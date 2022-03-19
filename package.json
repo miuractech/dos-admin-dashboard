@@ -9,11 +9,22 @@
   },
   "private": true,
   "dependencies": {
+    "@hookform/resolvers": "^2.8.8",
+    "@reduxjs/toolkit": "^1.8.0",
+    "clsx": "^1.1.1",
     "core-js": "^3.6.5",
+    "firebase": "^9.6.8",
     "react": "17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "17.0.2",
+    "react-hook-form": "^7.28.0",
+    "react-redux": "^7.2.6",
     "regenerator-runtime": "0.13.7",
-    "tslib": "^2.0.0"
+    "rxf": "^0.0.4",
+    "rxjs": "^7.5.5",
+    "tslib": "^2.0.0",
+    "uuid": "^8.3.2",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@nrwl/cli": "13.8.8",
@@ -30,7 +41,9 @@
     "@types/jest": "27.0.2",
     "@types/node": "16.11.7",
     "@types/react": "17.0.40",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "17.0.13",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "~5.10.0",
     "@typescript-eslint/parser": "~5.10.0",
     "babel-jest": "27.2.3",

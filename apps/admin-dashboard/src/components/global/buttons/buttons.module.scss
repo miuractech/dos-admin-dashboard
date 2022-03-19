@@ -1,0 +1,66 @@
+@use '../../../utils/styles/variables' as variables;
+
+@mixin common {
+  background: none;
+  border: none;
+  font-family: Montserrat;
+  font-weight: 400;
+  font-size: 1rem;
+  cursor: pointer;
+  color: variables.$gloval-white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  padding: 0.3rem 1.5rem 0.3rem 1.5rem;
+  transition: transform 0.2s ease-in-out;
+  gap: 8px;
+  &:hover {
+    transform: scale(1.01);
+  }
+  &:focus {
+    outline: none;
+  }
+}
+
+.default {
+  @include common();
+  padding: 0.7rem 1.5rem 0.7rem 1.5rem;
+  background: variables.$default-button;
+  color: variables.$gloval-white;
+}
+
+.default-not-padding {
+  @include common();
+  background: variables.$default-button;
+  color: variables.$gloval-white;
+}
+
+.edit {
+  @include common();
+
+  border: 1px solid variables.$edit-button;
+  color: variables.$edit-button;
+}
+
+.disable {
+  @include common();
+  border: 1px solid variables.$disable-button;
+  color: variables.$disable-button;
+}
+
+.cancel {
+  @include common();
+  border: 1px solid variables.$cancel-button;
+  color: variables.$cancel-button;
+}
+
+.enable {
+  @include common();
+  border: 1px solid variables.$enable-button;
+  color: variables.$enable-button;
+}
+
+.button-without-styles {
+  @include common();
+}

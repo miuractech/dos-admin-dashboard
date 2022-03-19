@@ -1,0 +1,40 @@
+@use '../../../utils/styles/variables' as variables;
+
+.text-input-container {
+  position: relative;
+  .text-input {
+    border: 1px solid variables.$global-grey;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 7px rgba(204, 204, 204, 0.25);
+    border-radius: 12px;
+    padding: 0.3rem 0.5rem 0.3rem 15px;
+    caret-color: transparent;
+    font-family: Montserrat;
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.not-hidden {
+  &::after {
+    content: '';
+    width: 1px;
+    height: 20px;
+    background: variables.$global-grey;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    animation: cursor-blink 1.5s steps(2) infinite;
+  }
+}
+
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
+}

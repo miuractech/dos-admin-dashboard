@@ -1,0 +1,21 @@
+.modal {
+  height: 100%;
+  width: 100%;
+  min-width: 600px;
+  position: fixed;
+  background: rgba(0, 0, 0, 0);
+  top: 0;
+  left: 0;
+  transition: all cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+  visibility: hidden;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-mounted {
+  visibility: visible;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
