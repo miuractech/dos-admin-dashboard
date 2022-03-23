@@ -127,7 +127,7 @@ const ProductSubCategory: React.FC = () => {
       <ApplicationModal mounted={showAddForm$.value}>
         <Form
           dbError={addError}
-          onCompleteText={'Product Category Has been Successfully Created!'}
+          onCompleteText={'Product Sub-Category Has been Successfully Created!'}
           unmountFunc={() => showAddForm$.next(false)}
           submitFormFunc={(name: string, categoryId: string) => {
             selectedProductFamily$.value !== null &&
@@ -279,7 +279,7 @@ const Form: React.FC<{
           <label>Category: </label>
           <select {...register('categoryId')}>
             {categories.metaProductCategoriesByFamily.map((c) => (
-              <option>{c.name}</option>
+              <option value={c.id}>{c.name}</option>
             ))}
           </select>
         </div>
