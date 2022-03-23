@@ -1,26 +1,23 @@
-import { getFirestore, runTransaction } from "firebase/firestore";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { from } from "rxjs";
+import { getFirestore, runTransaction } from 'firebase/firestore';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { from } from 'rxjs';
 
 import {
-  setMetaProductSubCategories,
+  setEditedMetaProductSubCategory,
   setMetaProductSubCategoryEditError,
-} from "../../store/meta-product.subcategory.slice";
-import {
-  metaProductSubCategoryRepo,
-  reorderSubCategoryHelper,
-} from "./helpers-subcategory";
+} from '../../store/meta-product.subcategory.slice';
+import { metaProductSubCategoryRepo } from './helpers-subcategory';
 
 async function deleteSubCategoryAsyncWrapper(docId: string, userName: string) {
   const res = await runTransaction(getFirestore(), async () => {
     const doc = await metaProductSubCategoryRepo.updateOne(
-      { status: "deleted" },
+      { status: 'deleted' },
       docId
     );
-    if ("severity" in doc) return doc;
+    if ('severity' in doc) return doc;
     else {
-      return await reorderSubCategoryHelper(userName, doc.index);
+      return metaProductSubCategoryRepo.getOne(docId);
     }
   });
   return res;
@@ -34,9 +31,9 @@ export default function useDeleteSubCategory(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(deleteSubCategoryAsyncWrapper(docId, userName));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) dispatch(setMetaProductSubCategoryEditError(res));
+      if ('severity' in res) dispatch(setMetaProductSubCategoryEditError(res));
       else {
-        dispatch(setMetaProductSubCategories(res));
+        dispatch(setEditedMetaProductSubCategory(res));
         dispatch(setMetaProductSubCategoryEditError(null));
       }
       setLoadingFlag(false);

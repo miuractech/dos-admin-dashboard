@@ -1,0 +1,20 @@
+@use '../../../utils/styles/mixins' as mixins;
+@use '../../../utils/styles/variables' as variables;
+
+.spinner {
+  height: 50px;
+  width: 50px;
+  border: 10px solid variables.$gloval-white;
+  border-top-color: variables.$global-dark-blue;
+  border-radius: 50%;
+  animation: animate-spinner 0.75s ease infinite;
+}
+
+@keyframes animate-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}

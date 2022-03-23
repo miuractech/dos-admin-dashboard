@@ -1,4 +1,4 @@
-import { orderBy } from 'firebase/firestore';
+import { orderBy, QueryConstraint } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { from } from 'rxjs';
@@ -13,9 +13,9 @@ export default function useGetFamilies(mounted: boolean) {
   const [loadingFlag, setLoadingFlag] = React.useState(false);
   const dispatch = useDispatch();
 
-  function getFamilies() {
+  function getFamilies(constraints: Array<QueryConstraint>) {
     setLoadingFlag(true);
-    const obs$ = from(metaProductFamilyRepo.getAll([orderBy('index')]));
+    const obs$ = from(metaProductFamilyRepo.getAll([...constraints]));
     const sub = obs$.subscribe((res) => {
       if ('severity' in res) dispatch(setMetaProductFamilyFetchError(res));
       else {

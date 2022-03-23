@@ -1,23 +1,35 @@
 import { AddIcon, CloseCircle } from '@admin/assets';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useSubject } from 'rxf';
+import { TApplicationErrorObject, useSubject } from 'rxf';
 import { BehaviorSubject } from 'rxjs';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { v4 as uuidv4 } from 'uuid';
+import clsx from 'clsx';
+
+import useAddFamily from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/add-family';
+import useUpdateFamily from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/update-family';
+import { TMetaProductFamily } from 'apps/admin-dashboard/src/Midl/meta-products/types';
+import useGetFamilies from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/get-families';
 
 import ApplicationButton, { ButtonWithoutStyles } from '../../global/buttons';
 import InfoText from '../../global/info-text';
 import ApplicationModal from '../../global/modal';
 import ApplicationTextInput from '../../global/text-input';
 import styles from './styles/meta.module.scss';
-import useAddFamily from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/add-family';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'apps/admin-dashboard/src/store';
-import { TMetaProductFamily } from 'apps/admin-dashboard/src/Midl/meta-products/types';
-import useGetFamilies from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/get-families';
-import { Draggable, DraggableProvided, Droppable } from 'react-beautiful-dnd';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import ApplicationSpinner from '../../global/spinner';
+import { orderBy } from 'firebase/firestore';
+import {
+  setDndFamily,
+  setRestoreBeforeDnd,
+} from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.family.slice';
+import { PRODUCT_FAMILY_DND_ID } from 'apps/admin-dashboard/src/utils/settings';
+import produce from 'immer';
+import { batchCommitFamily } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/helpers-family';
 
 const showAddForm$ = new BehaviorSubject(false);
 
@@ -31,12 +43,17 @@ const ProductFamily: React.FC = () => {
     showAddForm$.value
   );
   const { getFamilies } = useGetFamilies(true);
-  const families = useSelector(
-    (state: RootState) => state.metaProductFamily.metaProductFamilies
+  const families = useSelector((state: RootState) => state.metaProductFamily);
+  const dndInit =
+    families.dndInit === 'initialize' || families.dndInit === 'continue';
+  const dbError = useSelector(
+    (state: RootState) => state.metaProductFamily.addError
   );
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
-    getFamilies();
+    families.metaProductFamilies.length === 0 &&
+      getFamilies([orderBy('index')]);
   }, []);
 
   return (
@@ -54,29 +71,70 @@ const ProductFamily: React.FC = () => {
           <AddIcon /> <span>Add Family</span>
         </ApplicationButton>
       </div>
-      <Droppable droppableId="product-family-droppable">
+      {dndInit && (
+        <div className={styles['dnd-container']}>
+          <div className={styles['inner']}>
+            <div style={{ height: 35, width: 80 }}>
+              <ApplicationButton
+                variant="disable"
+                clickAction={() => {
+                  dispatch(setRestoreBeforeDnd());
+                }}
+                dimension={{ height: '100%', width: '100%' }}
+              >
+                Cancel
+              </ApplicationButton>
+            </div>
+            <div style={{ height: 35, width: 80 }}>
+              <ApplicationButton
+                variant="enable"
+                clickAction={() => {
+                  produce(families, (draft) =>
+                    batchCommitFamily(draft.metaProductFamilies, 'Somnath')
+                  );
+                  dispatch(setDndFamily('default'));
+                }}
+                dimension={{ height: '100%', width: '100%' }}
+              >
+                Save
+              </ApplicationButton>
+            </div>
+          </div>
+        </div>
+      )}
+      <Droppable droppableId={PRODUCT_FAMILY_DND_ID}>
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
             className={styles['list']}
           >
-            {families.map((f) => (
+            {families.metaProductFamilies.map((f) => (
               <Draggable
                 key={f.id}
                 draggableId={`draggable ${f.id}`}
                 index={f.index}
               >
                 {(provided, snapshot) => (
-                  <List provided={provided} family={f} />
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    className={styles['list-content']}
+                  >
+                    <List family={f} />
+                  </div>
                 )}
               </Draggable>
             ))}
+            {provided.placeholder}
           </div>
         )}
       </Droppable>
       <ApplicationModal mounted={showAddForm$.value}>
         <Form
+          dbError={dbError}
+          onCompleteText={'Product Family Has been Successfully Created!'}
           unmountFunc={() => showAddForm$.next(false)}
           submitFormFunc={(name: string) => {
             addFamily({ name: name, createdBy: 'Somnath' }, uuidv4());
@@ -89,28 +147,83 @@ const ProductFamily: React.FC = () => {
   );
 };
 
+const List: React.FC<{
+  family: TMetaProductFamily;
+}> = ({ family }) => {
+  const [showEditForm, setShowEditForm] = React.useState(false);
+  const dbError = useSelector(
+    (state: RootState) => state.metaProductFamily.editError
+  );
+  const { updateFamilyName, loadingFlag, completed, completedSetter } =
+    useUpdateFamily(showEditForm);
+
+  return (
+    <>
+      <div className={styles['main']}>
+        <h3>{family.name}</h3>
+        <div className={styles['button-container']}>
+          <ApplicationButton
+            clickAction={() => {
+              setShowEditForm(true);
+              completedSetter(false);
+            }}
+            variant="edit"
+          >
+            Edit
+          </ApplicationButton>
+          <ApplicationButton clickAction={() => {}} variant="disable">
+            Unpublish
+          </ApplicationButton>
+        </div>
+      </div>
+      <div className={styles['footer']}></div>
+      <ApplicationModal mounted={showEditForm}>
+        <Form
+          dbError={dbError}
+          onCompleteText={'Changes Have Been Saved Successfully!'}
+          unmountFunc={() => setShowEditForm(false)}
+          submitFormFunc={(name: string) =>
+            updateFamilyName({ name: name, updatedBy: 'Somnath' }, family.id)
+          }
+          completed={completed}
+          productFamilyNameDefaultValue={family.name}
+          loadingFlag={loadingFlag}
+        />
+      </ApplicationModal>
+    </>
+  );
+};
+
 const Form: React.FC<{
   unmountFunc: () => void;
   submitFormFunc: (name: string) => void;
   loadingFlag: boolean;
   completed: boolean;
-}> = ({ unmountFunc, submitFormFunc, loadingFlag, completed }) => {
+  dbError: TApplicationErrorObject | null;
+  onCompleteText: string;
+  productFamilyNameDefaultValue?: string;
+}> = ({
+  unmountFunc,
+  submitFormFunc,
+  loadingFlag,
+  completed,
+  dbError,
+  productFamilyNameDefaultValue,
+  onCompleteText,
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{ name: string }>({ resolver: yupResolver(validationSchema) });
-  const addError = useSelector(
-    (state: RootState) => state.metaProductFamily.addError
-  );
 
   function submit(data: { name: string }) {
     submitFormFunc(data.name);
   }
 
   return (
-    <div className={styles['product-family-form']}>
-      <div className={styles['product-family-form-heading']}>
+    <div className={styles['product-form']}>
+      <div className={styles['product-form-heading']}>
         <div></div>
         <h3>Product Family</h3>
         <ButtonWithoutStyles clickAction={() => unmountFunc()}>
@@ -118,10 +231,14 @@ const Form: React.FC<{
         </ButtonWithoutStyles>
       </div>
       <form onSubmit={handleSubmit(submit)}>
-        <div className={styles['product-family-form-body']}>
+        <div className={styles['product-form-body']}>
           <label>Product Name:</label>
           <div>
-            <ApplicationTextInput inputChangeFunc={register} fieldName="name" />
+            <ApplicationTextInput
+              defaultValue={productFamilyNameDefaultValue}
+              inputChangeFunc={register}
+              fieldName="name"
+            />
             <InfoText
               text={
                 errors.name?.message !== undefined ? errors.name.message : ''
@@ -130,71 +247,55 @@ const Form: React.FC<{
               variant="error"
             />
             <InfoText
-              text={addError !== null ? addError.message : ''}
+              text={dbError !== null ? dbError.message : ''}
               fontFamily="Montserrat"
               variant="error"
             />
           </div>
         </div>
-        {loadingFlag ? (
-          <p>Sending Request</p>
-        ) : (
-          <div className={styles['form-button-container']}>
-            <div style={{ height: 50, width: 100 }}>
-              <ApplicationButton
-                variant="cancel"
-                clickAction={() => unmountFunc()}
-                dimension={{ height: '100%', width: '100%' }}
-              >
-                Cancel
-              </ApplicationButton>
-            </div>
-            <div style={{ height: 50, width: 100 }}>
-              <ApplicationButton
-                variant="default-not-padding"
-                clickAction={handleSubmit(submit)}
-                dimension={{ height: '100%', width: '100%' }}
-              >
-                Save
-              </ApplicationButton>
-            </div>
-          </div>
-        )}
+        <div
+          className={
+            loadingFlag
+              ? clsx(
+                  styles['form-button-container'],
+                  styles['form-button-container-loading']
+                )
+              : styles['form-button-container']
+          }
+        >
+          {loadingFlag ? (
+            <ApplicationSpinner />
+          ) : (
+            <>
+              <div style={{ height: 50, width: 100 }}>
+                <ApplicationButton
+                  variant="cancel"
+                  clickAction={() => unmountFunc()}
+                  dimension={{ height: '100%', width: '100%' }}
+                >
+                  Cancel
+                </ApplicationButton>
+              </div>
+              <div style={{ height: 50, width: 100 }}>
+                <ApplicationButton
+                  variant="default-not-padding"
+                  clickAction={handleSubmit(submit)}
+                  dimension={{ height: '100%', width: '100%' }}
+                >
+                  Save
+                </ApplicationButton>
+              </div>
+            </>
+          )}
+        </div>
       </form>
       {completed && (
         <InfoText
-          text="Product Family Has been Successfully Created!"
+          text={onCompleteText}
           fontFamily="Montserrat"
           variant="success"
         />
       )}
-    </div>
-  );
-};
-
-const List: React.FC<{
-  family: TMetaProductFamily;
-  provided: DraggableProvided;
-}> = ({ family, provided }) => {
-  return (
-    <div
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      className={styles['list-content']}
-    >
-      <div className={styles['main']}>
-        <h3>{family.name}</h3>
-        <div className={styles['button-container']}>
-          <ApplicationButton clickAction={() => {}} variant="edit">
-            Edit
-          </ApplicationButton>
-          <ApplicationButton clickAction={() => {}} variant="disable">
-            Disable
-          </ApplicationButton>
-        </div>
-      </div>
-      <div className={styles['footer']}></div>
     </div>
   );
 };

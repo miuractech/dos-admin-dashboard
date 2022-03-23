@@ -1,32 +1,99 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import { from } from "rxjs";
+import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { runTransaction, where } from 'firebase/firestore';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { ApplicationError } from 'rxf';
+import { from } from 'rxjs';
+import { MetaProductCategoryLimit } from '../../settings';
+
 import {
   setEditedMetaProductCategory,
   setMetaProductCategoryEditError,
-} from "../../store/meta-product.category.slice";
-import { metaProductCategoryRepo } from "./helpers-category";
+} from '../../store/meta-product.category.slice';
+import { metaProductCategoryRepo } from './helpers-category';
+
+async function updateCategoryNameAsyncWrapper(
+  payload: { name: string; updatedBy: string; familyId: string },
+  docId: string
+) {
+  const res = await runTransaction(firestore, async () => {
+    const docs = await metaProductCategoryRepo.getAll([
+      where('familyId', '==', payload.familyId),
+    ]);
+
+    if ('severity' in docs) return docs;
+    else if (docs.filter((d) => d.name === payload.name).length === 0) {
+      return metaProductCategoryRepo.updateOne(payload, docId);
+    } else {
+      return new ApplicationError().handleCustomError(
+        'Conflict/Limit',
+        'Naming Conflict or Limit',
+        'Naming Conflicts or Limit of Documents has Exceeded',
+        'error'
+      );
+    }
+  });
+  return res;
+}
 
 export default function useUpdateCategory(mounted: boolean) {
   const [loadingFlag, setLoadingFlag] = React.useState(false);
+  const [completed, setCompleted] = React.useState(false);
   const dispatch = useDispatch();
 
+  function completedSetter(val: boolean) {
+    setCompleted(val);
+  }
+
   function updateCategoryName(
-    payload: { name: string; updatedBy: string },
+    payload: { name: string; updatedBy: string; familyId: string },
     docId: string
   ) {
     setLoadingFlag(true);
-    const obs$ = from(metaProductCategoryRepo.updateOne(payload, docId));
+    setCompleted(false);
+    const obs$ = from(updateCategoryNameAsyncWrapper(payload, docId));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) dispatch(setMetaProductCategoryEditError(res));
+      if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
       else {
         dispatch(setEditedMetaProductCategory(res));
         dispatch(setMetaProductCategoryEditError(null));
+        setCompleted(true);
       }
       setLoadingFlag(false);
     });
     if (!mounted) sub.unsubscribe();
   }
 
-  return { loadingFlag, updateCategoryName };
+  function unPublishCategory(docId: string) {
+    metaProductCategoryRepo
+      .updateOne({ status: 'unpublished' }, docId)
+      .then((res) => {
+        if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
+        else {
+          dispatch(setEditedMetaProductCategory(res));
+          dispatch(setMetaProductCategoryEditError(null));
+        }
+      });
+  }
+
+  function publishCategory(docId: string) {
+    metaProductCategoryRepo
+      .updateOne({ status: 'published' }, docId)
+      .then((res) => {
+        if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
+        else {
+          dispatch(setEditedMetaProductCategory(res));
+          dispatch(setMetaProductCategoryEditError(null));
+        }
+      });
+  }
+
+  return {
+    loadingFlag,
+    updateCategoryName,
+    unPublishCategory,
+    publishCategory,
+    completedSetter,
+    completed,
+  };
 }

@@ -1,22 +1,22 @@
-import { getFirestore, runTransaction } from "firebase/firestore";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { from } from "rxjs";
+import { getFirestore, runTransaction } from 'firebase/firestore';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { from } from 'rxjs';
 import {
-  setMetaProductFamilies,
+  setEditedMetaProductFamily,
   setMetaProductFamilyEditError,
-} from "../../store/meta-product.family.slice";
-import { metaProductFamilyRepo, reorderFamilyHelper } from "./helpers-family";
+} from '../../store/meta-product.family.slice';
+import { metaProductFamilyRepo } from './helpers-family';
 
 async function deleteFamilyAsyncWrapper(docId: string, userName: string) {
   const res = await runTransaction(getFirestore(), async () => {
     const doc = await metaProductFamilyRepo.updateOne(
-      { status: "deleted" },
+      { status: 'deleted' },
       docId
     );
-    if ("severity" in doc) return doc;
+    if ('severity' in doc) return doc;
     else {
-      return await reorderFamilyHelper(userName, doc.index);
+      return await metaProductFamilyRepo.getOne(docId);
     }
   });
   return res;
@@ -30,9 +30,9 @@ export default function useDeleteFamily(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(deleteFamilyAsyncWrapper(docId, userName));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) dispatch(setMetaProductFamilyEditError(res));
+      if ('severity' in res) dispatch(setMetaProductFamilyEditError(res));
       else {
-        dispatch(setMetaProductFamilies(res));
+        dispatch(setEditedMetaProductFamily(res));
         dispatch(setMetaProductFamilyEditError(null));
       }
       setLoadingFlag(false);

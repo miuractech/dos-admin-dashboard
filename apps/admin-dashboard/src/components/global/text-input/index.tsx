@@ -1,13 +1,13 @@
 import clsx from 'clsx';
 import React from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
+import { UseFormRegister } from 'react-hook-form';
 
 import styles from './text-input.module.scss';
 
 const ApplicationTextInput: React.FC<{
   inputChangeFunc: UseFormRegister<any>;
   fieldName: string;
+  defaultValue?: string;
 }> = (props) => {
   const containerStyle = styles['text-input-container'];
   const afterStyle = styles['not-hidden'];
@@ -24,6 +24,7 @@ const ApplicationTextInput: React.FC<{
         onFocus={() => {
           setStyleState(containerStyle);
         }}
+        defaultValue={props.defaultValue}
         onBlur={() => setStyleState(clsx(containerStyle, afterStyle))}
         autoComplete="off"
       />

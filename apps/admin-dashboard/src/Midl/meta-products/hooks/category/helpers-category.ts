@@ -1,41 +1,22 @@
-import { getFirestore, orderBy } from "firebase/firestore";
-import { FirebaseRepository, reorder } from "rxf";
+import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { FirebaseRepository } from 'rxf';
 
-import { TMetaProductCategory } from "../../types";
+import { TMetaProductCategory } from '../../types';
 
 export const metaProductCategoryRepo =
   new FirebaseRepository<TMetaProductCategory>(
-    "/meta/products/category",
-    getFirestore()
+    '/meta/products/category',
+    firestore
   );
 
-export async function reorderCategoryHelper(
-  userName: string,
-  currentIndex: number,
-  nextIndex?: number
+export async function batchCommitCategory(
+  arr: Array<TMetaProductCategory>,
+  updatedBy: string
 ) {
-  const docs = await metaProductCategoryRepo.getAll([orderBy("index")]);
-
-  if ("severity" in docs) return docs;
-  else {
-    const reordered = reorder(
-      docs,
-      nextIndex === undefined ? docs.length - 1 : nextIndex,
-      currentIndex
-    );
-    if ("severity" in reordered) return reordered;
-    else {
-      const batch = metaProductCategoryRepo.createBatch();
-      reordered.forEach((r) => {
-        r.updatedBy = userName;
-        metaProductCategoryRepo.batchCommitUpdate(
-          batch,
-          { updatedBy: userName, index: r.index },
-          r.id
-        );
-      });
-      await batch.commit();
-      return await metaProductCategoryRepo.getAll([orderBy("index")]);
-    }
-  }
+  const batch = metaProductCategoryRepo.createBatch();
+  arr.forEach((r) => {
+    r.updatedBy = updatedBy;
+    metaProductCategoryRepo.batchCommitUpdate(batch, r, r.id);
+  });
+  await batch.commit();
 }

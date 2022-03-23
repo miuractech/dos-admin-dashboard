@@ -1,10 +1,10 @@
-import { TFirestoreDefault } from "rxf";
+import { TFirestoreDefault } from 'rxf';
 
 export type metaProductStatus =
-  | "deleted"
-  | "archived"
-  | "published"
-  | "unpublished";
+  | 'deleted'
+  | 'archived'
+  | 'published'
+  | 'unpublished';
 
 export interface TMetaProductSubCategory extends TFirestoreDefault {
   name: string;

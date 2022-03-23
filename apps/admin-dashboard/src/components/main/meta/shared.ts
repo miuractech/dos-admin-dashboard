@@ -1,7 +1,9 @@
 import React from 'react';
 import { BehaviorSubject } from 'rxjs';
-import { Categories, ProductType, SubCategories } from './mock';
+import { ProductType } from './mock';
+import ProductCategory from './product-category';
 import ProductFamily from './product-family';
+import ProductSubCategory from './product-sub-category';
 
 export const metaTopbarObject: {
   [key: string]: {
@@ -15,11 +17,11 @@ export const metaTopbarObject: {
   },
   CATEGORIES: {
     value: 'Categories',
-    mainComponent: Categories,
+    mainComponent: ProductCategory,
   },
   SUB_CATEGORIES: {
     value: 'Sub Categories',
-    mainComponent: SubCategories,
+    mainComponent: ProductSubCategory,
   },
   PRODUCT_TYPE: {
     value: 'Product Type',
@@ -28,4 +30,4 @@ export const metaTopbarObject: {
 };
 
 // Selected Meta Option
-export const selectedMetaOption$ = new BehaviorSubject('PRODUCT_FAMILY');
+export const selectedMetaOption$ = new BehaviorSubject('SUB_CATEGORIES');

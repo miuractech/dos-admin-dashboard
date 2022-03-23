@@ -15,6 +15,7 @@ interface IButton {
     height: string;
     width: string;
   };
+  disabled?: boolean;
 }
 
 const buttonObject: { [key: string]: string } = {
@@ -31,21 +32,31 @@ const ApplicationButton: React.FC<IButton> = ({
   variant,
   clickAction,
   dimension,
+  disabled,
 }) => {
   const styleObject = dimension !== undefined ? dimension : {};
 
   return (
-    <button style={styleObject}  onClick={() => clickAction()} className={buttonObject[variant]}>
+    <button
+      style={styleObject}
+      onClick={() => clickAction()}
+      className={buttonObject[variant]}
+      disabled={disabled}
+    >
       {children}
     </button>
   );
 };
 
-const ButtonWithoutStyles: React.FC<{ clickAction: () => void }> = (props) => {
+const ButtonWithoutStyles: React.FC<{
+  clickAction: () => void;
+  disabled?: boolean;
+}> = (props) => {
   return (
     <button
       onClick={() => props.clickAction()}
       className={styles['button-without-styles']}
+      disabled={props.disabled}
     >
       {props.children}
     </button>

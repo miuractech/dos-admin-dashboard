@@ -1,23 +1,23 @@
-import { orderBy } from "firebase/firestore";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { from } from "rxjs";
+import { orderBy, QueryConstraint } from 'firebase/firestore';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { from } from 'rxjs';
 
 import {
   setMetaProductCategories,
   setMetaProductCategoryFetchError,
-} from "../../store/meta-product.category.slice";
-import { metaProductCategoryRepo } from "./helpers-category";
+} from '../../store/meta-product.category.slice';
+import { metaProductCategoryRepo } from './helpers-category';
 
 export default function useGetCategories(mounted: boolean) {
   const [loadingFlag, setLoadingFlag] = React.useState(false);
   const dispatch = useDispatch();
 
-  function getCategories() {
+  function getCategories(constraints: Array<QueryConstraint>) {
     setLoadingFlag(true);
-    const obs$ = from(metaProductCategoryRepo.getAll([orderBy("createdAt")]));
+    const obs$ = from(metaProductCategoryRepo.getAll([...constraints]));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) dispatch(setMetaProductCategoryFetchError(res));
+      if ('severity' in res) dispatch(setMetaProductCategoryFetchError(res));
       else {
         dispatch(setMetaProductCategories(res));
         dispatch(setMetaProductCategoryFetchError(null));

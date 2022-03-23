@@ -1,33 +1,98 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import { from } from "rxjs";
+import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { runTransaction } from 'firebase/firestore';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { ApplicationError } from 'rxf';
+import { from } from 'rxjs';
 
 import {
   setEditedMetaProductFamily,
   setMetaProductFamilyEditError,
-} from "../../store/meta-product.family.slice";
-import { metaProductFamilyRepo } from "./helpers-family";
+} from '../../store/meta-product.family.slice';
+import { metaProductFamilyRepo } from './helpers-family';
+
+async function updateFamilyNameAsyncWrapper(
+  payload: { name: string; updatedBy: string },
+  docId: string
+) {
+  const res = await runTransaction(firestore, async () => {
+    const docs = await metaProductFamilyRepo.getAll([]);
+    if ('severity' in docs) return docs;
+    else if (docs.filter((d) => d.name === payload.name).length === 0) {
+      return metaProductFamilyRepo.updateOne(
+        { name: payload.name, updatedBy: payload.updatedBy },
+        docId
+      );
+    } else {
+      return new ApplicationError().handleCustomError(
+        'Conflict',
+        'Naming Conflict/Limit',
+        'Naming Conflicts or Limit of Documents has Exceeded',
+        'error'
+      );
+    }
+  });
+  return res;
+}
 
 export default function useUpdateFamily(mounted: boolean) {
   const [loadingFlag, setLoadingFlag] = React.useState(false);
+  const [completed, setCompleted] = React.useState(false);
   const dispatch = useDispatch();
+
+  function completedSetter(val: boolean) {
+    setCompleted(val);
+  }
 
   function updateFamilyName(
     payload: { name: string; updatedBy: string },
     docId: string
   ) {
     setLoadingFlag(true);
-    const obs$ = from(metaProductFamilyRepo.updateOne(payload, docId));
+    setCompleted(false);
+    const obs$ = from(updateFamilyNameAsyncWrapper(payload, docId));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) dispatch(setMetaProductFamilyEditError(res));
+      if ('severity' in res) dispatch(setMetaProductFamilyEditError(res));
       else {
         dispatch(setEditedMetaProductFamily(res));
         dispatch(setMetaProductFamilyEditError(null));
+        setCompleted(true);
       }
       setLoadingFlag(false);
     });
     if (!mounted) sub.unsubscribe();
   }
 
-  return { loadingFlag, updateFamilyName };
+  function unPublishFamily(docId: string) {
+    metaProductFamilyRepo
+      .updateOne({ status: 'unpublished' }, docId)
+      .then((res) => {
+        if ('severity' in res) dispatch(setMetaProductFamilyEditError(res));
+        else {
+          dispatch(setEditedMetaProductFamily(res));
+          dispatch(setMetaProductFamilyEditError(null));
+        }
+      });
+  }
+
+  function publishFamily(docId: string) {
+    metaProductFamilyRepo
+      .updateOne({ status: 'published' }, docId)
+      .then((res) => {
+        if ('severity' in res) dispatch(setMetaProductFamilyEditError(res));
+        else {
+          dispatch(setEditedMetaProductFamily(res));
+          dispatch(setMetaProductFamilyEditError(null));
+        }
+      });
+  }
+
+  return {
+    loadingFlag,
+    updateFamilyName,
+    completed,
+    completedSetter,
+    publishFamily,
+    unPublishFamily,
+  };
 }
