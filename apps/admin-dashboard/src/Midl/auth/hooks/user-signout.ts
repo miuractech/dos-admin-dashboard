@@ -1,10 +1,11 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { from } from "rxjs";
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import { from } from 'rxjs';
 
-import { RootState } from "../../../store";
-import { setAdminUserState } from "../store/admin.user.slice";
-import firebaseAuth from "./auth-instance";
+import { RootState } from '../../../store';
+import { setAdminUserState } from '../store/admin.user.slice';
+import firebaseAuth from './auth-instance';
 
 export default function useUserSignOut(mounted: boolean) {
   const dispatch = useDispatch();
@@ -15,13 +16,13 @@ export default function useUserSignOut(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(firebaseAuth.firebaseUserSignOut());
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) {
+      if (res instanceof ApplicationErrorHandler) {
         dispatch(
           setAdminUserState({
             user: user,
             userLoading: false,
-            error: res.message,
-            signOutMessage: "",
+            error: res.errorObject.message,
+            signOutMessage: '',
           })
         );
       } else {
@@ -29,7 +30,7 @@ export default function useUserSignOut(mounted: boolean) {
           setAdminUserState({
             user: null,
             userLoading: false,
-            error: "",
+            error: '',
             signOutMessage: res.message,
           })
         );

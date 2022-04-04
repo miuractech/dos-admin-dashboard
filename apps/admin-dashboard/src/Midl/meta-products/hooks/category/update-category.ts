@@ -2,9 +2,9 @@ import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
 import { runTransaction, where } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ApplicationError } from 'rxf';
+import { ApplicationError } from 'rxf-rewrite';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
-import { MetaProductCategoryLimit } from '../../settings';
 
 import {
   setEditedMetaProductCategory,
@@ -21,7 +21,7 @@ async function updateCategoryNameAsyncWrapper(
       where('familyId', '==', payload.familyId),
     ]);
 
-    if ('severity' in docs) return docs;
+    if (docs instanceof ApplicationErrorHandler) return docs;
     else if (docs.filter((d) => d.name === payload.name).length === 0) {
       return metaProductCategoryRepo.updateOne(payload, docId);
     } else {
@@ -53,7 +53,8 @@ export default function useUpdateCategory(mounted: boolean) {
     setCompleted(false);
     const obs$ = from(updateCategoryNameAsyncWrapper(payload, docId));
     const sub = obs$.subscribe((res) => {
-      if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductCategoryEditError(res.errorObject));
       else {
         dispatch(setEditedMetaProductCategory(res));
         dispatch(setMetaProductCategoryEditError(null));
@@ -68,7 +69,8 @@ export default function useUpdateCategory(mounted: boolean) {
     metaProductCategoryRepo
       .updateOne({ status: 'unpublished' }, docId)
       .then((res) => {
-        if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
+        if (res instanceof ApplicationErrorHandler)
+          dispatch(setMetaProductCategoryEditError(res.errorObject));
         else {
           dispatch(setEditedMetaProductCategory(res));
           dispatch(setMetaProductCategoryEditError(null));
@@ -80,7 +82,8 @@ export default function useUpdateCategory(mounted: boolean) {
     metaProductCategoryRepo
       .updateOne({ status: 'published' }, docId)
       .then((res) => {
-        if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
+        if (res instanceof ApplicationErrorHandler)
+          dispatch(setMetaProductCategoryEditError(res.errorObject));
         else {
           dispatch(setEditedMetaProductCategory(res));
           dispatch(setMetaProductCategoryEditError(null));

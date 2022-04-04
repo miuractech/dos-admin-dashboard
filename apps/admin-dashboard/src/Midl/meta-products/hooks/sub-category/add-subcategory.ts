@@ -1,7 +1,8 @@
 import { getFirestore, runTransaction, where } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ApplicationError } from 'rxf';
+import { ApplicationError } from 'rxf-rewrite';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
 
 import { MetaProductSubCategoryLimit } from '../../settings';
@@ -27,7 +28,7 @@ async function addNewSubCategoryAsyncWrapper(
       where('categoryId', '==', payload.categoryId),
     ]);
 
-    if ('severity' in docs) return docs;
+    if (docs instanceof ApplicationErrorHandler) return docs;
     else if (
       docs.length < MetaProductSubCategoryLimit &&
       docs.filter((d) => d.name === payload.name).length === 0
@@ -77,7 +78,8 @@ export default function useAddSubCategory(mounted: boolean) {
     setCompleted(false);
     const obs$ = from(addNewSubCategoryAsyncWrapper(payload, docId));
     const sub = obs$.subscribe((res) => {
-      if ('severity' in res) dispatch(setMetaProductSubCategoryAddError(res));
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductSubCategoryAddError(res.errorObject));
       else {
         dispatch(setAddedMetaProductSubCategory(res));
         dispatch(setMetaProductSubCategoryAddError(null));

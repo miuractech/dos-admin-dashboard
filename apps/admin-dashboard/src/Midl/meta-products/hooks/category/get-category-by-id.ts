@@ -1,9 +1,10 @@
-import React from "react";
-import { TApplicationErrorObject } from "rxf";
-import { from } from "rxjs";
+import React from 'react';
+import { TApplicationErrorObject } from 'rxf-rewrite';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import { from } from 'rxjs';
 
-import { TMetaProductCategory } from "../../types";
-import { metaProductCategoryRepo } from "./helpers-category";
+import { TMetaProductCategory } from '../../types';
+import { metaProductCategoryRepo } from './helpers-category';
 
 export default function useGetCategoryById(mounted: boolean) {
   const [loadingFlag, setLoadingFlag] = React.useState(false);
@@ -17,7 +18,8 @@ export default function useGetCategoryById(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(metaProductCategoryRepo.getOne(id));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) setCategoryError(res);
+      if (res instanceof ApplicationErrorHandler)
+        setCategoryError(res.errorObject);
       else {
         setCategory(res);
         setCategoryError(null);

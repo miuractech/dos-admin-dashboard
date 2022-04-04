@@ -2,6 +2,7 @@ import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
 import { runTransaction } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
 
 import {
@@ -16,7 +17,7 @@ async function deleteCategoryAsyncWrapper(docId: string, userName: string) {
       { status: 'deleted' },
       docId
     );
-    if ('severity' in doc) return doc;
+    if (doc instanceof ApplicationErrorHandler) return doc;
     else {
       return await metaProductCategoryRepo.getOne(docId);
     }
@@ -32,7 +33,7 @@ export default function useDeleteCategory(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(deleteCategoryAsyncWrapper(docId, userName));
     const sub = obs$.subscribe((res) => {
-      if ('severity' in res) dispatch(setMetaProductCategoryEditError(res));
+      if (res instanceof ApplicationErrorHandler) dispatch(setMetaProductCategoryEditError(res.errorObject));
       else {
         dispatch(setEditedMetaProductCategory(res));
         dispatch(setMetaProductCategoryEditError(null));

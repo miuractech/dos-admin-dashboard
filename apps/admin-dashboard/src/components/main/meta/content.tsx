@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSubject } from 'rxf';
+import { useSubject } from 'rxf-rewrite';
 import { metaTopbarObject, selectedMetaOption$ } from './shared';
 
 const Content: React.FC = () => {

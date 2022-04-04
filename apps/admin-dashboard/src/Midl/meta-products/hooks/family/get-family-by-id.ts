@@ -1,9 +1,10 @@
-import React from "react";
-import { TApplicationErrorObject } from "rxf";
-import { from } from "rxjs";
+import React from 'react';
+import { TApplicationErrorObject } from 'rxf-rewrite';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import { from } from 'rxjs';
 
-import { TMetaProductFamily } from "../../types";
-import { metaProductFamilyRepo } from "./helpers-family";
+import { TMetaProductFamily } from '../../types';
+import { metaProductFamilyRepo } from './helpers-family';
 
 export default function useGetFamilyById(mounted: boolean) {
   const [loadingFlag, setLoadingFlag] = React.useState(false);
@@ -15,7 +16,8 @@ export default function useGetFamilyById(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(metaProductFamilyRepo.getOne(id));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) setFamilyError(res);
+      if (res instanceof ApplicationErrorHandler)
+        setFamilyError(res.errorObject);
       else {
         setFamily(res);
         setFamilyError(null);

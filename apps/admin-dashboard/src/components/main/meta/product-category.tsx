@@ -1,7 +1,6 @@
 import React from 'react';
 import * as yup from 'yup';
 import { BehaviorSubject } from 'rxjs';
-import { TApplicationErrorObject, useSubject } from 'rxf';
 import useGetCategories from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/get-categories';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'apps/admin-dashboard/src/store';
@@ -35,6 +34,7 @@ import {
   setRestoreCategoryBeforeDnd,
 } from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
 import { batchCommitCategory } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/helpers-category';
+import { TApplicationErrorObject, useSubject } from 'rxf-rewrite';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null

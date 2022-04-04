@@ -15,7 +15,6 @@ import _ from 'lodash';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { TApplicationErrorObject, useSubject } from 'rxf';
 import { BehaviorSubject } from 'rxjs';
 import * as yup from 'yup';
 import ApplicationButton, { ButtonWithoutStyles } from '../../global/buttons';
@@ -26,6 +25,7 @@ import ApplicationTextInput from '../../global/text-input';
 
 import styles from './styles/meta.module.scss';
 import { setMetaProductCategoriesByFamily } from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
+import { TApplicationErrorObject, useSubject } from 'rxf-rewrite';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null

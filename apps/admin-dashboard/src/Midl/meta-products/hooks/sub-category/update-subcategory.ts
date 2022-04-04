@@ -2,7 +2,8 @@ import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
 import { runTransaction, where } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ApplicationError } from 'rxf';
+import { ApplicationError } from 'rxf-rewrite';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
 import {
   setEditedMetaProductSubCategory,
@@ -11,7 +12,12 @@ import {
 import { metaProductSubCategoryRepo } from './helpers-subcategory';
 
 async function updateSubCategoryNameAsyncWrapper(
-  payload: { name: string; updatedBy: string; familyId: string; categoryId: string },
+  payload: {
+    name: string;
+    updatedBy: string;
+    familyId: string;
+    categoryId: string;
+  },
   docId: string
 ) {
   const res = await runTransaction(firestore, async () => {
@@ -20,7 +26,7 @@ async function updateSubCategoryNameAsyncWrapper(
       where('categoryId', '==', payload.categoryId),
     ]);
 
-    if ('severity' in docs) return docs;
+    if (docs instanceof ApplicationErrorHandler) return docs;
     else if (docs.filter((d) => d.name === payload.name).length === 0) {
       return metaProductSubCategoryRepo.updateOne(payload, docId);
     } else {
@@ -45,14 +51,20 @@ export default function useUpdateSubCategory(mounted: boolean) {
   }
 
   function updateSubCategoryName(
-    payload: { name: string; updatedBy: string; familyId: string; categoryId: string },
+    payload: {
+      name: string;
+      updatedBy: string;
+      familyId: string;
+      categoryId: string;
+    },
     docId: string
   ) {
     setLoadingFlag(true);
     setCompleted(false);
     const obs$ = from(updateSubCategoryNameAsyncWrapper(payload, docId));
     const sub = obs$.subscribe((res) => {
-      if ('severity' in res) dispatch(setMetaProductSubCategoryEditError(res));
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductSubCategoryEditError(res.errorObject));
       else {
         dispatch(setEditedMetaProductSubCategory(res));
         dispatch(setMetaProductSubCategoryEditError(null));
@@ -67,8 +79,8 @@ export default function useUpdateSubCategory(mounted: boolean) {
     metaProductSubCategoryRepo
       .updateOne({ status: 'unpublished' }, docId)
       .then((res) => {
-        if ('severity' in res)
-          dispatch(setMetaProductSubCategoryEditError(res));
+        if (res instanceof ApplicationErrorHandler)
+          dispatch(setMetaProductSubCategoryEditError(res.errorObject));
         else {
           dispatch(setEditedMetaProductSubCategory(res));
           dispatch(setMetaProductSubCategoryEditError(null));
@@ -80,8 +92,8 @@ export default function useUpdateSubCategory(mounted: boolean) {
     metaProductSubCategoryRepo
       .updateOne({ status: 'published' }, docId)
       .then((res) => {
-        if ('severity' in res)
-          dispatch(setMetaProductSubCategoryEditError(res));
+        if (res instanceof ApplicationErrorHandler)
+          dispatch(setMetaProductSubCategoryEditError(res.errorObject));
         else {
           dispatch(setEditedMetaProductSubCategory(res));
           dispatch(setMetaProductSubCategoryEditError(null));

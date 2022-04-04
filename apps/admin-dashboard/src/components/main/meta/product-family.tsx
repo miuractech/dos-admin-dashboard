@@ -1,7 +1,6 @@
 import { AddIcon, CloseCircle } from '@admin/assets';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { TApplicationErrorObject, useSubject } from 'rxf';
 import { BehaviorSubject } from 'rxjs';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -30,6 +29,7 @@ import {
 import { PRODUCT_FAMILY_DND_ID } from 'apps/admin-dashboard/src/utils/settings';
 import produce from 'immer';
 import { batchCommitFamily } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/helpers-family';
+import { TApplicationErrorObject, useSubject } from 'rxf-rewrite';
 
 const showAddForm$ = new BehaviorSubject(false);
 

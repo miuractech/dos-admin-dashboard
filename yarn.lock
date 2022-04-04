@@ -5342,7 +5342,7 @@
     "locate-path" "^6.0.0"
     "path-exists" "^4.0.0"
 
-"firebase@^9.6.10", "firebase@^9.6.6", "firebase@^9.6.8":
+"firebase@^9.6.10", "firebase@^9.6.8":
   "integrity" "sha512-pnWXhH2J/O5To/TXEp7Dx1nSKkDRspl1bo4f4p6f2noVrn3lvz+cbQNM7DTT0xyA0RsNM/V7aSv3ZbAQj8Od3Q=="
   "resolved" "https://registry.npmjs.org/firebase/-/firebase-9.6.10.tgz"
   "version" "9.6.10"
@@ -8767,25 +8767,16 @@
   dependencies:
     "queue-microtask" "^1.2.2"
 
-"rxf-2@^1.1.0":
-  "integrity" "sha512-yPgtpckhoKaaJiH4S18lG0U3VY1xEEINUrOlXn7RRYOHe3SE52bTHp+TQNc6r0EEvWXcKALlotPr8OXOu1xsCw=="
-  "resolved" "https://registry.npmjs.org/rxf-2/-/rxf-2-1.1.0.tgz"
-  "version" "1.1.0"
+"rxf-rewrite@^1.0.1":
+  "integrity" "sha512-+T4cb0M28J7pemo+O8YIfP6lJwGXdSR20oNnFQD8Jm6Yi1RtMIhOf/Jkv7J+bq7H2HVt5cIOnGRhYFgwB0hKEA=="
+  "resolved" "https://registry.npmjs.org/rxf-rewrite/-/rxf-rewrite-1.0.1.tgz"
+  "version" "1.0.1"
   dependencies:
     "firebase" "^9.6.10"
     "react" "^17.0.2"
     "react-dom" "^17.0.2"
     "rxjs" "^7.5.5"
     "uuid" "^8.3.2"
-
-"rxf@^0.0.4":
-  "integrity" "sha512-14R8znfJ8xg+fgC7+evdy54dy0GOSINv3X+9zkOsXaULus4/FU26oNAPrahv2Al22hF5qGmhYBnSFs6V91RAeA=="
-  "resolved" "https://registry.npmjs.org/rxf/-/rxf-0.0.4.tgz"
-  "version" "0.0.4"
-  dependencies:
-    "firebase" "^9.6.6"
-    "react" "17.0.2"
-    "rxjs" "^7.5.4"
 
 "rxjs-for-await@0.0.2":
   "integrity" "sha512-IJ8R/ZCFMHOcDIqoABs82jal00VrZx8Xkgfe7TOKoaRPAW5nH/VFlG23bXpeGdrmtqI9UobFPgUKgCuFc7Lncw=="
@@ -8799,7 +8790,7 @@
   dependencies:
     "tslib" "^1.9.0"
 
-"rxjs@^7.5.1", "rxjs@^7.5.4", "rxjs@^7.5.5":
+"rxjs@^7.5.1", "rxjs@^7.5.5":
   "integrity" "sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw=="
   "resolved" "https://registry.npmjs.org/rxjs/-/rxjs-7.5.5.tgz"
   "version" "7.5.5"

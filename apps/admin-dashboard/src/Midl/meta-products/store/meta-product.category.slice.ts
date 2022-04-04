@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { reorder, TApplicationErrorObject } from 'rxf';
 import _ from 'lodash';
 
 import { TMetaProductCategory } from '../types';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import { TApplicationErrorObject } from 'rxf-rewrite/dist/types/application-error';
+import reorder from 'rxf-rewrite/dist/helpers/reorder';
 
 type TDnd = 'initialize' | 'continue' | 'default';
 
@@ -101,7 +103,7 @@ export const metaProductCategorySlice = createSlice({
         action.payload.destination,
         action.payload.source
       );
-      if (!('severity' in reordered)) {
+      if (!(reordered instanceof ApplicationErrorHandler)) {
         state.metaProductCategoriesByFamily = reordered;
       }
     },

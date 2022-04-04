@@ -2,9 +2,12 @@ import React, { useRef } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+import { UploadIcon } from '@admin/assets';
+
 import usePreviewImage from '../hooks/preview';
 import { UploadButton } from '../components/global/buttons';
-import { UploadIcon } from '@admin/assets';
+import { storage } from '../config/firebase.config';
+import FirebaseFileStorage from 'rxf-rewrite/dist/firebase/storage';
 
 const schema = yup.object({
   imageField: yup
@@ -21,6 +24,8 @@ const schema = yup.object({
     }),
 });
 
+const fileUpload = new FirebaseFileStorage(storage, 'test');
+
 const FormTest: React.FC = () => {
   const { register, watch, handleSubmit, setValue } = useForm<{
     imageField: FileList | undefined;
@@ -31,8 +36,11 @@ const FormTest: React.FC = () => {
   const { preview } = usePreviewImage(watch('imageField'));
   const imageFieldRef = useRef<HTMLInputElement | null>(null);
 
-  function submit(data: { imageField: FileList | undefined }) {
-    console.log(data);
+  async function submit(data: { imageField: FileList | undefined }) {
+    if (data.imageField !== undefined) {
+      const res = await fileUpload.uploadFile(data.imageField[0]);
+      console.log(res);
+    }
   }
 
   return (

@@ -1,4 +1,4 @@
-import { TFirestoreDefault } from 'rxf';
+import { TFirestoreDefault } from 'rxf-rewrite';
 
 export type metaProductStatus =
   | 'deleted'
