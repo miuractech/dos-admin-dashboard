@@ -25,7 +25,7 @@ import ApplicationTextInput from '../../global/text-input';
 
 import styles from './styles/meta.module.scss';
 import { setMetaProductCategoriesByFamily } from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
-import { TApplicationErrorObject, useSubject } from 'rxf-rewrite';
+import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
@@ -255,7 +255,7 @@ const Form: React.FC<{
       </div>
       <form onSubmit={handleSubmit(submit)}>
         <div className={styles['product-form-body']}>
-          <label>Product Name:</label>
+          <label>Sub Category Name:</label>
           <div>
             <ApplicationTextInput
               defaultValue={productSubCategoryNameDefaultValue}

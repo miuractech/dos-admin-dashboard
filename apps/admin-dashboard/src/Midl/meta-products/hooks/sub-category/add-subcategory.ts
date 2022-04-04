@@ -1,8 +1,7 @@
 import { getFirestore, runTransaction, where } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ApplicationError } from 'rxf-rewrite';
-import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import { ApplicationError, ApplicationErrorHandler } from 'rxf-rewrite/dist';
 import { from } from 'rxjs';
 
 import { MetaProductSubCategoryLimit } from '../../settings';

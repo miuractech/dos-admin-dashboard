@@ -2,7 +2,7 @@ import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
 import { runTransaction, where } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ApplicationError } from 'rxf-rewrite';
+import { ApplicationError } from 'rxf-rewrite/dist';
 import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
 

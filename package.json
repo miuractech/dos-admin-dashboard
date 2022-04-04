@@ -22,7 +22,7 @@
     "react-hook-form": "^7.28.0",
     "react-redux": "^7.2.6",
     "regenerator-runtime": "0.13.7",
-    "rxf-rewrite": "^1.0.1",
+    "rxf-rewrite": "^1.0.2",
     "rxjs": "^7.5.5",
     "tslib": "^2.0.0",
     "uuid": "^8.3.2",

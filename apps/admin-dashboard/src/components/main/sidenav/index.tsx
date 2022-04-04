@@ -7,7 +7,7 @@ import Header from './header';
 import SideNavItem from './item';
 import { rootStyle$, SideNavItemList } from './shared';
 import { selectedSideNavItem$ } from '../shared';
-import { useSubject } from 'rxf-rewrite';
+import { useSubject } from 'rxf-rewrite/dist';
 
 const SideNavBar: React.FC = () => {
   useSubject(rootStyle$);

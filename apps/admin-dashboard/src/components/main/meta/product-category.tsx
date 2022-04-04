@@ -34,7 +34,7 @@ import {
   setRestoreCategoryBeforeDnd,
 } from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
 import { batchCommitCategory } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/helpers-category';
-import { TApplicationErrorObject, useSubject } from 'rxf-rewrite';
+import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
@@ -301,7 +301,7 @@ const Form: React.FC<{
       </div>
       <form onSubmit={handleSubmit(submit)}>
         <div className={styles['product-form-body']}>
-          <label>Product Name:</label>
+          <label>Category Name:</label>
           <div>
             <ApplicationTextInput
               defaultValue={productCategoryNameDefaultValue}

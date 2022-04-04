@@ -8767,10 +8767,10 @@
   dependencies:
     "queue-microtask" "^1.2.2"
 
-"rxf-rewrite@^1.0.1":
-  "integrity" "sha512-+T4cb0M28J7pemo+O8YIfP6lJwGXdSR20oNnFQD8Jm6Yi1RtMIhOf/Jkv7J+bq7H2HVt5cIOnGRhYFgwB0hKEA=="
-  "resolved" "https://registry.npmjs.org/rxf-rewrite/-/rxf-rewrite-1.0.1.tgz"
-  "version" "1.0.1"
+"rxf-rewrite@^1.0.2":
+  "integrity" "sha512-YAw7wmT5+X3a+VsLULkWWBPpbUoErAYZdj/w2Z1jgCjtBHr38PGB7sfss8yrTbJ6AQ8Oo3vn+xzXbHvkdHq3uQ=="
+  "resolved" "https://registry.npmjs.org/rxf-rewrite/-/rxf-rewrite-1.0.2.tgz"
+  "version" "1.0.2"
   dependencies:
     "firebase" "^9.6.10"
     "react" "^17.0.2"

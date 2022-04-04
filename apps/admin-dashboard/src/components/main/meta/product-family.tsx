@@ -29,7 +29,7 @@ import {
 import { PRODUCT_FAMILY_DND_ID } from 'apps/admin-dashboard/src/utils/settings';
 import produce from 'immer';
 import { batchCommitFamily } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/helpers-family';
-import { TApplicationErrorObject, useSubject } from 'rxf-rewrite';
+import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 
 const showAddForm$ = new BehaviorSubject(false);
 
