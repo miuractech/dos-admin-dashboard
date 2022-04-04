@@ -1,6 +1,7 @@
 import { where } from "firebase/firestore";
 import React from "react";
-import { ApplicationError, TApplicationErrorObject } from "rxf";
+import { ApplicationError, TApplicationErrorObject } from "rxf-rewrite";
+import ApplicationErrorHandler from "rxf-rewrite/dist/errors/error-handler";
 import { from } from "rxjs";
 
 import { TMetaProductFamily } from "../../types";
@@ -8,7 +9,7 @@ import { metaProductFamilyRepo } from "./helpers-family";
 
 async function familyByNameAsyncWrapper(name: string) {
   const res = await metaProductFamilyRepo.getAll([where("name", "==", name)]);
-  if ("severity" in res) return res;
+  if (res instanceof ApplicationErrorHandler) return res;
   else {
     if (res.length === 1) return res[0];
     else return new ApplicationError().handleDocumentNotFound();
@@ -25,7 +26,7 @@ export default function useGetFamilyByName(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(familyByNameAsyncWrapper(name));
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) setFamilyError(res);
+      if (res instanceof ApplicationErrorHandler) setFamilyError(res.errorObject);
       else {
         setFamily(res);
         setFamilyError(null);

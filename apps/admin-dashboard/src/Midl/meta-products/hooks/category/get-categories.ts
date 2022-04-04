@@ -1,6 +1,7 @@
-import { orderBy, QueryConstraint } from 'firebase/firestore';
+import { QueryConstraint } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
 
 import {
@@ -17,7 +18,8 @@ export default function useGetCategories(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(metaProductCategoryRepo.getAll([...constraints]));
     const sub = obs$.subscribe((res) => {
-      if ('severity' in res) dispatch(setMetaProductCategoryFetchError(res));
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductCategoryFetchError(res.errorObject));
       else {
         dispatch(setMetaProductCategories(res));
         dispatch(setMetaProductCategoryFetchError(null));

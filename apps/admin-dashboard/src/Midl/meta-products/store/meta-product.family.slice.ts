@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { reorder, TApplicationErrorObject } from 'rxf';
-import { batchCommitFamily } from '../hooks/family/helpers-family';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import reorder from 'rxf-rewrite/dist/helpers/reorder';
+import { TApplicationErrorObject } from 'rxf-rewrite/dist/types/application-error';
 import { TMetaProductFamily } from '../types';
 
 type TDnd = 'initialize' | 'continue' | 'default';
@@ -82,7 +83,7 @@ const metaProductFamilySlice = createSlice({
         action.payload.source
       );
 
-      if (!('severity' in reordered)) {
+      if (!(reordered instanceof ApplicationErrorHandler)) {
         state.metaProductFamilies = reordered;
       }
     },

@@ -1,13 +1,13 @@
 // Entry Point for the Whole SideNavbar Component
 
 import React from 'react';
-import { useSubject } from 'rxf';
 
 import styles from './sidenav.module.scss';
 import Header from './header';
 import SideNavItem from './item';
 import { rootStyle$, SideNavItemList } from './shared';
 import { selectedSideNavItem$ } from '../shared';
+import { useSubject } from 'rxf-rewrite';
 
 const SideNavBar: React.FC = () => {
   useSubject(rootStyle$);

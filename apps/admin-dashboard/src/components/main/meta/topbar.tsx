@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { useSubject } from 'rxf';
+import { useSubject } from 'rxf-rewrite';
 import { metaTopbarObject, selectedMetaOption$ } from './shared';
 
 import styles from './styles/meta.module.scss';

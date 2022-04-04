@@ -1,9 +1,10 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import { from } from "rxjs";
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
+import { from } from 'rxjs';
 
-import { setAdminUserState } from "../store/admin.user.slice";
-import firebaseAuth from "./auth-instance";
+import { setAdminUserState } from '../store/admin.user.slice';
+import firebaseAuth from './auth-instance';
 
 export default function useGoogleSignIn(mounted: boolean) {
   const dispatch = useDispatch();
@@ -13,13 +14,13 @@ export default function useGoogleSignIn(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(firebaseAuth.firebaseGoogleSignIn());
     const sub = obs$.subscribe((res) => {
-      if ("severity" in res) {
+      if (res instanceof ApplicationErrorHandler) {
         dispatch(
           setAdminUserState({
             user: null,
             userLoading: false,
-            error: res.message,
-            signOutMessage: "",
+            error: res.errorObject.message,
+            signOutMessage: '',
           })
         );
       } else {
@@ -27,8 +28,8 @@ export default function useGoogleSignIn(mounted: boolean) {
           setAdminUserState({
             user: res,
             userLoading: false,
-            error: "",
-            signOutMessage: "",
+            error: '',
+            signOutMessage: '',
           })
         );
       }

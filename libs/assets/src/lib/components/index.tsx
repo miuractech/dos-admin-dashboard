@@ -8,6 +8,7 @@ import CouponsGiftsIcon from './coupons-gifts-icon';
 import LogoutIcon from './logout-icon';
 import AddIcon from './add-icon';
 import CloseCircle from './close-circle';
+import UploadIcon from './upload';
 
 export {
   DropoutStoreLogo,
@@ -20,4 +21,5 @@ export {
   LogoutIcon,
   AddIcon,
   CloseCircle,
+  UploadIcon,
 };

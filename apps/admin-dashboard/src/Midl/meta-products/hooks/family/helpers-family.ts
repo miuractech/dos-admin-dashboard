@@ -1,6 +1,6 @@
 import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
 import { orderBy } from 'firebase/firestore';
-import { FirebaseRepository, reorder } from 'rxf';
+import { FirebaseRepository, reorder } from 'rxf-rewrite';
 
 import { TMetaProductFamily } from '../../types';
 

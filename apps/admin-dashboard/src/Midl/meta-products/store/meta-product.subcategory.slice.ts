@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TApplicationErrorObject } from "rxf";
-import { TMetaProductSubCategory } from "../types";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TApplicationErrorObject } from 'rxf-rewrite';
+import { TMetaProductSubCategory } from '../types';
 
 interface TState {
   metaProductSubCategories: Array<TMetaProductSubCategory>;
@@ -17,7 +17,7 @@ const state: TState = {
 };
 
 export const metaProductSubCategorySlice = createSlice({
-  name: "metaProductSubCategory",
+  name: 'metaProductSubCategory',
   initialState: state,
   reducers: {
     setMetaProductSubCategories: (

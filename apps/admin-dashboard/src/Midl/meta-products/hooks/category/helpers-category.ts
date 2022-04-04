@@ -1,5 +1,5 @@
 import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
-import { FirebaseRepository } from 'rxf';
+import { FirebaseRepository } from 'rxf-rewrite';
 
 import { TMetaProductCategory } from '../../types';
 

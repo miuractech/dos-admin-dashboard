@@ -63,5 +63,26 @@ const ButtonWithoutStyles: React.FC<{
   );
 };
 
+const UploadButton: React.FC<{
+  clickAction: () => void;
+  disabled?: boolean;
+  dimension?: {
+    height: string;
+    width: string;
+  };
+}> = (props) => {
+  const styleObject = props.dimension !== undefined ? props.dimension : {};
+  return (
+    <button
+      style={styleObject}
+      onClick={() => props.clickAction()}
+      className={styles['upload-button']}
+      disabled={props.disabled}
+    >
+      {props.children}
+    </button>
+  );
+};
+
 export default ApplicationButton;
-export { ButtonWithoutStyles };
+export { ButtonWithoutStyles, UploadButton };

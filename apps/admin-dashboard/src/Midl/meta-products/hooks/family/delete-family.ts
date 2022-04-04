@@ -1,6 +1,7 @@
 import { getFirestore, runTransaction } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import ApplicationErrorHandler from 'rxf-rewrite/dist/errors/error-handler';
 import { from } from 'rxjs';
 import {
   setEditedMetaProductFamily,
@@ -14,7 +15,7 @@ async function deleteFamilyAsyncWrapper(docId: string, userName: string) {
       { status: 'deleted' },
       docId
     );
-    if ('severity' in doc) return doc;
+    if (doc instanceof ApplicationErrorHandler) return doc;
     else {
       return await metaProductFamilyRepo.getOne(docId);
     }
@@ -30,7 +31,8 @@ export default function useDeleteFamily(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(deleteFamilyAsyncWrapper(docId, userName));
     const sub = obs$.subscribe((res) => {
-      if ('severity' in res) dispatch(setMetaProductFamilyEditError(res));
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductFamilyEditError(res.errorObject));
       else {
         dispatch(setEditedMetaProductFamily(res));
         dispatch(setMetaProductFamilyEditError(null));

@@ -64,3 +64,8 @@
 .button-without-styles {
   @include common();
 }
+
+.upload-button {
+  @include common();
+  border: 1px solid variables.$global-grey;
+}
