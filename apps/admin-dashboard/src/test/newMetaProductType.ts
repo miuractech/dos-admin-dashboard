@@ -23,5 +23,13 @@ interface TMetaProductType extends TFirestoreDefault {
   style: Array<string>; // min 1
   base_price: number;
   sku: string;
-  inventory:number;
 }
+
+interface TMetaProductTypeInventory {
+    color: string;
+    size:string;
+    location: string;
+    units:number;
+    sku: string; // same as prices
+  }
+  
