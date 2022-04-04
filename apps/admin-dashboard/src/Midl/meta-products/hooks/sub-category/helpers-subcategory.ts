@@ -1,4 +1,4 @@
-import { getFirestore, orderBy } from 'firebase/firestore';
+import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
 import { FirebaseRepository, reorder } from 'rxf';
 
 import { TMetaProductSubCategory } from '../../types';
@@ -6,7 +6,7 @@ import { TMetaProductSubCategory } from '../../types';
 export const metaProductSubCategoryRepo =
   new FirebaseRepository<TMetaProductSubCategory>(
     '/meta/products/sub_category',
-    getFirestore()
+    firestore
   );
 
 export async function batchCommitCategory(
