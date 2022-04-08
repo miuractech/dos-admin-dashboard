@@ -9,6 +9,7 @@ import LogoutIcon from './logout-icon';
 import AddIcon from './add-icon';
 import CloseCircle from './close-circle';
 import UploadIcon from './upload';
+import ColorWheel from './color-wheel';
 
 export {
   DropoutStoreLogo,
@@ -22,4 +23,5 @@ export {
   AddIcon,
   CloseCircle,
   UploadIcon,
+  ColorWheel,
 };

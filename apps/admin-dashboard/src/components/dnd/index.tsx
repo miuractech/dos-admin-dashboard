@@ -12,9 +12,9 @@ import {
 } from 'apps/admin-dashboard/src/utils/settings';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
-import Main from '../main';
+import React from 'react';
 
-function DndWrapper() {
+const DndWrapper: React.FC = (props) => {
   const dispatch = useDispatch();
 
   function handleDnd(result: DropResult) {
@@ -51,9 +51,9 @@ function DndWrapper() {
         handleDnd(result);
       }}
     >
-      <Main />
+      {props.children}
     </DragDropContext>
   );
-}
+};
 
 export default DndWrapper;

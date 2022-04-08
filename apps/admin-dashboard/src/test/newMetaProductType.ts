@@ -14,22 +14,13 @@ interface TMetaProductType extends TFirestoreDefault {
   color: Array<{
     name: string;
     colorCode: string /* hex color code */;
-    sides:Array<{
+    sides: Array<{
       img: string;
-      side:string;
-    }>
+      side: string;
+    }>;
   }>; // min 1
   material: Array<string>; // min 1
   style: Array<string>; // min 1
   base_price: number;
   sku: string;
 }
-
-interface TMetaProductTypeInventory {
-    color: string;
-    size:string;
-    location: string;
-    units:number;
-    sku: string; // same as prices
-  }
-  

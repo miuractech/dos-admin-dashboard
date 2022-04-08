@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { UploadIcon } from '@admin/assets';
 
-import usePreviewImage from '../hooks/preview';
+import usePreviewImage from '../hooks/preview-image';
 import { UploadButton } from '../components/global/buttons';
 import { storage } from '../config/firebase.config';
 import FirebaseFileStorage from 'rxf-rewrite/dist/firebase/storage';

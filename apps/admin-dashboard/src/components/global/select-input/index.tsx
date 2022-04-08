@@ -2,15 +2,15 @@ import React from 'react';
 
 import styles from './select.module.scss';
 
-const ApplicationSelectInput: React.FC<JSX.IntrinsicElements['select']> = ({
-  ...selectProps
-}) => {
+const ApplicationSelectInput = React.forwardRef<
+  JSX.IntrinsicElements['select']
+>((selectProps, ref) => {
   return (
     <select className={styles['select-input']} {...selectProps}>
       {selectProps.children}
     </select>
   );
-};
+});
 
 const ApplicationOptionElement: React.FC<JSX.IntrinsicElements['option']> = ({
   ...optionProps

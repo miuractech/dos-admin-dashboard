@@ -48,7 +48,12 @@ const ApplicationButton: React.FC<IButton> = ({
   );
 };
 
-const ButtonWithoutStyles: React.FC<{
+/**
+ *
+ * ButtonWithoutStyles
+ *
+ */
+export const ButtonWithoutStyles: React.FC<{
   clickAction: () => void;
   disabled?: boolean;
 }> = (props) => {
@@ -63,7 +68,7 @@ const ButtonWithoutStyles: React.FC<{
   );
 };
 
-const UploadButton: React.FC<{
+export const UploadButton: React.FC<{
   clickAction: () => void;
   disabled?: boolean;
   dimension?: {
@@ -84,5 +89,10 @@ const UploadButton: React.FC<{
   );
 };
 
+export const CrossButton: React.FC<{ clickAction: () => void }> = ({
+  clickAction,
+}) => {
+  return <button className={styles['cross-button']} onClick={clickAction} />;
+};
+
 export default ApplicationButton;
-export { ButtonWithoutStyles, UploadButton };

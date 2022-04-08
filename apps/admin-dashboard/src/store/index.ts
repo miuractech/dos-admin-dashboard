@@ -4,6 +4,7 @@ import metaProductFamilyReducers from '../Midl/meta-products/store/meta-product.
 import metaProductCategoryReducers from '../Midl/meta-products/store/meta-product.category.slice';
 import metaProductSubCategoryReducers from '../Midl/meta-products/store/meta-product.subcategory.slice';
 import adminUserReducers from '../Midl/auth/store/admin.user.slice';
+import metaProductTypeReducers from '../Midl/meta-products/store/meta-product.type.slice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     metaProductFamily: metaProductFamilyReducers,
     metaProductCategory: metaProductCategoryReducers,
     metaProductSubCategory: metaProductSubCategoryReducers,
+    metaProductType: metaProductTypeReducers,
   },
   middleware: (middleware) =>
     middleware({

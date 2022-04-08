@@ -69,3 +69,26 @@
   @include common();
   border: 1px solid variables.$global-grey;
 }
+
+.cross-button {
+  position: relative;
+  background: variables.$global-dark-blue;
+  border: none;
+  font-family: Montserrat;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+  &:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: '\d7';
+    text-align: center;
+    color: variables.$gloval-white;
+    line-height: 20px;
+    font-size: 20px;
+  }
+}

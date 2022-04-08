@@ -1,0 +1,15 @@
+@use '../../../utils/styles//mixins' as mixins;
+@use '../../../utils/styles/variables' as variables;
+
+.container {
+  @include mixins.flex-center();
+  padding: 0.5rem;
+  background: variables.$global-light-grey;
+  border-radius: 20%/50%;
+  p {
+    font-family: Montserrat;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-right: 5px;
+  }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BehaviorSubject } from 'rxjs';
-import { ProductType } from './mock';
+import ProductType from './product-type';
 import ProductCategory from './product-category';
 import ProductFamily from './product-family';
 import ProductSubCategory from './product-sub-category';
@@ -30,4 +30,4 @@ export const metaTopbarObject: {
 };
 
 // Selected Meta Option
-export const selectedMetaOption$ = new BehaviorSubject('PRODUCT_FAMILY');
+export const selectedMetaOption$ = new BehaviorSubject('PRODUCT_TYPE');

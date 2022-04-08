@@ -4,7 +4,7 @@ export default function usePreviewImage(file: FileList | undefined) {
   const [preview, setPreview] = React.useState<string>('');
 
   React.useEffect(() => {
-    if (file !== undefined) {
+    if (file !== undefined && file.length > 0) {
       const first = file[0];
       const fileReader = new FileReader();
       fileReader.onloadend = () => {
