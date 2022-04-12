@@ -3,6 +3,7 @@ import variables from 'apps/admin-dashboard/src/utils/styles/variables';
 
 import styles from './sidenav.module.scss';
 import { ChangeSelectedSideNavItem } from './helpers';
+import { useNavigate } from 'react-router-dom';
 
 const SideNavItem: React.FC<{
   selected: boolean;
@@ -10,9 +11,37 @@ const SideNavItem: React.FC<{
   id: string;
   icon: React.FC<{ stroke: string }>;
 }> = ({ selected, value, icon, id }) => {
+
+  const navigate = useNavigate()
+
+  const nav = () => {
+    switch (id) {
+      case "ORDERS":
+        navigate("/orders")
+        break;
+      case "PRODUCTS":
+        navigate("/products")
+        break;
+      case "MERCHANTS":
+        navigate("/merchants")
+        break;
+      case "CUSTOMERS":
+        navigate("/customers")
+        break;
+      case "META":
+        navigate("/meta")
+        break;
+      case "COUPONS_AND_GIFTS":
+        navigate("/couponsgifts")
+        break;
+      case "LOGOUT":
+        navigate("/logout")
+    }
+  }
+
   return (
     <div
-      onClick={() => ChangeSelectedSideNavItem(id)}
+      onClick={nav}
       className={styles['item']}
     >
       <div></div>

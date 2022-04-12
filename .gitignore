@@ -43,3 +43,4 @@ Thumbs.db
 
 #firebase env
 apps/admin-dashboard/src/secrets.ts
+
