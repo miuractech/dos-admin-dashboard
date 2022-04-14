@@ -1,15 +1,15 @@
 import {
   setPreserveCategoryBeforeDnd,
   setReorderCategory,
-} from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
+} from '../../Midl/meta-products/store/meta-product.category.slice';
 import {
   setPreserveFamilyBeforeDnd,
   setReorderFamily,
-} from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.family.slice';
+} from '../../Midl/meta-products/store/meta-product.family.slice';
 import {
   PRODUCT_CATEGORY_DND_ID,
   PRODUCT_FAMILY_DND_ID,
-} from 'apps/admin-dashboard/src/utils/settings';
+} from '../../utils/settings';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import React from 'react';

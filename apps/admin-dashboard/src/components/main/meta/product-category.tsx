@@ -1,9 +1,9 @@
 import React from 'react';
 import * as yup from 'yup';
 import { BehaviorSubject } from 'rxjs';
-import useGetCategories from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/get-categories';
+import useGetCategories from '../../../Midl/meta-products/hooks/category/get-categories';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'apps/admin-dashboard/src/store';
+import { RootState } from '../../../store';
 import { v4 as uuidv4 } from 'uuid';
 import { produce } from 'immer';
 import _ from 'lodash';
@@ -14,26 +14,26 @@ import { AddIcon, CloseCircle } from '@admin/assets';
 import {
   TMetaProductCategory,
   TMetaProductFamily,
-} from 'apps/admin-dashboard/src/Midl/meta-products/types';
+} from '../../../Midl/meta-products/types';
 import clsx from 'clsx';
 import { Draggable, DraggableProvided, Droppable } from 'react-beautiful-dnd';
-import useUpdateCategory from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/update-category';
+import useUpdateCategory from '../../../Midl/meta-products/hooks/category/update-category';
 import ApplicationModal from '../../global/modal';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ApplicationTextInput from '../../global/text-input';
 import InfoText from '../../global/info-text';
 import ApplicationSpinner from '../../global/spinner';
-import useAddCategory from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/add-category';
+import useAddCategory from '../../../Midl/meta-products/hooks/category/add-category';
 import { orderBy } from 'firebase/firestore';
-import { PRODUCT_CATEGORY_DND_ID } from 'apps/admin-dashboard/src/utils/settings';
+import { PRODUCT_CATEGORY_DND_ID } from '../../../utils/settings';
 import {
   setDndCategory,
   setMetaProductCategoriesAfterReorder,
   setMetaProductCategoriesByFamily,
   setRestoreCategoryBeforeDnd,
-} from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
-import { batchCommitCategory } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/category/helpers-category';
+} from '../../../Midl/meta-products/store/meta-product.category.slice';
+import { batchCommitCategory } from '../../../Midl/meta-products/hooks/category/helpers-category';
 import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
@@ -305,8 +305,7 @@ const Form: React.FC<{
           <div>
             <ApplicationTextInput
               defaultValue={productCategoryNameDefaultValue}
-              inputChangeFunc={register}
-              fieldName="name"
+              {...register('name')}
             />
             <InfoText
               text={

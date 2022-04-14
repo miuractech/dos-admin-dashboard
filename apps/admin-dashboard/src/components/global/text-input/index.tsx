@@ -1,14 +1,12 @@
 import clsx from 'clsx';
 import React from 'react';
-import { UseFormRegister } from 'react-hook-form';
 
 import styles from './text-input.module.scss';
 
-const ApplicationTextInput: React.FC<{
-  inputChangeFunc: UseFormRegister<any>;
-  fieldName: string;
-  defaultValue?: string;
-}> = (props) => {
+const ApplicationTextInput = React.forwardRef<
+  HTMLInputElement,
+  React.HTMLProps<HTMLInputElement>
+>((props, ref) => {
   const containerStyle = styles['text-input-container'];
   const afterStyle = styles['not-hidden'];
   const [styleState, setStyleState] = React.useState(
@@ -20,7 +18,8 @@ const ApplicationTextInput: React.FC<{
       <input
         size={50}
         className={styles['text-input']}
-        {...props.inputChangeFunc(props.fieldName)}
+        {...props}
+        ref={ref}
         onFocus={() => {
           setStyleState(containerStyle);
         }}
@@ -30,6 +29,6 @@ const ApplicationTextInput: React.FC<{
       />
     </div>
   );
-};
+});
 
 export default ApplicationTextInput;

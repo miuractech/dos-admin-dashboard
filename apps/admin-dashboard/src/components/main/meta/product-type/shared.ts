@@ -1,7 +1,7 @@
 import {
   checkHex,
   undefinedArrayCheck,
-} from 'apps/admin-dashboard/src/utils/helpers/validation-custom';
+} from '../../../../utils/helpers/validation-custom';
 import {
   UseFormRegister,
   UseFormSetValue,
@@ -9,35 +9,44 @@ import {
 } from 'react-hook-form';
 import { BehaviorSubject } from 'rxjs';
 import * as yup from 'yup';
-
-export interface TAddFormSchema {
-  name: string;
-  description: string;
-  familyId: string;
-  categoryId: string;
-  subcategoryId: string;
-  displayImage: FileList | undefined;
-  size: Array<string>;
-  color: Array<{ colorName: string; colorCode: string }>;
-  basePrice: number;
-}
+import { TAddFormSchema } from '../../../../Midl/meta-products/hooks/product-type/add-product.type';
 
 export type TRegister = UseFormRegister<TAddFormSchema>;
 export type TSetValue = UseFormSetValue<TAddFormSchema>;
 export type TWatch = UseFormWatch<TAddFormSchema>;
 
-export const showProductAddForm$ = new BehaviorSubject(true);
+export const showProductAddForm$ = new BehaviorSubject(false);
+
+const hexValidation = yup
+  .string()
+  .required()
+  .test(
+    'hex_check',
+    'must be a valid hex code',
+    (val) => val !== undefined && checkHex(val)
+  );
+
+export const imageValidation = yup
+  .mixed()
+  .required()
+  .test(
+    'fileSize',
+    'file size is too large',
+    (val: FileList | undefined) =>
+      val !== undefined && val.length > 0 && val[0].size <= 1024 * 1024
+  )
+  .test(
+    'fileType',
+    'must be a jpeg/png file',
+    (val: FileList | undefined) =>
+      val !== undefined &&
+      val.length > 0 &&
+      ['image/jpeg', 'image/png', 'image/jpg'].includes(val[0].type)
+  );
 
 export const colorFormSchema = yup.object({
   colorName: yup.string().required().min(3).max(20),
-  colorCode: yup
-    .string()
-    .required()
-    .test(
-      'hex_check',
-      'must be a valid hex code',
-      (val) => val !== undefined && checkHex(val)
-    ),
+  colorCode: hexValidation,
 });
 
 export const sizeFormSchema = yup.object({
@@ -50,23 +59,7 @@ export const addProductFormSchema = yup.object({
   familyId: yup.string().required(),
   categoryId: yup.string().required(),
   subcategoryId: yup.string().required(),
-  displayImage: yup
-    .mixed()
-    .required()
-    .test(
-      'fileSize',
-      'file size is too large',
-      (val: FileList | undefined) =>
-        val !== undefined && val.length > 0 && val[0].size <= 1024 * 1024
-    )
-    .test(
-      'fileType',
-      'must be a jpeg/png file',
-      (val: FileList | undefined) =>
-        val !== undefined &&
-        val.length > 0 &&
-        ['image/jpeg', 'image/png', 'image/jpg'].includes(val[0].type)
-    ),
+  displayImage: imageValidation,
   size: yup
     .array()
     .of(yup.string().required().min(1).max(10))
@@ -76,3 +69,5 @@ export const addProductFormSchema = yup.object({
   color: yup.array().of(colorFormSchema),
   basePrice: yup.number().required().min(50).max(1000),
 });
+
+export const selectedEditOption$ = new BehaviorSubject('IMAGES_BY_COLORS');

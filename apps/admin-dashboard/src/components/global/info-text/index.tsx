@@ -1,4 +1,4 @@
-import variables from 'apps/admin-dashboard/src/utils/styles/variables';
+import variables from '../../../utils/styles/variables';
 import React from 'react';
 
 type TVariant = 'error' | 'success';

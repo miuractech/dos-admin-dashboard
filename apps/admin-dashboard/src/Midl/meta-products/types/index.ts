@@ -11,8 +11,8 @@ interface TSides {
   right: string;
   top: string;
   bottom: string;
-  up: string;
-  down: string;
+  front: string;
+  back: string;
 }
 
 export interface TMetaProductFamily extends TFirestoreDefault {
@@ -51,12 +51,14 @@ export interface TMetaProductType extends TFirestoreDefault {
   display_image: string; // firestore storage url
   size: Array<string>; // min 3
   color: Array<{
-    index: number;
-    name: string;
+    colorName: string;
     colorCode: string /* hex color code */;
-    sides: TSides;
   }>; // min 1
+  color_options: Array<{ colorName: string; colorCode: string; sides: TSides }>;
   base_price: number;
+  status: metaProductStatus;
+  createdBy: string;
+  updatedBy: string;
   sku: string;
 }
 

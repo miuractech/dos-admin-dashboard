@@ -20,8 +20,6 @@ const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);
   useSubject(sideNavToggled$);
 
-  const Element = SideNavItemObject[selectedSideNavItem$.value].mainComponent;
-
   return (
     <>
       <SideNavBar />

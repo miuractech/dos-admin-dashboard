@@ -7,10 +7,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { v4 as uuidv4 } from 'uuid';
 import clsx from 'clsx';
 
-import useAddFamily from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/add-family';
-import useUpdateFamily from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/update-family';
-import { TMetaProductFamily } from 'apps/admin-dashboard/src/Midl/meta-products/types';
-import useGetFamilies from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/get-families';
+import useAddFamily from '../../../Midl/meta-products/hooks/family/add-family';
+import useUpdateFamily from '../../../Midl/meta-products/hooks/family/update-family';
+import { TMetaProductFamily } from '../../../Midl/meta-products/types';
+import useGetFamilies from '../../../Midl/meta-products/hooks/family/get-families';
 
 import ApplicationButton, { ButtonWithoutStyles } from '../../global/buttons';
 import InfoText from '../../global/info-text';
@@ -18,17 +18,17 @@ import ApplicationModal from '../../global/modal';
 import ApplicationTextInput from '../../global/text-input';
 import styles from './styles/meta.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'apps/admin-dashboard/src/store';
+import { RootState } from '../../../store';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import ApplicationSpinner from '../../global/spinner';
 import { orderBy } from 'firebase/firestore';
 import {
   setDndFamily,
   setRestoreBeforeDnd,
-} from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.family.slice';
-import { PRODUCT_FAMILY_DND_ID } from 'apps/admin-dashboard/src/utils/settings';
+} from '../../../Midl/meta-products/store/meta-product.family.slice';
+import { PRODUCT_FAMILY_DND_ID } from '../../../utils/settings';
 import produce from 'immer';
-import { batchCommitFamily } from 'apps/admin-dashboard/src/Midl/meta-products/hooks/family/helpers-family';
+import { batchCommitFamily } from '../../../Midl/meta-products/hooks/family/helpers-family';
 import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 
 const showAddForm$ = new BehaviorSubject(false);
@@ -236,8 +236,7 @@ const Form: React.FC<{
           <div>
             <ApplicationTextInput
               defaultValue={productFamilyNameDefaultValue}
-              inputChangeFunc={register}
-              fieldName="name"
+              {...register("name")}
             />
             <InfoText
               text={

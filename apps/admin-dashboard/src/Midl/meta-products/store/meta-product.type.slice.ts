@@ -30,19 +30,19 @@ const metaProductTypeSlice = createSlice({
     },
     setMetaProductTypeFetchError: (
       state: TState,
-      action: PayloadAction<TApplicationErrorObject>
+      action: PayloadAction<TApplicationErrorObject | null>
     ) => {
       state.fetchError = action.payload;
     },
     setMetaProductTypeAddError: (
       state: TState,
-      action: PayloadAction<TApplicationErrorObject>
+      action: PayloadAction<TApplicationErrorObject | null>
     ) => {
       state.addError = action.payload;
     },
     setMetaProductTypeEditError: (
       state: TState,
-      action: PayloadAction<TApplicationErrorObject>
+      action: PayloadAction<TApplicationErrorObject | null>
     ) => {
       state.editError = action.payload;
     },

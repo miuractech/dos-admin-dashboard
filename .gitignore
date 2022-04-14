@@ -42,5 +42,5 @@ Thumbs.db
 .docz/
 
 #firebase env
-apps/admin-dashboard/src/secrets.ts
+../../../../secrets.ts
 

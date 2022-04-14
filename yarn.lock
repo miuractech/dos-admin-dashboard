@@ -3236,9 +3236,14 @@
   dependencies:
     "source-map-support" "^0.5.21"
 
-"@swc/core-win32-x64-msvc@1.2.155":
-  "integrity" "sha512-YXkO8IOtup0FN5bkQH5nIbft80SOAvRrNjqYx7KXSux3o5by15dEcQ11A67mc9WOtO+umGTquynh3S2bMdLaEQ=="
-  "resolved" "https://registry.npmjs.org/@swc/core-win32-x64-msvc/-/core-win32-x64-msvc-1.2.155.tgz"
+"@swc/core-linux-x64-gnu@1.2.155":
+  "integrity" "sha512-hIi6epWH05yAVTrxB81/5/yILT/5mhw+n52JrZcUT1CkxCZJmPPLHrlLWR/A4QtPpwHUdNm01vn0hBWdDHWtxQ=="
+  "resolved" "https://registry.npmjs.org/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.2.155.tgz"
+  "version" "1.2.155"
+
+"@swc/core-linux-x64-musl@1.2.155":
+  "integrity" "sha512-HI2117+Y9vXwPIJOCWhAQHulyD1o+xNfiwjJeF42ukxKsBLoDm1STwNKbx8PUgWTAVwade9UG2YCskVX89OOGA=="
+  "resolved" "https://registry.npmjs.org/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.2.155.tgz"
   "version" "1.2.155"
 
 "@swc/core@^1.2.119", "@swc/core@^1.2.146":
@@ -7496,7 +7501,7 @@
     "language-tags" "^1.0.5"
     "minimatch" "^3.0.4"
 
-"eslint-plugin-react-hooks@^4.3.0", "eslint-plugin-react-hooks@4.3.0":
+"eslint-plugin-react-hooks@^4.3.0":
   "integrity" "sha512-XslZy0LnMn+84NEG9jSGR6eGqaZB3133L8xewQo3fQagbQuGt7a63gf+P1NGKZavEYEC3UXaWEAA/AqDkuN6xA=="
   "resolved" "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.3.0.tgz"
   "version" "4.3.0"

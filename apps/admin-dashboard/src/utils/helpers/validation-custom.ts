@@ -1,11 +1,11 @@
 export function undefinedArrayCheck<T>(arr: Array<T | undefined>) {
   if (arr.filter((a) => typeof a === 'undefined').length === 0) {
-    return true;
+    return arr as Array<T>;
   } else {
-    return false;
+    return [] as Array<T>;
   }
 }
 
 export function checkHex(hex: string) {
-  return /0[xX][0-9a-fA-F]+/.test(hex);
+  return /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(hex);
 }

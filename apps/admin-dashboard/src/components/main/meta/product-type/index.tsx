@@ -6,6 +6,7 @@ import ApplicationButton from '../../../global/buttons';
 import ApplicationModal from '../../../global/modal';
 import metaStyles from '../styles/meta.module.scss';
 import AddProductTypeForm from './add-form';
+import ListItems from './item-list';
 
 import { showProductAddForm$ } from './shared';
 
@@ -29,6 +30,7 @@ const ProductType: React.FC = () => {
       <ApplicationModal mounted={showProductAddForm$.value}>
         <AddProductTypeForm></AddProductTypeForm>
       </ApplicationModal>
+      <ListItems />
     </div>
   );
 };

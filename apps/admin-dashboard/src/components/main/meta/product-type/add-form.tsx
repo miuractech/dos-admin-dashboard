@@ -1,8 +1,8 @@
 import { CloseCircle, ColorWheel, UploadIcon } from '@admin/assets';
 import { yupResolver } from '@hookform/resolvers/yup';
-import usePreviewImage from 'apps/admin-dashboard/src/hooks/preview-image';
+import usePreviewImage from '../../../../hooks/preview-image';
 import React from 'react';
-import { ChromePicker, SketchPicker } from 'react-color';
+import { ChromePicker } from 'react-color';
 import { useForm } from 'react-hook-form';
 import ApplicationButton, {
   ButtonWithoutStyles,
@@ -22,11 +22,25 @@ import {
   colorFormSchema,
   showProductAddForm$,
   sizeFormSchema,
-  TAddFormSchema,
   TRegister,
   TSetValue,
   TWatch,
 } from './shared';
+import addProductType, {
+  TAddFormSchema,
+} from '../../../../Midl/meta-products/hooks/product-type/add-product.type';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  ApplicationErrorHandler,
+  useAsyncCall,
+  useSubject,
+} from 'rxf-rewrite/dist';
+import ApplicationSpinner from '../../../global/spinner';
+import { useDispatch } from 'react-redux';
+import {
+  setMetaProductTypeAddError,
+  setAddedMetaProductType,
+} from '../../../../Midl/meta-products/store/meta-product.type.slice';
 
 const AddProductTypeForm: React.FC = () => {
   const {
@@ -38,8 +52,23 @@ const AddProductTypeForm: React.FC = () => {
   } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
   });
+  useSubject(showProductAddForm$);
+  const dispatch = useDispatch();
 
-  console.log(errors);
+  console.log(watch('familyId'));
+
+  const { loading, asyncWrapper } = useAsyncCall(
+    addProductType,
+    showProductAddForm$.value,
+    (res) => {
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductTypeAddError(res.errorObject));
+      else {
+        dispatch(setAddedMetaProductType(res));
+        dispatch(setMetaProductTypeAddError(null));
+      }
+    }
+  );
 
   return (
     <div className={styles['add-form']}>
@@ -52,36 +81,80 @@ const AddProductTypeForm: React.FC = () => {
           <CloseCircle />
         </ButtonWithoutStyles>
       </div>
-      <form onSubmit={handleSubmit((data) => console.log(data))}>
-        <div className={styles['add-form-body']}>
-          <ProductNameField register={register} fieldName="name" />
-          <ProductDescriptionField register={register} />
-          <ProductMetaFields register={register} />
-          <ProductDisplayImage
-            register={register}
-            setValue={setValue}
-            watch={watch}
-          />
-          <ProductSizeField setValue={setValue} />
-          <ProductColorField setValue={setValue} />
+      <form
+        className={styles['add-form-body']}
+        onSubmit={handleSubmit((data) =>
+          asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
+        )}
+      >
+        <ProductNameField register={register} />
+        <ProductDescriptionField register={register} />
+        <ProductMetaFields register={register} />
+        <ProductDisplayImage
+          register={register}
+          setValue={setValue}
+          watch={watch}
+        />
+        <ProductSizeField setValue={setValue} />
+        <ProductColorField setValue={setValue} />
+        <ProductBasePrice register={register} />
+
+        <div className={styles['add-form-button']}>
+          {!loading ? (
+            <>
+              <ApplicationButton
+                variant="default-not-padding"
+                clickAction={() => {
+                  handleSubmit((data) =>
+                    asyncWrapper({
+                      id: uuidv4(),
+                      form: data,
+                      createdBy: 'Somnath',
+                    })
+                  );
+                }}
+              >
+                Save
+              </ApplicationButton>
+              <ApplicationButton
+                variant="cancel"
+                clickAction={() => {
+                  showProductAddForm$.next(false);
+                }}
+              >
+                Cancel
+              </ApplicationButton>
+            </>
+          ) : (
+            <ApplicationSpinner />
+          )}
         </div>
       </form>
     </div>
   );
 };
 
+const ProductBasePrice: React.FC<{
+  register: TRegister;
+}> = ({ register }) => {
+  return (
+    <div className={styles['field-container']}>
+      <label>Base Price:</label>
+      <div>
+        <ApplicationTextInput {...register('basePrice')} />
+      </div>
+    </div>
+  );
+};
+
 const ProductNameField: React.FC<{
   register: TRegister;
-  fieldName: string;
-}> = ({ register, fieldName }) => {
+}> = ({ register }) => {
   return (
     <div className={styles['field-container']}>
       <label>Type Name:</label>
       <div>
-        <ApplicationTextInput
-          inputChangeFunc={register}
-          fieldName={fieldName}
-        ></ApplicationTextInput>
+        <ApplicationTextInput {...register('name')} />
       </div>
     </div>
   );
@@ -120,7 +193,7 @@ const ProductMetaFields: React.FC<{ register: TRegister }> = ({ register }) => {
       <div className={styles['field-container']}>
         <label>CategoryId:</label>
         <div>
-          <ApplicationSelectInput {...register('familyId')}>
+          <ApplicationSelectInput {...register('categoryId')}>
             <ApplicationOptionElement value="1">1</ApplicationOptionElement>
             <ApplicationOptionElement value="2">2</ApplicationOptionElement>
           </ApplicationSelectInput>
@@ -129,7 +202,7 @@ const ProductMetaFields: React.FC<{ register: TRegister }> = ({ register }) => {
       <div className={styles['field-container']}>
         <label>SubCategoryId:</label>
         <div>
-          <ApplicationSelectInput {...register('familyId')}>
+          <ApplicationSelectInput {...register('subcategoryId')}>
             <ApplicationOptionElement value="1">1</ApplicationOptionElement>
             <ApplicationOptionElement value="2">2</ApplicationOptionElement>
           </ApplicationSelectInput>
@@ -232,7 +305,7 @@ const ProductSizeField: React.FC<{ setValue: TSetValue }> = ({ setValue }) => {
       </div>
       <ApplicationModal mounted={showForm}>
         <div className={styles['inner-form-container']}>
-          <ApplicationTextInput inputChangeFunc={register} fieldName="val" />
+          <ApplicationTextInput {...register('val')} />
           <div className={styles['button-container']}>
             <ApplicationButton
               variant="cancel"
@@ -324,17 +397,11 @@ const ProductColorField: React.FC<{ setValue: TSetValue }> = ({ setValue }) => {
         <div className={styles['inner-form-container']}>
           <div className={styles['field']}>
             <label>Name:</label>
-            <ApplicationTextInput
-              inputChangeFunc={register}
-              fieldName="colorName"
-            />
+            <ApplicationTextInput {...register('colorName')} />
           </div>
           <div className={styles['field']}>
             <label>Code:</label>
-            <ApplicationTextInput
-              inputChangeFunc={register}
-              fieldName="colorCode"
-            />
+            <ApplicationTextInput {...register('colorCode')} />
             <ButtonWithoutStyles
               clickAction={() => {
                 setShowColorPicker((prev) => !prev);

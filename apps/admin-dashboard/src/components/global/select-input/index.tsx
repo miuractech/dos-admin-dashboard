@@ -3,11 +3,12 @@ import React from 'react';
 import styles from './select.module.scss';
 
 const ApplicationSelectInput = React.forwardRef<
-  JSX.IntrinsicElements['select']
->((selectProps, ref) => {
+  HTMLSelectElement,
+  React.HTMLProps<HTMLSelectElement>
+>((props, ref) => {
   return (
-    <select className={styles['select-input']} {...selectProps}>
-      {selectProps.children}
+    <select className={styles['select-input']} ref={ref} {...props}>
+      {props.children}
     </select>
   );
 });

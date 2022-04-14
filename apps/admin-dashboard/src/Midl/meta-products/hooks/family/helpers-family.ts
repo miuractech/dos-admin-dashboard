@@ -1,4 +1,4 @@
-import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { firestore } from '../../../../config/firebase.config';
 import { orderBy } from 'firebase/firestore';
 import { FirebaseRepository, reorder } from 'rxf-rewrite/dist';
 

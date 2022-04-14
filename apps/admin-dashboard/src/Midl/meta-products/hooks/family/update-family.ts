@@ -1,4 +1,4 @@
-import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { firestore } from '../../../../config/firebase.config';
 import { runTransaction } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';

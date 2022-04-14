@@ -1,5 +1,5 @@
 import React from 'react';
-import variables from 'apps/admin-dashboard/src/utils/styles/variables';
+import variables from '../../../utils/styles/variables';
 
 import styles from './sidenav.module.scss';
 import { ChangeSelectedSideNavItem } from './helpers';
@@ -11,37 +11,39 @@ const SideNavItem: React.FC<{
   id: string;
   icon: React.FC<{ stroke: string }>;
 }> = ({ selected, value, icon, id }) => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const nav = () => {
     switch (id) {
-      case "ORDERS":
-        navigate("/orders")
+      case 'ORDERS':
+        navigate('/orders');
         break;
-      case "PRODUCTS":
-        navigate("/products")
+      case 'PRODUCTS':
+        navigate('/products');
         break;
-      case "MERCHANTS":
-        navigate("/merchants")
+      case 'MERCHANTS':
+        navigate('/merchants');
         break;
-      case "CUSTOMERS":
-        navigate("/customers")
+      case 'CUSTOMERS':
+        navigate('/customers');
         break;
-      case "META":
-        navigate("/meta")
+      case 'META':
+        navigate('/meta');
         break;
-      case "COUPONS_AND_GIFTS":
-        navigate("/couponsgifts")
+      case 'COUPONS_AND_GIFTS':
+        navigate('/couponsgifts');
         break;
-      case "LOGOUT":
-        navigate("/logout")
+      case 'LOGOUT':
+        navigate('/logout');
     }
-  }
+  };
 
   return (
     <div
-      onClick={nav}
+      onClick={() => {
+        nav();
+        ChangeSelectedSideNavItem(id);
+      }}
       className={styles['item']}
     >
       <div></div>

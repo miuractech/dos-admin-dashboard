@@ -1,4 +1,4 @@
-import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { firestore } from '../../../../config/firebase.config';
 import { runTransaction } from 'firebase/firestore';
 import React from 'react';
 import { useDispatch } from 'react-redux';
@@ -33,7 +33,8 @@ export default function useDeleteCategory(mounted: boolean) {
     setLoadingFlag(true);
     const obs$ = from(deleteCategoryAsyncWrapper(docId, userName));
     const sub = obs$.subscribe((res) => {
-      if (res instanceof ApplicationErrorHandler) dispatch(setMetaProductCategoryEditError(res.errorObject));
+      if (res instanceof ApplicationErrorHandler)
+        dispatch(setMetaProductCategoryEditError(res.errorObject));
       else {
         dispatch(setEditedMetaProductCategory(res));
         dispatch(setMetaProductCategoryEditError(null));

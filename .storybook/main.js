@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  stories: ['../apps/admin-dashboard/src/app/**/*.stories.tsx'],
+  stories: ['../../../../../app/**/*.stories.tsx'],
   // Add any Storybook addons you want here: https://storybook.js.org/addons/
   addons: [],
   webpackFinal: async (config) => {

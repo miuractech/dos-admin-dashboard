@@ -1,14 +1,14 @@
 import { AddIcon, CloseCircle } from '@admin/assets';
 import { yupResolver } from '@hookform/resolvers/yup';
-import useAddSubCategory from 'apps/admin-dashboard/src/Midl/meta-products/hooks/sub-category/add-subcategory';
-import useGetSubCategories from 'apps/admin-dashboard/src/Midl/meta-products/hooks/sub-category/get-subcategories';
-import useUpdateSubCategory from 'apps/admin-dashboard/src/Midl/meta-products/hooks/sub-category/update-subcategory';
+import useAddSubCategory from '../../../Midl/meta-products/hooks/sub-category/add-subcategory';
+import useGetSubCategories from '../../../Midl/meta-products/hooks/sub-category/get-subcategories';
+import useUpdateSubCategory from '../../../Midl/meta-products/hooks/sub-category/update-subcategory';
 import {
   TMetaProductFamily,
   TMetaProductSubCategory,
-} from 'apps/admin-dashboard/src/Midl/meta-products/types';
+} from '../../../Midl/meta-products/types';
 import { v4 as uuidv4 } from 'uuid';
-import { RootState } from 'apps/admin-dashboard/src/store';
+import { RootState } from '../../../store';
 import clsx from 'clsx';
 import { orderBy } from 'firebase/firestore';
 import _ from 'lodash';
@@ -24,8 +24,9 @@ import ApplicationSpinner from '../../global/spinner';
 import ApplicationTextInput from '../../global/text-input';
 
 import styles from './styles/meta.module.scss';
-import { setMetaProductCategoriesByFamily } from 'apps/admin-dashboard/src/Midl/meta-products/store/meta-product.category.slice';
+import { setMetaProductCategoriesByFamily } from '../../../Midl/meta-products/store/meta-product.category.slice';
 import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
+import { ApplicationSelectInput } from '../../global/select-input';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
@@ -259,8 +260,7 @@ const Form: React.FC<{
           <div>
             <ApplicationTextInput
               defaultValue={productSubCategoryNameDefaultValue}
-              inputChangeFunc={register}
-              fieldName="name"
+              {...register('name')}
             />
             <InfoText
               text={
@@ -277,11 +277,11 @@ const Form: React.FC<{
           </div>
 
           <label>Category: </label>
-          <select {...register('categoryId')}>
+          <ApplicationSelectInput {...register('categoryId')}>
             {categories.metaProductCategoriesByFamily.map((c) => (
               <option value={c.id}>{c.name}</option>
             ))}
-          </select>
+          </ApplicationSelectInput>
         </div>
         <div
           className={
