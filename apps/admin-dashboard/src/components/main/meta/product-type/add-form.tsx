@@ -43,19 +43,11 @@ import {
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 
 const AddProductTypeForm: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<TAddFormSchema>({
+  const { register, handleSubmit, setValue, watch } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
   });
   useSubject(showProductAddForm$);
   const dispatch = useDispatch();
-
-  console.log(watch('familyId'));
 
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
@@ -95,8 +87,8 @@ const AddProductTypeForm: React.FC = () => {
           setValue={setValue}
           watch={watch}
         />
-        <ProductSizeField setValue={setValue} />
-        <ProductColorField setValue={setValue} />
+        <ProductSizeField initial={[]} setValue={setValue} />
+        <ProductColorField initial={[]} setValue={setValue} />
         <ProductBasePrice register={register} />
 
         <div className={styles['add-form-button']}>
@@ -147,7 +139,7 @@ const ProductBasePrice: React.FC<{
   );
 };
 
-const ProductNameField: React.FC<{
+export const ProductNameField: React.FC<{
   register: TRegister;
 }> = ({ register }) => {
   return (
@@ -160,7 +152,7 @@ const ProductNameField: React.FC<{
   );
 };
 
-const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
+export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
   register,
 }) => {
   return (
@@ -258,8 +250,11 @@ const ProductDisplayImage: React.FC<{
   );
 };
 
-const ProductSizeField: React.FC<{ setValue: TSetValue }> = ({ setValue }) => {
-  const [sizeLocal, setSizeLocal] = React.useState<Array<string>>([]);
+export const ProductSizeField: React.FC<{
+  setValue: TSetValue;
+  initial: Array<string>;
+}> = ({ setValue, initial }) => {
+  const [sizeLocal, setSizeLocal] = React.useState<Array<string>>(initial);
   const [showForm, setShowForm] = React.useState(false);
   const { register, watch } = useForm<{ val: string }>({
     resolver: yupResolver(sizeFormSchema),
@@ -328,10 +323,12 @@ const ProductSizeField: React.FC<{ setValue: TSetValue }> = ({ setValue }) => {
   );
 };
 
-const ProductColorField: React.FC<{ setValue: TSetValue }> = ({ setValue }) => {
-  const [colorLocal, setColorLocal] = React.useState<
-    Array<{ colorName: string; colorCode: string }>
-  >([]);
+export const ProductColorField: React.FC<{
+  setValue: TSetValue;
+  initial: Array<{ colorName: string; colorCode: string }>;
+}> = ({ setValue, initial }) => {
+  const [colorLocal, setColorLocal] =
+    React.useState<Array<{ colorName: string; colorCode: string }>>(initial);
   const [showForm, setShowForm] = React.useState(false);
   const {
     register,

@@ -7,34 +7,35 @@
   background: variables.$gloval-white;
   font-family: Montserrat;
   overflow: scroll;
-  .add-form-heading {
-    @include mixins.flex-space-between();
-    margin-top: 2rem;
-    h3 {
-      font-size: 1.5rem;
+}
+
+.add-form-heading {
+  @include mixins.flex-space-between();
+  margin-top: 2rem;
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    font-style: normal;
+    @include mixins.flex-center();
+  }
+}
+.add-form-body {
+  display: flex;
+  flex-direction: column;
+  margin: 3rem 0 3rem 0;
+  padding: 0 15rem 0 15rem;
+  .field-container {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    margin-bottom: 1rem;
+    label {
       font-weight: 500;
-      font-style: normal;
-      @include mixins.flex-center();
+      margin-right: 10px;
     }
   }
-  .add-form-body {
-    display: flex;
-    flex-direction: column;
-    margin: 3rem 0 3rem 0;
-    padding: 0 15rem 0 15rem;
-    .field-container {
-      display: grid;
-      grid-template-columns: 30% 1fr;
-      margin-bottom: 1rem;
-      label {
-        font-weight: 500;
-        margin-right: 10px;
-      }
-    }
-  }
-  .add-form-button {
-    @include mixins.flex-space-between();
-  }
+}
+.add-form-button {
+  @include mixins.flex-space-between();
 }
 
 .inner-form-container {
@@ -91,6 +92,7 @@
   height: 80%;
   width: 80%;
   background: variables.$gloval-white;
+  overflow: scroll;
   .close-button {
     float: right;
     padding: 1rem;

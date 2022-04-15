@@ -9,11 +9,10 @@ import {
 } from 'react-hook-form';
 import { BehaviorSubject } from 'rxjs';
 import * as yup from 'yup';
-import { TAddFormSchema } from '../../../../Midl/meta-products/hooks/product-type/add-product.type';
 
-export type TRegister = UseFormRegister<TAddFormSchema>;
-export type TSetValue = UseFormSetValue<TAddFormSchema>;
-export type TWatch = UseFormWatch<TAddFormSchema>;
+export type TRegister = UseFormRegister<any>;
+export type TSetValue = UseFormSetValue<any>;
+export type TWatch = UseFormWatch<any>;
 
 export const showProductAddForm$ = new BehaviorSubject(false);
 
@@ -70,4 +69,4 @@ export const addProductFormSchema = yup.object({
   basePrice: yup.number().required().min(50).max(1000),
 });
 
-export const selectedEditOption$ = new BehaviorSubject('IMAGES_BY_COLORS');
+export const selectedEditOption$ = new BehaviorSubject('BASIC_INFO');
