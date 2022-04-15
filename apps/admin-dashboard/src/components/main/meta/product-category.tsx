@@ -80,7 +80,7 @@ const ProductCategory: React.FC = () => {
     );
     dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
   }, [selectedProductFamily$.value, metaProductCategories]);
-
+  console.log('metaProductCategoriesByFamily',metaProductCategoriesByFamily)
   return (
     <div className={styles['root-content']}>
       <div className={styles['heading']}>
@@ -217,7 +217,7 @@ const List: React.FC<{
   );
   const { updateCategoryName, loadingFlag, completed, completedSetter } =
     useUpdateCategory(showEditForm);
-
+    
   return (
     <div
       ref={provided.innerRef}
@@ -237,7 +237,7 @@ const List: React.FC<{
           >
             Edit
           </ApplicationButton>
-          <ApplicationButton clickAction={() => {}} variant="disable">
+          <ApplicationButton clickAction={() => console.log('pub')} variant="disable">
             Unpublish
           </ApplicationButton>
         </div>

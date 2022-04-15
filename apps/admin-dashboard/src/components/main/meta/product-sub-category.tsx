@@ -174,7 +174,7 @@ const List: React.FC<{ subcategory: TMetaProductSubCategory }> = ({
           >
             Edit
           </ApplicationButton>
-          <ApplicationButton clickAction={() => {}} variant="disable">
+          <ApplicationButton clickAction={() => console.log('pub')} variant="disable">
             Unpublish
           </ApplicationButton>
         </div>

@@ -6,7 +6,7 @@ import {
   ApplicationErrorHandler,
 } from 'rxf-rewrite/dist';
 import { TMetaProductType } from '../../types';
-import { undefinedArrayCheck } from 'apps/admin-dashboard/src/utils/helpers/validation-custom';
+import { undefinedArrayCheck } from '../../../../utils/helpers/validation-custom';
 import { getDownloadURL, UploadResult } from 'firebase/storage';
 
 export const productTypeRepo = new FirebaseRepository<TMetaProductType>(

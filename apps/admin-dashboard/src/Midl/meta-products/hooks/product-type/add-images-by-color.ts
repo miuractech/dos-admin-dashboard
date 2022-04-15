@@ -1,4 +1,4 @@
-import { firestore } from 'apps/admin-dashboard/src/config/firebase.config';
+import { firestore } from '../../../../config/firebase.config';
 import { runTransaction } from 'firebase/firestore';
 import { ApplicationErrorHandler } from 'rxf-rewrite/dist';
 import { productTypeRepo, uploadArrayOfFiles } from './helpers';

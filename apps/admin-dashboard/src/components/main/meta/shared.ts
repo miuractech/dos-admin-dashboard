@@ -30,4 +30,4 @@ export const metaTopbarObject: {
 };
 
 // Selected Meta Option
-export const selectedMetaOption$ = new BehaviorSubject('PRODUCT_TYPE');
+export const selectedMetaOption$ = new BehaviorSubject('PRODUCT_FAMILY');
