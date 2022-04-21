@@ -80,7 +80,7 @@ const ProductCategory: React.FC = () => {
     );
     dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
   }, [selectedProductFamily$.value, metaProductCategories]);
-
+  console.log('metaProductCategoriesByFamily', metaProductCategoriesByFamily);
   return (
     <div className={styles['root-content']}>
       <div className={styles['heading']}>
