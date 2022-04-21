@@ -157,8 +157,14 @@ const List: React.FC<{ subcategory: TMetaProductSubCategory }> = ({
   const dbError = useSelector(
     (state: RootState) => state.metaProductCategory.editError
   );
-  const { updateSubCategoryName, loadingFlag, completed, completedSetter } =
-    useUpdateSubCategory(showEditForm);
+  const {
+    updateSubCategoryName,
+    loadingFlag,
+    completed,
+    completedSetter,
+    unPublishSubCategory,
+    publishSubCategory,
+  } = useUpdateSubCategory(showEditForm);
 
   return (
     <div className={styles['list-content']}>
@@ -174,9 +180,28 @@ const List: React.FC<{ subcategory: TMetaProductSubCategory }> = ({
           >
             Edit
           </ApplicationButton>
-          <ApplicationButton clickAction={() => {}} variant="disable">
-            Unpublish
-          </ApplicationButton>
+          {subcategory.status === 'published' && (
+            <ApplicationButton
+              clickAction={() => {
+                unPublishSubCategory(subcategory.id);
+              }}
+              variant="disable"
+              disabled={loadingFlag}
+            >
+              Unpublish
+            </ApplicationButton>
+          )}
+          {subcategory.status === 'unpublished' && (
+            <ApplicationButton
+              clickAction={() => {
+                publishSubCategory(subcategory.id);
+              }}
+              variant="enable"
+              disabled={loadingFlag}
+            >
+              Publish
+            </ApplicationButton>
+          )}
         </div>
       </div>
       <div className={styles['footer']}></div>

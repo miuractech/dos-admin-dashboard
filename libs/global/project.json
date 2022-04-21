@@ -1,0 +1,23 @@
+{
+  "root": "libs/global",
+  "sourceRoot": "libs/global/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/global/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/global"],
+      "options": {
+        "jestConfig": "libs/global/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

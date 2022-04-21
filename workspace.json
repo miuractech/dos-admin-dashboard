@@ -3,6 +3,7 @@
   "projects": {
     "admin-dashboard": "apps/admin-dashboard",
     "admin-dashboard-e2e": "apps/admin-dashboard-e2e",
-    "assets": "libs/assets"
+    "assets": "libs/assets",
+    "global": "libs/global"
   }
 }

@@ -7,7 +7,7 @@ import metaStyles from '../styles/meta.module.scss';
 import { selectedEditOption$ } from './shared';
 import { useSubject } from 'rxf-rewrite/dist';
 import clsx from 'clsx';
-import { TMetaProductType } from 'apps/admin-dashboard/src/Midl/meta-products/types';
+import { TMetaProductType } from '../../../../Midl/meta-products/types';
 import BasicInfo from './basic-info';
 import ImagesByColor from './images-by-colors';
 import Inventory from './inventory';

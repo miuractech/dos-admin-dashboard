@@ -43,6 +43,7 @@ export interface TMetaProductSubCategory extends TFirestoreDefault {
 }
 
 export interface TMetaProductType extends TFirestoreDefault {
+  index: number;
   name: string; // min 5 max 25
   description: string; // min 20 max 100
   familyId: string; // family foreign key (uuid)

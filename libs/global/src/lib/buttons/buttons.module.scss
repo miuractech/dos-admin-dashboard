@@ -1,0 +1,54 @@
+@use '../styles/_variables.scss' as variables;
+@use '../styles/_mixins.scss' as mixins;
+
+@mixin button-common {
+  background: none;
+  border: none;
+  position: relative;
+  @include mixins.flex-center();
+  font-family: Montserrat;
+  font-weight: 400;
+  font-size: 1rem;
+  cursor: pointer;
+  color: variables.$gloval-white;
+  border-radius: 5px;
+  padding: 0.3rem 1.5rem 0.3rem 1.5rem;
+  transition: transform 0.2s ease-in-out;
+  gap: 8px;
+  &:hover {
+    transform: scale(1.01);
+  }
+  &:focus {
+    outline: none;
+  }
+  overflow: hidden;
+}
+
+.ripple {
+  background: variables.$gloval-white;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border-radius: 50%;
+  animation: animate 0.5s linear normal;
+  top: 0;
+  left: 0;
+}
+
+@keyframes animate {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.5;
+  }
+  100% {
+    width: 500px;
+    height: 500px;
+    opacity: 0;
+  }
+}
+
+.default {
+  @include button-common();
+  background: variables.$default-button;
+  color: variables.$gloval-white;
+}

@@ -6,11 +6,16 @@ import {
   ApplicationErrorHandler,
 } from 'rxf-rewrite/dist';
 import { TMetaProductType } from '../../types';
-import { undefinedArrayCheck } from 'apps/admin-dashboard/src/utils/helpers/validation-custom';
+import { undefinedArrayCheck } from '../../../../utils/helpers/validation-custom';
 import { getDownloadURL, UploadResult } from 'firebase/storage';
 
 export const productTypeRepo = new FirebaseRepository<TMetaProductType>(
   '/meta/products/product_type',
+  firestore
+);
+
+export const countRepo = new FirebaseRepository<{ product_type: number }>(
+  '/meta',
   firestore
 );
 
@@ -55,4 +60,17 @@ export async function uploadArrayOfFiles(files: Array<FileList | undefined>) {
         secondCheck.map(async (s) => await getDownloadURL(s.ref))
       );
   }
+}
+
+export async function batchCommitTypes(
+  arr: Array<TMetaProductType>,
+  updatedBy: string
+) {
+  const batch = productTypeRepo.createBatch();
+  arr.forEach((a) => {
+    const updated = a;
+    updated.updatedBy = updatedBy;
+    productTypeRepo.batchCommitUpdate(batch, updated, updated.id);
+  });
+  await batch.commit();
 }

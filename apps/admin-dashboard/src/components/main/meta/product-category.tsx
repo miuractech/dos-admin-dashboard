@@ -215,8 +215,14 @@ const List: React.FC<{
   const dbError = useSelector(
     (state: RootState) => state.metaProductCategory.editError
   );
-  const { updateCategoryName, loadingFlag, completed, completedSetter } =
-    useUpdateCategory(showEditForm);
+  const {
+    updateCategoryName,
+    loadingFlag,
+    completed,
+    completedSetter,
+    publishCategory,
+    unPublishCategory,
+  } = useUpdateCategory(showEditForm);
 
   return (
     <div
@@ -237,9 +243,28 @@ const List: React.FC<{
           >
             Edit
           </ApplicationButton>
-          <ApplicationButton clickAction={() => {}} variant="disable">
-            Unpublish
-          </ApplicationButton>
+          {category.status === 'published' && (
+            <ApplicationButton
+              clickAction={() => {
+                unPublishCategory(category.id);
+              }}
+              variant="disable"
+              disabled={loadingFlag}
+            >
+              Unpublish
+            </ApplicationButton>
+          )}
+          {category.status === 'unpublished' && (
+            <ApplicationButton
+              clickAction={() => {
+                publishCategory(category.id);
+              }}
+              variant="enable"
+              disabled={loadingFlag}
+            >
+              Publish
+            </ApplicationButton>
+          )}
         </div>
       </div>
       <div className={styles['footer']}></div>

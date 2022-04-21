@@ -54,7 +54,7 @@ const ProductFamily: React.FC = () => {
   React.useEffect(() => {
     families.metaProductFamilies.length === 0 &&
       getFamilies([orderBy('index')]);
-  }, []);
+  }, [families.metaProductFamilies.length, getFamilies]);
 
   return (
     <div className={styles['root-content']}>
@@ -154,8 +154,14 @@ const List: React.FC<{
   const dbError = useSelector(
     (state: RootState) => state.metaProductFamily.editError
   );
-  const { updateFamilyName, loadingFlag, completed, completedSetter } =
-    useUpdateFamily(showEditForm);
+  const {
+    updateFamilyName,
+    loadingFlag,
+    completed,
+    completedSetter,
+    unPublishFamily,
+    publishFamily,
+  } = useUpdateFamily(showEditForm);
 
   return (
     <>
@@ -171,9 +177,28 @@ const List: React.FC<{
           >
             Edit
           </ApplicationButton>
-          <ApplicationButton clickAction={() => {}} variant="disable">
-            Unpublish
-          </ApplicationButton>
+          {family.status === 'published' && (
+            <ApplicationButton
+              clickAction={() => {
+                unPublishFamily(family.id);
+              }}
+              variant="disable"
+              disabled={loadingFlag}
+            >
+              Unpublish
+            </ApplicationButton>
+          )}
+          {family.status === 'unpublished' && (
+            <ApplicationButton
+              clickAction={() => {
+                publishFamily(family.id);
+              }}
+              variant="enable"
+              disabled={loadingFlag}
+            >
+              Publish
+            </ApplicationButton>
+          )}
         </div>
       </div>
       <div className={styles['footer']}></div>
@@ -236,7 +261,7 @@ const Form: React.FC<{
           <div>
             <ApplicationTextInput
               defaultValue={productFamilyNameDefaultValue}
-              {...register("name")}
+              {...register('name')}
             />
             <InfoText
               text={

@@ -1,10 +1,9 @@
 import { Provider } from 'react-redux';
 import React from 'react';
+import GlobalComponents from '../test/global-components';
 
-// drag-and-drop context for the whole application
 import DndWrapper from '../components/dnd';
 
-// redux store import
 import { store } from '../store';
 import Main from '../components/main';
 
