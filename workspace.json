@@ -4,6 +4,8 @@
     "admin-dashboard": "apps/admin-dashboard",
     "admin-dashboard-e2e": "apps/admin-dashboard-e2e",
     "assets": "libs/assets",
-    "global": "libs/global"
+    "global": "libs/global",
+    "reseller": "apps/reseller",
+    "reseller-e2e": "apps/reseller-e2e"
   }
 }
