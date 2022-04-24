@@ -5,7 +5,7 @@ import TextField,{ TextFieldProps } from '@mui/material/TextField';
 
 export function InputField(props: TextFieldProps) {
   return (
-    <TextField inputProps={{className:'dos-input'}} {...props} />
+    <TextField style={{borderColor:'green'}} color='secondary' inputProps={{className:'dos-input'}} {...props} />
   );
 }
 
