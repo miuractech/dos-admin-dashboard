@@ -1,4 +1,5 @@
 import styles from './registration1.module.css';
+import InputField from "../../UI/input-field/input-field"
 
 /* eslint-disable-next-line */
 export interface Registration1Props { }
@@ -11,8 +12,8 @@ export function Registration1(props: Registration1Props) {
 
   return (
     <div className={styles['container']}>
-      <input type="text" />
-      <input type="text" value={storeName ? storeName : ""} />
+      <InputField type="text" />
+      <InputField type="text" value={storeName ? storeName : "" } />
     </div>
   );
 }

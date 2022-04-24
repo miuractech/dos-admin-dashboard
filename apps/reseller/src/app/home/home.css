@@ -5,17 +5,19 @@
  .main { 
      height: 80vh;
      display: flex;
+     background: #FBFAF8
  }
 
  .center{
      width: 70vw;
      margin: auto;
      text-align: center;
+     
  }
 
- .input{
+
+
+ /* .box{
      display: flex;
-     justify-content: center;
-     column-gap: 15px;
- }
+ } */
 
