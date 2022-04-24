@@ -1,0 +1,21 @@
+
+ /* * Replace this with your own classes
+ *
+ * e.g. */
+ .main { 
+     height: 80vh;
+     display: flex;
+ }
+
+ .center{
+     width: 70vw;
+     margin: auto;
+     text-align: center;
+ }
+
+ .input{
+     display: flex;
+     justify-content: center;
+     column-gap: 15px;
+ }
+
