@@ -1,0 +1,25 @@
+body{
+    margin: 0;
+}
+
+.container{
+    width: 100vw;
+    height: 100vh;
+    background: #FBFAF8;
+    justify-content: center;
+    display: flex;
+    align-content: center;
+}
+
+.form{
+    width: 40%;
+    height: 80%;
+    margin: auto;
+    display: grid;
+    background-color: #FFFFFF;
+    box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
+}
