@@ -23,10 +23,10 @@ export function Registration1(props: Registration1Props) {
       <div className='container'>
         <div className='form'>
           <h3 style={{ color: "black" }}>CREATE YOUR SELLER ACCOUNT </h3>
-          <InputField placeholder="Enter Your Phone Number" type="text" />
-          <InputField placeholder="Enter Your Full Name" type="text" />
-          <InputField placeholder="Enter Email Address" type="text" />
-          <InputField type="text" value={storeName ? storeName : ""} />
+          <InputField color='primary' placeholder="Enter Your Phone Number" type="text" name='phone' />
+          <InputField color='primary' placeholder="Enter Your Full Name" type="text" name='fullname' />
+          <InputField color='primary' placeholder="Enter Email Address" type="text" name='email'  />
+          <InputField color='primary' type="text" value={storeName ? storeName : ""} />
           <Button variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
         </div>
       </div>
