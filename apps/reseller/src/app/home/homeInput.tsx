@@ -5,9 +5,10 @@ import InputField from '../../UI/input-field/input-field';
 interface RegistrationHomeProps {
     changed: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
     clicked: React.MouseEventHandler<HTMLButtonElement>;
+    storeName:string | undefined | null;
 }
 
-export const RegistrationHome = ({ changed, clicked }: RegistrationHomeProps) => {
+export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHomeProps) => {
     return (
         <div className="main" >
             <div className='center'>

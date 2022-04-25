@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
+import NewsLetter from './news-letter/news-letter';
 
 import { Route, Routes } from 'react-router-dom';
 import Home from './home/home';
@@ -12,6 +13,7 @@ export function App() {
         <Route index element={<Home />} />
         <Route path="/registration" element={<Registration1 />} />
       </Routes>
+      <NewsLetter/>
     </div>
   );
 }

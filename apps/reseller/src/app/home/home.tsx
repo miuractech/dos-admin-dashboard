@@ -2,7 +2,6 @@ import { Container } from '@mui/material';
 import { useState } from 'react';
 import './home.css';
 import { RegistrationHome } from './homeInput';
-import { Newletter } from './newletter';
 import { StepsToSell } from './stepsTosell';
 
 /* eslint-disable-next-line */
@@ -13,7 +12,9 @@ export function Home(props: HomeProps) {
   const [storeName, setStoreName] = useState<string | null>(null)
 
   const clicked = () => {
-    window.location.href = `/registration?storeName=${storeName}`
+    if(storeName){
+      window.location.href = `/registration?storeName=${storeName?storeName:''}`
+    }
   }
 
   const changed = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,9 +23,8 @@ export function Home(props: HomeProps) {
 
   return (
     <Container maxWidth={false} style={{ padding: 0 }}  >
-      <RegistrationHome changed={changed} clicked={clicked} />
+      <RegistrationHome changed={changed} clicked={clicked} storeName={storeName} />
       <StepsToSell />
-      <Newletter />
     </Container>
   );
 }

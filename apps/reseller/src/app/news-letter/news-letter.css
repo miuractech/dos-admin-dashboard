@@ -1,0 +1,42 @@
+.news{
+    width: 50%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 0 40px;
+}
+
+.maindiv{
+    background-color: #292931;
+    height: 100vh;
+    padding-bottom: 50px;
+    margin-top: 50px;
+}
+
+.bottom{
+    display: flex;
+}
+
+.logo{
+    width:45%
+}
+.about{
+    width:55%;
+    display: grid;
+    grid-template: repeat(4, 50px)/repeat(4, 150px);
+    justify-content: center;
+    align-content: center;
+    padding-top: 20px;
+
+}
+
+.icons{
+    color:white;
+    display: flex;
+    column-gap: 10px;
+}
+
+h3{
+    margin:0;
+    padding:0
+}

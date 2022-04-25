@@ -17,11 +17,22 @@ body{
     max-width: 600px;
     height: 80%;
     margin: 150px auto;
-    display: grid;
     background-color: #FFFFFF;
     box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.05);
     padding: 30px;
     display: flex;
     flex-direction: column;
     row-gap: 25px;
+}
+
+.select{
+    display: flex;
+    column-gap: 30px;
+}
+
+.details{
+display: flex;
+justify-content: space-evenly;
+background: rgba(229, 229, 229, 0.5);
+padding-bottom: 30px;
 }
