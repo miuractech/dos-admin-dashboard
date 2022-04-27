@@ -1,83 +1,85 @@
 import './news-letter.css';
-import { Button } from '@mui/material';
-import {Instagram, YouTube, LinkedIn, Twitter,Facebook} from '@mui/icons-material';
+import { Button, Grid } from '@mui/material';
+import { Instagram, YouTube, LinkedIn, Twitter, Facebook } from '@mui/icons-material';
 
 
 /* eslint-disable-next-line */
-export interface NewsLetterProps {}
+export interface NewsLetterProps { }
 
 export function NewsLetter(props: NewsLetterProps) {
   return (
     <div className="maindiv">
       <div className="news">
-        <h2 style={{ color: "white", textAlign:"center", paddingBottom:"30px" }}>Subscribe to our newsletter!</h2>
+        <h2 style={{ color: "white", textAlign: "center", paddingBottom: "30px" }}>Subscribe to our newsletter!</h2>
         <div>
-         <input style={{height:"45px", borderRadius:"10px 0 0 10px", outline:"none", border:"none", width:"75%"}} type="text"/>
-        <Button color='secondary' style={{ height: "48px", borderRadius:"0 10px 10px 0", width:"24%"}} variant="contained">Subscribe</Button>
+          <input style={{ height: "45px", borderRadius: "10px 0 0 10px", outline: "none", border: "none", width: "75%" }} type="text" />
+          <Button color='secondary' style={{ height: "48px", borderRadius: "0 10px 10px 0", width: "24%" }} variant="contained">Subscribe</Button>
         </div>
       </div>
       <div className='bottom'>
-        <div className="logo" style={{padding:"70px"}}>
+        <div className="logo">
           <img src="../../assets/images/logo.svg" alt="logo" />
-          <h3 style={{textAlign:"left"}}>Address</h3>
-          <p style={{color:"white"}}>Q427, Sukanta Nagar, Salt Lake, Sector 4,<br/> Kolkata - 700098, India</p>
+          <h3 style={{ textAlign: "left" }}>Address</h3>
+          <p style={{ color: "white" }}>Q427, Sukanta Nagar, Salt Lake, Sector 4,<br /> Kolkata - 700098, India</p>
           <br />
           <h3 style={{ textAlign: "left" }}>Follow us</h3>
           <div className='icons'>
-          <Instagram />
-          <YouTube/>
-          <LinkedIn />
-          <Twitter />
-          <Facebook/>
+            <Instagram />
+            <YouTube />
+            <LinkedIn />
+            <Twitter />
+            <Facebook />
           </div>
         </div>
         <div className='about'>
-          {[{
-            option:"About us"
-          },
-          {
-            option:"Product"
+          <Grid container spacing={4}>
+            {[{
+              option: "About us"
             },
-          {
-            option:"Bulk Orders"
+            {
+              option: "Product"
             },
-          {
-            option:"Privacy policy"
+            {
+              option: "Bulk Orders"
             },
-          {
-            option:"Profile"
+            {
+              option: "Privacy policy"
             },
-          {
-            option:"Payment"
+            {
+              option: "Profile"
             },
-          {
-            option:"Blogs"
+            {
+              option: "Payment"
             },
-          {
-            option:"Terms & conditions"
+            {
+              option: "Blogs"
             },
-          {
-            option:"Start Selling"
+            {
+              option: "Terms & conditions"
             },
-          {
-            option:"Start Design"
+            {
+              option: "Start Selling"
             },
-          {
-            option:"Carees"
+            {
+              option: "Start Design"
             },
-          {
-            option: "Refund Policy",
-            onclick:()=>console.log("Refund")
-            
+            {
+              option: "Carees"
             },
-          {
-            option:"contact"
+            {
+              option: "Refund Policy",
+              onclick: () => console.log("Refund")
+
             },
-          ].map((doc, index) => <div key={index} onClick={doc.onclick} style={{color:"white"}}>{ doc.option}</div>)}
+            {
+              option: "Contact Us"
+            },
+            ].map((doc, index) => <Grid item xs={3} md={4} key={index} onClick={doc.onclick} style={{ color: "white" }}>{doc.option}</Grid>)}
+          </Grid>
         </div>
       </div>
-      <div style={{backgroundColor: "#292931"}}>
-        <p style={{ marginTop:"0px", color:"white", textAlign:"center"}}>Copyright © Dropoutstore 2021.</p>
+      <div style={{ backgroundColor: "#292931" }}>
+        <p style={{ marginTop: "30px", color: "white", textAlign: "center" }}>Copyright © Dropoutstore 2021.</p>
       </div>
     </div>
   );

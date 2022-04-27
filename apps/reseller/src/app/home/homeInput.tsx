@@ -5,7 +5,7 @@ import InputField from '../../UI/input-field/input-field';
 interface RegistrationHomeProps {
     changed: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
     clicked: React.MouseEventHandler<HTMLButtonElement>;
-    storeName:string | undefined | null;
+    storeName: string | undefined | null;
 }
 
 export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHomeProps) => {
