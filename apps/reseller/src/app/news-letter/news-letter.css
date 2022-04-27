@@ -1,42 +1,14 @@
 .news{
-    width: 50%;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
     padding: 40px 0 40px;
+    justify-content: center;
 }
 
 .maindiv{
     background-color: #292931;
-    height: 80vh;
-    padding: 0 70px 50px 70px;
+    padding-bottom: 5px;
+    margin: auto;
+    width: 85%;
     margin-top: 50px;
-}
-
-.bottom{
-    display: flex;
-}
-
-.logo{
-    width:45%
-}
-.about{
-    width:55%;
-    padding: 30px 0 0
-}
-
-.icons{
-    color:white;
-    display: flex;
-    column-gap: 10px;
-}
-
-h3{
-    margin:0;
-    padding:0
-}
-
-.select{
-    display: flex;
-    align-items: center;
+    
 }

@@ -2,11 +2,15 @@ import './input-field.css';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 /* eslint-disable-next-line */
 
-
-export function InputField(props: TextFieldProps) {
+type rhfType = {
+  formInput?:any
+}
+type formInputType = TextFieldProps & rhfType
+export function InputField(props: formInputType ) {
   return (
-    <TextField color='secondary' inputProps={{ className: 'dos-input', style: { background: 'white' } }} {...props} />
+    <TextField color='secondary' inputProps={{ className: 'dos-input', style: { background: 'white' },...props.formInput }} {...props}  />
   );
 }
+
 
 export default InputField;

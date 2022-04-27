@@ -28,11 +28,36 @@ body{
 .select{
     display: flex;
     column-gap: 30px;
+    align-content:stretch;
 }
+
 
 .details{
 display: flex;
 justify-content: space-evenly;
 background: rgba(229, 229, 229, 0.5);
 padding-bottom: 30px;
+flex-direction: row;
+}
+
+.menu-flags{
+    padding:0px;
+    width:250px
+}
+.menu-flags>button{
+    height: 56px;
+}
+
+@media only screen and (max-width: 900px)  {
+    .select{
+        flex-wrap: wrap;
+        /* width: 100%; */
+        row-gap: 30px;
+    }
+    .menu-flags{
+        width: 100%;
+    }
+    .details{
+        flex-direction: column;
+    }
 }

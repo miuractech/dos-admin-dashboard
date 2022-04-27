@@ -10,6 +10,7 @@ interface RegistrationHomeProps {
 
 export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHomeProps) => {
     return (
+        
         <div className="main" >
             <div className='center'>
                 <h1>Register With Us!</h1>
