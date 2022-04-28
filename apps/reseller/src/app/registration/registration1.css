@@ -16,7 +16,7 @@ body{
     width: 100%;
     max-width: 600px;
     height: 80%;
-    margin: 150px auto;
+    margin: 100px auto 50px;
     background-color: #FFFFFF;
     box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.05);
     padding: 30px;
@@ -28,11 +28,38 @@ body{
 .select{
     display: flex;
     column-gap: 30px;
+    align-content:stretch;
 }
+
+.preColor{
+    background: rgba(229, 229, 229, 0.5);
+}
+
 
 .details{
 display: flex;
 justify-content: space-evenly;
-background: rgba(229, 229, 229, 0.5);
 padding-bottom: 30px;
+flex-direction: row;
+}
+
+.menu-flags{
+    padding:0px;
+    width:250px
+}
+.menu-flags>button{
+    height: 56px;
+}
+
+@media only screen and (max-width: 900px)  {
+    .select{
+        flex-wrap: wrap;
+        row-gap: 30px;
+    }
+    .menu-flags{
+        width: 100%;
+    }
+    .details{
+        flex-direction: column;
+    }
 }

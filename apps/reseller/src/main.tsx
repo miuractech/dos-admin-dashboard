@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, ThemeOptions } from '@mui/material/styles';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -24,7 +24,11 @@ export const theme = createTheme({
     background: {
       default: '#FBFAF8',
     },
+    info: {
+      main: "#167AF9",
+    }
   },
+
   typography: {
     h3: {
       fontFamily: 'Montserrat',

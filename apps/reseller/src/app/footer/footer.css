@@ -1,0 +1,32 @@
+
+
+.icons{
+    display:flex;
+    color:white;
+    column-gap: 10px;
+}
+
+.footer-text>h3 {
+    text-align:left;
+}
+.footer-text {
+    text-align:left;
+}
+
+@media only screen and (max-width: 900px) {
+    .footer-text>h3{
+        text-align:center;
+    }
+    .footer-text{
+        text-align:center;
+    }
+    .icons{
+        display:flex;
+        justify-content:center;
+        
+    }
+}
+
+.h3Color{
+    color: white;
+}
