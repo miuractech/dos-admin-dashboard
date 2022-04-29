@@ -1,15 +1,22 @@
 import './registration1.css';
 import InputField from "../../../UI/input-field/input-field"
-import { Button, FormControlLabel } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import Checkbox from '@mui/material/Checkbox';
 import ReactFlagsSelect from "react-flags-select";
 import { Prequisits } from "./prequisits"
 import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux'
 import { submit } from '../../../redux-tool/auth';
-import { user, UserDetailState } from '../../../types';
 import { useNavigate } from 'react-router-dom';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+const schema = yup.object().shape({
+    email: yup.string().email('email must look like abc@example.com').required('email feild cannot be empty')
+  })
+  .required();
+
+
 
 /* eslint-disable-next-line */
 export interface Registration1Props { }
@@ -19,19 +26,14 @@ export function Registration(props: Registration1Props) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const [user, setUser] = useState<user>({
-    fullName: "",
-    email: "",
-    phone: "",
-    storeName: ""
-  })
-
   const params = new URLSearchParams(window.location.search)
+  
   const storeName = params.get("storeName")
   const [selected, setSelected] = useState("IN");
-  const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm()
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+    resolver: yupResolver(schema),
+  })
   const onSubmit = (data: any) => {
-    setUser(data)
     dispatch(submit(data))
     navigate("/password")
   }
@@ -39,6 +41,8 @@ export function Registration(props: Registration1Props) {
   useEffect(() => {
     setValue('storeName', storeName)
   }, [setValue, storeName])
+
+   console.log('errors',errors)
 
   return (
     <div>
@@ -59,9 +63,12 @@ export function Registration(props: Registration1Props) {
             </div>
             <InputField color='primary' placeholder="Enter Your Full Name" type="text" formInput={{ ...register("fullName") }} />
             <InputField color='primary' placeholder="Enter Email Address" type="text" formInput={{ ...register("email") }} />
+            {errors['email'] && <Typography variant='caption' color={'error'} >
+              {errors['email']?.message}
+            </Typography> }
             <InputField color='primary' type="text" formInput={{ ...register("storeName") }} />
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
-            <p style={{ textAlign: "center" }}>You already have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
+            <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
           </div>
         </div>
       </form>

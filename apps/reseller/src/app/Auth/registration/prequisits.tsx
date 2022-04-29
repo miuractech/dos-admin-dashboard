@@ -21,7 +21,7 @@ export const Prequisits = () => {
           dis: " You need to provide PAN details for selling"
         }].map((doc, index, { length }) =>
           <>
-            <div style={{ textAlign: "center" }}>
+            <div key={index} style={{ textAlign: "center" }}>
 
               <h4>{doc.title}</h4>
               <p>{doc.dis}</p>

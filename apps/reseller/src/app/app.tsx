@@ -13,10 +13,12 @@ import Home from './Auth/regHomePage/home';
 import Registration from './Auth/registration/registration';
 import RegistrationPassword from './Auth/confrimPassword/registration-password';
 import Login from './Auth/loginpage/login';
+import VerifyEmail from './Auth/verify-email/verify-email';
 
 export function App() {
   const dispatch = useDispatch()
   const User = useSelector((state: RootState) => state.User.User)
+  const {loading} = useSelector((state: RootState) => state.User)
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, (cred) => {
       dispatch(setUser(cred))
@@ -24,10 +26,11 @@ export function App() {
 
     return () => Unsubscribe()
 
-}, [dispatch])
-console.log('app page',User);
+  }, [])
+  
+// console.log('app page',User);
 
-if(User === undefined) {
+if(loading) {
   return(
   <div className='flex justify-center vertical-center' style={{height:'100vh'}} >
     <CircularProgress />
@@ -50,7 +53,12 @@ else if(!User){
       
     )
   }
-else if(User){
+else if(!User.emailVerified){
+  return (
+    <VerifyEmail />
+  );
+}
+else if(User?.emailVerified){
   return (
     <Routes>
         <Route path="/home" element={<Homepage />} />

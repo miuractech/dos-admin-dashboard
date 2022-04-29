@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { UserDetailState } from '../types'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
 import { app } from '../firebaseConfig/config';
 
 export const auth = getAuth(app);
@@ -18,7 +18,7 @@ const initialState: UserDetailState = {
     fullName: "",
     phone: "",
     storeName: ""
-  },
+  },  
   loading: true,
   error: null,
   User: undefined,
@@ -29,31 +29,50 @@ type createPayloadType = {
   password: string
 }
 
+// export const verificationEmail = createAsyncThunk("User/verificationEmail",
+//   async () => {
+//     try{
+//      
+//       return  {response}
+//     }
+//     catch (error:any) {
+//           const errorCode = error.code;
+//           console.log(errorCode);
+//           return rejectWithValue(error)
+//         }
+//   }
+// )
+
+
 export const createUser = createAsyncThunk("User/createUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
-    await createUserWithEmailAndPassword(auth, payload.email, payload.password)
-      .then((userCredential) => {
-        const user = userCredential;
-        return { user }
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = rejectWithValue(error.message);
-      })
+    try{
+      const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
+      await sendEmailVerification(response.user)
+      return  {response}
+    }
+    catch (error:any) {
+          const errorCode = error.code;
+          console.log(errorCode);
+          return rejectWithValue(error)
+        }
   }
 )
 
 export const loginUser = createAsyncThunk("User/loginUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
-    signInWithEmailAndPassword(auth, payload.email, payload.password)
-      .then((userCredential) => {
-        const user = userCredential;
-        return { user }
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = rejectWithValue(error.message);
-      });
+    try {
+      const response = await signInWithEmailAndPassword(auth, payload.email, payload.password)
+       return  response.user
+    }
+    catch (error: any) {
+          const errorCode = error.code;
+          console.log(errorCode);
+          return rejectWithValue(error)
+    }
+    
+    
+       
   }
 )
 
@@ -77,6 +96,7 @@ export const UserSlice = createSlice({
     },
     setUser: (state, action) => {
       state.User = action.payload
+      state.loading = false
     }
 
   },
@@ -86,15 +106,21 @@ export const UserSlice = createSlice({
     },
     [createUser.rejected.toString()]: (state, action) => {
       state.loading = false
-      state.error = action.payload
+      state.error = action.payload.message
     },
     [createUser.fulfilled.toString()]: (state, action) => {
       state.loading = false
-      state.User = action.payload
     },
     [loginUser.fulfilled.toString()]: (state, action) => {
       state.loading = false
       state.User = action.payload
+    },
+    [loginUser.rejected.toString()]: (state, action) => {
+      state.loading = false
+      state.error = action.payload.message
+    },
+    [loginUser.pending.toString()]: (state, action) => {
+      state.loading = true
     },
   }
 })

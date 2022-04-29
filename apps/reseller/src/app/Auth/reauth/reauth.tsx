@@ -2,17 +2,18 @@ import './login.css';
 import { Button, Typography } from '@mui/material';
 import InputField from '../../../UI/input-field/input-field';
 import { useDispatch } from 'react-redux'
-import { loginUser } from '../../../redux-tool/auth';
+import { auth, loginUser } from '../../../redux-tool/auth';
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
 import { Prequisits } from '../registration/prequisits';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux-tool/store';
+import { reauthenticateWithCredential } from 'firebase/auth';
 
 /* eslint-disable-next-line */
-export interface LoginProps { }
+export interface ReauthProps { }
 
-export function Login(props: LoginProps) {
+export function Reauth(props: ReauthProps) {
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm()
   const dispatch = useDispatch()
@@ -22,8 +23,17 @@ export function Login(props: LoginProps) {
 
 
   const onSubmit = (data: any) => {
-    dispatch(loginUser(data))
-  }
+    const user = auth.currentUser
+    if(user){
+      reauthenticateWithCredential(user, data).then(response => {
+        console.log(response);
+        
+      }).catch((error) => {
+        // An error ocurred
+        // ...
+      });
+    }
+    }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -48,4 +58,4 @@ export function Login(props: LoginProps) {
   );
 }
 
-export default Login;
+export default Reauth;

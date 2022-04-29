@@ -1,6 +1,7 @@
 import { Button, Grid } from '@mui/material';
 import { ChangeEventHandler } from 'react';
 import InputField from '../../../UI/input-field/input-field';
+import { useNavigate } from 'react-router-dom';
 
 interface RegistrationHomeProps {
     changed: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
@@ -9,6 +10,9 @@ interface RegistrationHomeProps {
 }
 
 export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHomeProps) => {
+
+    const navigate = useNavigate()
+
     return (
         
         <div className="main" >
@@ -23,6 +27,7 @@ export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHo
                         <Button variant='contained' color='primary' fullWidth onClick={clicked} style={{ height: 56 }} > Register Here For Selling</Button>
                     </Grid>
                 </Grid>
+                 <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
             </div>
         </div >
     )
