@@ -3,8 +3,11 @@ import UserReduser from "./auth"
 
 export const store = configureStore({
   reducer: {
-        User: UserReduser
+        User: UserReduser,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false
+})
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -13,6 +13,6 @@ export interface UserDetailState {
     userDetails: user
     loading: boolean
     error: null
-    User: User | null
+    User: User | null | undefined
 
 }

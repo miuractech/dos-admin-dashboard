@@ -1,6 +1,6 @@
 import { Button, Grid } from '@mui/material';
 import { ChangeEventHandler } from 'react';
-import InputField from '../../UI/input-field/input-field';
+import InputField from '../../../UI/input-field/input-field';
 
 interface RegistrationHomeProps {
     changed: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;

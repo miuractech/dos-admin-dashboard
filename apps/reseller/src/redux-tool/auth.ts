@@ -21,7 +21,7 @@ const initialState: UserDetailState = {
   },
   loading: true,
   error: null,
-  User: null
+  User: undefined,
 }
 
 type createPayloadType = {
@@ -75,7 +75,7 @@ export const UserSlice = createSlice({
     submit: (state, action) => {
       state.userDetails = action.payload
     },
-    user: (state, action) => {
+    setUser: (state, action) => {
       state.User = action.payload
     }
 
@@ -85,6 +85,7 @@ export const UserSlice = createSlice({
       state.loading = true
     },
     [createUser.rejected.toString()]: (state, action) => {
+      state.loading = false
       state.error = action.payload
     },
     [createUser.fulfilled.toString()]: (state, action) => {
@@ -98,6 +99,6 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { submit, user } = UserSlice.actions
+export const { submit, setUser } = UserSlice.actions
 
 export default UserSlice.reducer

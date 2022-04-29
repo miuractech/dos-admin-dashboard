@@ -1,6 +1,8 @@
 /* Your styles goes here. */
 
-
+html {
+  scroll-behavior: smooth;
+}
 .grey-bg{
     background-color:#F2F2F2
   }

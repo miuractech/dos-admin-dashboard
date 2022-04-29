@@ -8,21 +8,19 @@ import './homepage.css';
 export interface HomepageProps { }
 
 export function Homepage(props: HomepageProps) {
-
   const dispatch = useDispatch()
+  console.log('home pajhe');
 
   const logout = () => {
     dispatch(logoutUser())
   }
 
-  const User = useSelector((state: RootState) => state.User.User)
-  console.log(User?.uid);
-
-
   return (
     <div style={{ textAlign: "center" }}>
       <h1>logged in</h1>
-      <Button onClick={logout} variant='contained' color='primary'>Log Out</Button>
+      <Button 
+      onClick={logout} 
+      variant='contained' color='primary'>Log Out</Button>
     </div>
   );
 }

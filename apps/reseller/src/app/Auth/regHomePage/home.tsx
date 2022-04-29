@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux-tool/store';
+import { RootState } from '../../../redux-tool/store';
 import './home.css';
 import { RegistrationHome } from './homeInput';
 import { StepsToSell } from './stepsTosell';
@@ -15,7 +15,7 @@ export function Home(props: HomeProps) {
 
   const clicked = () => {
     if (storeName) {
-      window.location.href = `/singup?storeName=${storeName ? storeName : ''}`
+      window.location.href = `/signup?storeName=${storeName ? storeName : ''}`
     }
   }
 

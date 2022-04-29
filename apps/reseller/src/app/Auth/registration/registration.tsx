@@ -1,5 +1,5 @@
 import './registration1.css';
-import InputField from "../../UI/input-field/input-field"
+import InputField from "../../../UI/input-field/input-field"
 import { Button, FormControlLabel } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Checkbox from '@mui/material/Checkbox';
@@ -7,14 +7,14 @@ import ReactFlagsSelect from "react-flags-select";
 import { Prequisits } from "./prequisits"
 import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux'
-import { submit } from '../../redux-tool/auth';
-import { user, UserDetailState } from '../../types';
+import { submit } from '../../../redux-tool/auth';
+import { user, UserDetailState } from '../../../types';
 import { useNavigate } from 'react-router-dom';
 
 /* eslint-disable-next-line */
 export interface Registration1Props { }
 
-export function Registration1(props: Registration1Props) {
+export function Registration(props: Registration1Props) {
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -61,7 +61,7 @@ export function Registration1(props: Registration1Props) {
             <InputField color='primary' placeholder="Enter Email Address" type="text" formInput={{ ...register("email") }} />
             <InputField color='primary' type="text" formInput={{ ...register("storeName") }} />
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
-            <p style={{ textAlign: "center" }}>You alderdy have an account? Sign In</p>
+            <p style={{ textAlign: "center" }}>You already have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
           </div>
         </div>
       </form>
@@ -70,6 +70,6 @@ export function Registration1(props: Registration1Props) {
   );
 }
 
-export default Registration1;
+export default Registration;
 
 

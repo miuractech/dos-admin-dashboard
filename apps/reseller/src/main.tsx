@@ -2,7 +2,8 @@ import { createTheme, ThemeProvider, ThemeOptions } from '@mui/material/styles';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-
+import { Provider } from 'react-redux'
+import { store } from './redux-tool/store';
 import App from './app/app';
 
 
@@ -70,7 +71,10 @@ ReactDOM.render(
   <StrictMode>
     <ThemeProvider theme={theme} >
       <BrowserRouter>
-        <App />
+        <Provider store={store}>
+
+          <App />
+        </Provider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,
