@@ -31,15 +31,15 @@ export function Login(props: LoginProps) {
         <div className='container'>
           <div className='form'>
             <div>
-              <h3 style={{ color: "black", height: 60 }}>LOGIN  YOUR SELLER ACCOUNT</h3>
+              <h3 style={{ color: "black" }}>LOGIN  YOUR SELLER ACCOUNT</h3>
             </div>
-            <InputField fullWidth color='primary' placeholder="Email id" type="text" formInput={{ ...register("email") }} />
-            <InputField fullWidth color='primary' placeholder="Password" type="password" formInput={{ ...register("password") }} />
+            <InputField fullWidth color='primary' placeholder="Email id" type="text" forminput={{ ...register("email") }} />
+            <InputField fullWidth color='primary' placeholder="Password" type="password" forminput={{ ...register("password") }} />
             {error && <Typography variant='caption' color={'error'} >
               {error}
-            </Typography> }
+            </Typography>}
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign In</Button>
-            <p style={{ textAlign: "center" }}>Don't have an account? <strong onClick={()=>navigate("/signup")} style={{color:'#167AF9', cursor: "pointer"}}>Sign Up</strong></p>
+            <p style={{ textAlign: "center" }}>Don't have an account? <strong onClick={() => navigate("/signup")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign Up</strong></p>
           </div>
         </div>
       </div>

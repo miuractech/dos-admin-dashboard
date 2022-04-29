@@ -18,7 +18,7 @@ const initialState: UserDetailState = {
     fullName: "",
     phone: "",
     storeName: ""
-  },  
+  },
   loading: true,
   error: null,
   User: undefined,
@@ -46,16 +46,16 @@ type createPayloadType = {
 
 export const createUser = createAsyncThunk("User/createUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
-    try{
+    try {
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
       await sendEmailVerification(response.user)
-      return  {response}
+      return { response }
     }
-    catch (error:any) {
-          const errorCode = error.code;
-          console.log(errorCode);
-          return rejectWithValue(error)
-        }
+    catch (error: any) {
+      const errorCode = error.code;
+      console.log(errorCode);
+      return rejectWithValue(error)
+    }
   }
 )
 
@@ -63,16 +63,16 @@ export const loginUser = createAsyncThunk("User/loginUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
     try {
       const response = await signInWithEmailAndPassword(auth, payload.email, payload.password)
-       return  response.user
+      return response.user
     }
     catch (error: any) {
-          const errorCode = error.code;
-          console.log(errorCode);
-          return rejectWithValue(error)
+      const errorCode = error.code;
+      console.log(errorCode);
+      return rejectWithValue(error)
     }
-    
-    
-       
+
+
+
   }
 )
 

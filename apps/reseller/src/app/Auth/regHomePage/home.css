@@ -1,5 +1,5 @@
  .main { 
-     height: 80vh;
+     height: 70vh;
      display: flex;
      background: #FBFAF8
  }
@@ -26,5 +26,12 @@
  h3{
      text-align: center;
      color: #000000;
+ }
+
+ .signUpBar{
+    background: #161C33;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
  }
 

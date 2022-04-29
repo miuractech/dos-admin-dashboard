@@ -1,11 +1,11 @@
 .news{
     width: 100%;
-    padding: 40px 0 40px;
+    padding: 5% 0 10%;
     justify-content: center;
 }
 
 .maindiv{
-    background-color: #292931;
+    background-color: #161C33;
     padding-bottom: 5px;
     margin: auto;
     width: 85%;

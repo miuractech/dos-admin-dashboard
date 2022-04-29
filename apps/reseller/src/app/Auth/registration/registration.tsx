@@ -12,8 +12,8 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 const schema = yup.object().shape({
-    email: yup.string().email('email must look like abc@example.com').required('email feild cannot be empty')
-  })
+  email: yup.string().email('email must look like abc@example.com').required('email feild cannot be empty')
+})
   .required();
 
 
@@ -27,7 +27,7 @@ export function Registration(props: Registration1Props) {
   const navigate = useNavigate()
 
   const params = new URLSearchParams(window.location.search)
-  
+
   const storeName = params.get("storeName")
   const [selected, setSelected] = useState("IN");
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
@@ -42,7 +42,7 @@ export function Registration(props: Registration1Props) {
     setValue('storeName', storeName)
   }, [setValue, storeName])
 
-   console.log('errors',errors)
+  console.log('errors', errors)
 
   return (
     <div>
@@ -50,7 +50,7 @@ export function Registration(props: Registration1Props) {
         <div className='container'>
           <div className='form'>
             <div>
-              <h3 style={{ color: "black", height: 60 }}>CREATE YOUR SELLER ACCOUNT </h3>
+              <h3 style={{ color: "black" }}>CREATE YOUR SELLER ACCOUNT </h3>
             </div>
             <div className="select">
               <ReactFlagsSelect
@@ -59,16 +59,16 @@ export function Registration(props: Registration1Props) {
                 selected={selected}
                 onSelect={(code) => setSelected(code)}
               />
-              <InputField fullWidth color='primary' placeholder="Enter Your Phone Number" type="text" formInput={{ ...register("phone") }} />
+              <InputField fullWidth color='primary' placeholder="Enter Your Phone Number" type="text" forminput={{ ...register("phone") }} />
             </div>
-            <InputField color='primary' placeholder="Enter Your Full Name" type="text" formInput={{ ...register("fullName") }} />
-            <InputField color='primary' placeholder="Enter Email Address" type="text" formInput={{ ...register("email") }} />
+            <InputField color='primary' placeholder="Enter Your Full Name" type="text" forminput={{ ...register("fullName") }} />
+            <InputField color='primary' placeholder="Enter Email Address" type="text" forminput={{ ...register("email") }} />
             {errors['email'] && <Typography variant='caption' color={'error'} >
               {errors['email']?.message}
-            </Typography> }
-            <InputField color='primary' type="text" formInput={{ ...register("storeName") }} />
+            </Typography>}
+            <InputField placeholder='Company or Business name' color='primary' type="text" forminput={{ ...register("storeName") }} />
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
-            <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
+            <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={() => navigate("/login")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign In</strong></p>
           </div>
         </div>
       </form>

@@ -24,16 +24,16 @@ export function Reauth(props: ReauthProps) {
 
   const onSubmit = (data: any) => {
     const user = auth.currentUser
-    if(user){
+    if (user) {
       reauthenticateWithCredential(user, data).then(response => {
         console.log(response);
-        
+
       }).catch((error) => {
         // An error ocurred
         // ...
       });
     }
-    }
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -43,13 +43,13 @@ export function Reauth(props: ReauthProps) {
             <div>
               <h3 style={{ color: "black", height: 60 }}>LOGIN  YOUR SELLER ACCOUNT</h3>
             </div>
-            <InputField fullWidth color='primary' placeholder="Email id" type="text" formInput={{ ...register("email") }} />
-            <InputField fullWidth color='primary' placeholder="Password" type="password" formInput={{ ...register("password") }} />
+            <InputField fullWidth color='primary' placeholder="Email id" type="text" forminput={{ ...register("email") }} />
+            <InputField fullWidth color='primary' placeholder="Password" type="password" forminput={{ ...register("password") }} />
             {error && <Typography variant='caption' color={'error'} >
               {error}
-            </Typography> }
+            </Typography>}
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign In</Button>
-            <p style={{ textAlign: "center" }}>Don't have an account? <strong onClick={()=>navigate("/signup")} style={{color:'#167AF9', cursor: "pointer"}}>Sign Up</strong></p>
+            <p style={{ textAlign: "center" }}>Don't have an account? <strong onClick={() => navigate("/signup")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign Up</strong></p>
           </div>
         </div>
       </div>

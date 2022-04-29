@@ -4,12 +4,13 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 
 type rhfType = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  formInput?:any
+  forminput?: any
 }
-type formInputType = TextFieldProps & rhfType
-export function InputField(props: formInputType ) {
+type forminputType = TextFieldProps & rhfType
+
+export function InputField(props: forminputType) {
   return (
-    <TextField color='secondary' inputProps={{ className: 'dos-input', style: { background: 'white' },...props.formInput }} {...props}  />
+    <TextField color='secondary' inputProps={{ className: 'dos-input', style: { background: 'white' }, ...props.forminput }} {...props} />
   );
 }
 

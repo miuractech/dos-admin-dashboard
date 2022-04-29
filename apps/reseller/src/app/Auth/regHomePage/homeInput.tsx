@@ -14,21 +14,29 @@ export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHo
     const navigate = useNavigate()
 
     return (
-        
-        <div className="main" >
-            <div className='center'>
-                <h1>Register With Us!</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Felis sit lectus ut <br />ullamcorper enim, ullamcorpe.</p>
-                <Grid container spacing={1} >
-                    <Grid item xs={12} sm={12} md={12} lg={8} xl={9}>
-                        <InputField fullWidth onChange={changed} type="text" placeholder='Company or Business name' color='primary' />
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={4} xl={3}>
-                        <Button variant='contained' color='primary' fullWidth onClick={clicked} style={{ height: 56 }} > Register Here For Selling</Button>
-                    </Grid>
-                </Grid>
-                 <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
+        <div>
+            <div className='signUpBar'>
+                <img style={{ width: "30%", minWidth: "300px" }} src="../../../assets/images/logo.svg" alt="DropOut Logo" />
+                <Button style={{ alignSelf: "center" }} color='secondary' variant='outlined'>Sign In</Button>
             </div>
-        </div >
+            <div className="main" >
+                <div className='center'>
+                    <h1>Register With Us!</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Felis sit lectus ut <br />ullamcorper enim, ullamcorpe.</p>
+                    <Grid container spacing={1} >
+                        <Grid item xs={12} sm={12} md={12} lg={8} xl={9}>
+                            <InputField fullWidth onChange={changed} type="text" placeholder='Company or Business name' color='primary' />
+                        </Grid>
+                        <Grid item xs={12} md={12} lg={4} xl={3}>
+                            <Button variant='contained' color='primary' fullWidth onClick={clicked} style={{ height: 56 }} > Register Here For Selling</Button>
+                        </Grid>
+                    </Grid>
+                    <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={() => navigate("/login")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign In</strong></p>
+                </div>
+            </div >
+
+        </div>
+
+
     )
 }

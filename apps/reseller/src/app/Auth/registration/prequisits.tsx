@@ -11,23 +11,25 @@ export const Prequisits = () => {
         {[{
           title: "ADDRESS",
           dis: "You need a business Address",
+          key: 1
         },
         {
           title: "BANK DETAILS",
-          dis: " You need your bank details for selling"
+          dis: " You need your bank details for selling",
+          key: 2
         },
         {
           title: "PAN DETAILS",
-          dis: " You need to provide PAN details for selling"
+          dis: " You need to provide PAN details for selling",
+          key: 3
         }].map((doc, index, { length }) =>
-          <>
-            <div key={index} style={{ textAlign: "center" }}>
-
+          <div key={doc.key}>
+            <div style={{ textAlign: "center" }}>
               <h4>{doc.title}</h4>
               <p>{doc.dis}</p>
             </div>
             {(length - 1 !== index) && <Divider orientation='vertical' variant='middle' flexItem />}
-          </>
+          </div>
         )}
       </div>
     </div>

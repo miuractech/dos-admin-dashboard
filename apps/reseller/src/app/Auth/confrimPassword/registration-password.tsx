@@ -13,11 +13,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from "react-hook-form";
 
 const schema = yup.object().shape({
-    password: yup.string().required().max(16, 'Password must not exceed 8 characters').matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+  password: yup.string().required().max(16, 'Password must not exceed 8 characters').matches(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+    "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
   ),
-  })
+})
   .required();
 
 /* eslint-disable-next-line */
@@ -35,10 +35,10 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   })
-  
-  
-  const onSumit = (data:any) => {
-    if (data.password === data.confirmPassword){
+
+
+  const onSumit = (data: any) => {
+    if (data.password === data.confirmPassword) {
       dispatch(createUser({ email: userEmail, password: data.password }))
     } else if (data.password !== data.confirmPassword) {
       setErr("Passwords don't match")
@@ -47,35 +47,35 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
 
 
   useEffect(() => {
-    if(userEmail === ''){
+    if (userEmail === '') {
       navigate('/')
     }
   }, [navigate, userEmail])
-  
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSumit)}>
-      <div className='container'>
-        <div className='form'>
-          <div>
-            <h3 style={{ color: "black", height: 60 }}>CREATE YOUR SELLER ACCOUNT </h3>
-          </div>
-          <InputField fullWidth color="primary" placeholder="Enter Your Password" type={viewPassword?'text':"password"} formInput={{ ...register("password") }} InputProps={{endAdornment:viewPassword?<IconButton onClick={()=>setViewPassword(false)} ><VisibilityOff /></IconButton>:<IconButton onClick={()=>setViewPassword(true)} ><Visibility  /></IconButton>}} />
-          <InputField fullWidth color='primary' placeholder="Confirm Your Password" type="password" formInput={{ ...register("confirmPassword") }} />
-          {err && <Typography variant='caption' color={'error'}>{err}</Typography>}
-          {error && <Typography variant='caption' color={'error'} >
+        <div className='container'>
+          <div className='form'>
+            <div>
+              <h3 style={{ color: "black", height: 60 }}>CREATE YOUR SELLER ACCOUNT </h3>
+            </div>
+            <InputField fullWidth color="primary" placeholder="Enter Your Password" type={viewPassword ? 'text' : "password"} forminput={{ ...register("password") }} InputProps={{ endAdornment: viewPassword ? <IconButton onClick={() => setViewPassword(false)} ><VisibilityOff /></IconButton> : <IconButton onClick={() => setViewPassword(true)} ><Visibility /></IconButton> }} />
+            <InputField fullWidth color='primary' placeholder="Confirm Your Password" type="password" forminput={{ ...register("confirmPassword") }} />
+            {err && <Typography variant='caption' color={'error'}>{err}</Typography>}
+            {error && <Typography variant='caption' color={'error'} >
               {error}
             </Typography>}
             {errors['password'] && <Typography variant='caption' color={'error'} >
               {errors["password"]?.message}
-            </Typography> }
-          <FormControlLabel control={<Checkbox color='info' onChange={() => setChecked(!checked)} checked={checked} />} label="Agree DropOut Store Terms and Conditions" />
-          <Button type="submit" disabled={!checked} variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
-          <p style={{ textAlign: "center" }}>You alderdy have an account? <strong onClick={()=>navigate("/login")} style={{color:'#167AF9', cursor: "pointer"}}>Sign In</strong></p>
+            </Typography>}
+            <FormControlLabel control={<Checkbox color='info' onChange={() => setChecked(!checked)} checked={checked} />} label="Agree DropOut Store Terms and Conditions" />
+            <Button type="submit" disabled={!checked} variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
+            <p style={{ textAlign: "center" }}>You alderdy have an account? <strong onClick={() => navigate("/login")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign In</strong></p>
+          </div>
         </div>
-      </div>
         <Prequisits />
-        </form>
+      </form>
     </div>
   );
 }

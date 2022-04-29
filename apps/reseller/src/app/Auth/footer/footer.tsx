@@ -17,11 +17,11 @@ export function Footer(props: FooterProps) {
             <br />
             <h3 className='h3Color'>Follow us</h3>
             <div className='icons'>
-              <Instagram />
-              <YouTube />
-              <LinkedIn />
-              <Twitter />
-              <Facebook />
+              <Instagram className='icon' />
+              <YouTube className='icon' />
+              <LinkedIn className='icon' />
+              <Twitter className='icon' />
+              <Facebook className='icon' />
             </div>
           </div>
         </Grid>
@@ -83,18 +83,15 @@ export function Footer(props: FooterProps) {
             },
             ].map((doc) =>
               <Grid item xs={12} md={4} key={doc.key} onClick={doc.onclick} style={{ color: "white" }}  >
-                <div className="footer-text">
-
+                <span style={{ cursor: "pointer" }}>
                   {doc.option}
-                </div>
+                </span>
               </Grid>)
             }
           </Grid>
         </Grid>
       </Grid>
-      <div style={{ backgroundColor: "#292931" }}>
-        <p style={{ marginTop: "30px", color: "white", textAlign: "center" }}>Copyright © Dropoutstore 2021.</p>
-      </div>
+      <p style={{ marginTop: "30px", color: "white", textAlign: "center" }}>Copyright © Dropoutstore 2021.</p>
     </div>
   );
 }

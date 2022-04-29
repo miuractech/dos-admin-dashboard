@@ -18,7 +18,7 @@ import VerifyEmail from './Auth/verify-email/verify-email';
 export function App() {
   const dispatch = useDispatch()
   const User = useSelector((state: RootState) => state.User.User)
-  const {loading} = useSelector((state: RootState) => state.User)
+  const { loading } = useSelector((state: RootState) => state.User)
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, (cred) => {
       dispatch(setUser(cred))
@@ -27,50 +27,48 @@ export function App() {
     return () => Unsubscribe()
 
   }, [])
-  
-// console.log('app page',User);
 
-if(loading) {
-  return(
-  <div className='flex justify-center vertical-center' style={{height:'100vh'}} >
-    <CircularProgress />
-  </div>
-  )
-}
-else if(!User){
-    return(
-      <>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="/signup/*" element={<Registration/>} />
-        <Route path="/signup" element={<Registration/>} />
-        <Route path="/password" element={<RegistrationPassword />} />
-        <Route path="/login" element={<Login />} />
-        <Route path='*' element={<Navigate to='/login' />} />
-      </Routes>
-      <NewsLetter />
-    </>
-      
+  if (loading) {
+    return (
+      <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
+        <CircularProgress />
+      </div>
     )
   }
-else if(!User.emailVerified){
-  return (
-    <VerifyEmail />
-  );
-}
-else if(User?.emailVerified){
-  return (
-    <Routes>
+  else if (!User) {
+    return (
+      <>
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="/signup/*" element={<Registration />} />
+          <Route path="/signup" element={<Registration />} />
+          <Route path="/password" element={<RegistrationPassword />} />
+          <Route path="/login" element={<Login />} />
+          <Route path='*' element={<Navigate to='/login' />} />
+        </Routes>
+        <NewsLetter />
+      </>
+
+    )
+  }
+  else if (!User.emailVerified) {
+    return (
+      <VerifyEmail />
+    );
+  }
+  else if (User?.emailVerified) {
+    return (
+      <Routes>
         <Route path="/home" element={<Homepage />} />
         <Route path='*' element={<Navigate to='/home' replace />} />
       </Routes>
-  );
-}
-else{
-  return(
-    <>error 404</>
-  )
-}
+    );
+  }
+  else {
+    return (
+      <>error 404</>
+    )
+  }
 }
 
 export default App;

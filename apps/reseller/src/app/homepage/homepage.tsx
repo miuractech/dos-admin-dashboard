@@ -13,10 +13,12 @@ export interface HomepageProps { }
 
 export function Homepage(props: HomepageProps) {
   const dispatch = useDispatch()
-  const { User } = useSelector((state:RootState)=>state.User)
+  const { User } = useSelector((state: RootState) => state.User)
   const logout = () => {
     dispatch(logoutUser())
   }
+
+
   // useEffect(() => {
   //   const currentUser = auth?.currentUser
   //   auth.settings.appVerificationDisabledForTesting = true
@@ -36,31 +38,31 @@ export function Homepage(props: HomepageProps) {
   //         multiFactor(currentUser).enroll(assertion)
 
   //       }
-          
+
   //     }
-      
+
   //     catch (error) {
   //       console.log(error);
-      
+
   //     }
   //   }
   //   check()
   // }, [])
-  if(auth.currentUser){
+  if (auth.currentUser) {
     console.log(multiFactor(auth.currentUser).enrolledFactors);
   }
-  
+
 
   return (
     <div style={{ textAlign: "center" }}>
       <h1>logged in</h1>
       <div
-      id='recaptcha'
+        id='recaptcha'
       >
 
       </div>
-      <Button 
-      onClick={logout} 
+      <Button
+        onClick={logout}
         variant='contained' color='primary'>Log Out</Button>
     </div>
   );
