@@ -39,7 +39,11 @@ export function Login(props: LoginProps) {
               {error}
             </Typography>}
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign In</Button>
-            <p style={{ textAlign: "center" }}>Don't have an account? <strong onClick={() => navigate("/signup")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign Up</strong></p>
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", columnGap: "25px" }}>
+              <p style={{ textAlign: "center" }}>Don't have an account? <strong onClick={() => navigate("/signup")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign Up</strong></p>
+              <p><strong onClick={() => navigate("/password_reset")} style={{ color: '#167AF9', cursor: "pointer" }}>Forgot password?</strong></p>
+            </div>
+
           </div>
         </div>
       </div>

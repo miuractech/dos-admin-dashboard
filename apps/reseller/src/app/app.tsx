@@ -14,6 +14,7 @@ import Registration from './Auth/registration/registration';
 import RegistrationPassword from './Auth/confrimPassword/registration-password';
 import Login from './Auth/loginpage/login';
 import VerifyEmail from './Auth/verify-email/verify-email';
+import { PasswordReset } from './Auth/loginpage/passwordReset';
 
 export function App() {
   const dispatch = useDispatch()
@@ -44,6 +45,7 @@ export function App() {
           <Route path="/signup" element={<Registration />} />
           <Route path="/password" element={<RegistrationPassword />} />
           <Route path="/login" element={<Login />} />
+          <Route path='/password_reset' element={<PasswordReset />} />
           <Route path='*' element={<Navigate to='/login' />} />
         </Routes>
         <NewsLetter />

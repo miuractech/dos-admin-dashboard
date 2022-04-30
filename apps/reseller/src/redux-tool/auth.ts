@@ -5,13 +5,6 @@ import { app } from '../firebaseConfig/config';
 
 export const auth = getAuth(app);
 
-type userformDetails = {
-  email: string
-  fullName: string
-  phone: string
-  storeName: string
-}
-
 const initialState: UserDetailState = {
   userDetails: {
     email: "",
@@ -49,7 +42,17 @@ export const createUser = createAsyncThunk("User/createUser",
     try {
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
       await sendEmailVerification(response.user)
+
+      const interval = await setInterval(() => {
+        response.user.reload()
+        if (response.user.emailVerified) {
+          clearInterval(interval)
+          window.location.reload()
+        }
+      }, 1000);
+
       return { response }
+
     }
     catch (error: any) {
       const errorCode = error.code;

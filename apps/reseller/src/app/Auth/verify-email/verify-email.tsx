@@ -8,41 +8,43 @@ import { logoutUser } from '../../../redux-tool/auth'
 
 
 /* eslint-disable-next-line */
-export interface VerifyEmailProps {}
+export interface VerifyEmailProps { }
 
 export function VerifyEmail(props: VerifyEmailProps) {
   const dispatch = useDispatch();
-  const { User } = useSelector((state:RootState)=>state.User)
+  const { User } = useSelector((state: RootState) => state.User)
+
+
+
   return (
 
-<div className='container'>
+    <div className='container'>
       <div className='form'>
- <div
-    style={{height:'50vh',textAlign:'center'}}
-    className='flex justify-center vertical-align'
-    >
-      <div className='text-center' >  
-        <Typography variant='h6' >Verify your email to continue!</Typography>
-        <br />
-        <Typography variant='body1' > Check your Inbox for verification mail. Your Email Id is <strong>{User?.email}</strong> </Typography>
-        <Typography variant='body1' > <span> If this not your email, </span> <span className='pointer-cursor' style={{color:'blue'}} onClick={()=>dispatch(logoutUser())} > logout  </span><span>and try with your email</span></Typography>
-
-
-        <Button 
-        variant='contained'
-        onClick={()=>{
-          if(auth?.currentUser){
-            sendEmailVerification(auth?.currentUser)
-          }
-        }} 
+        <div
+          style={{ height: '50vh', textAlign: 'center' }}
         >
-          Send Verification Link Again
-        </Button>
+          <div className='text-center' >
+            <h2 style={{ color: "gray" }}>Please verify your email</h2>
+            <br />
+            <h4 style={{ color: "gray" }}> You're almost there! We sent an email to  <strong style={{ color: "black" }}>{User?.email}</strong> </h4>
+            <p > <span> If this is not your email, </span> <span className='pointer-cursor' style={{ color: 'blue' }} onClick={() => dispatch(logoutUser())} > logout  </span><span>and try with your email</span></p>
+            <br />
+            <p>Still can't find the mail</p>
+            <Button
+              variant='contained'
+              onClick={() => {
+                if (auth?.currentUser) {
+                  sendEmailVerification(auth?.currentUser)
+                }
+              }}
+            >
+              Resend Email
+            </Button>
+          </div>
+        </div>
+
       </div>
     </div>
-
-      </div>
- </div> 
   );
 }
 

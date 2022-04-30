@@ -19,35 +19,42 @@ export function Homepage(props: HomepageProps) {
   }
 
 
-  // useEffect(() => {
-  //   const currentUser = auth?.currentUser
-  //   auth.settings.appVerificationDisabledForTesting = true
-  //   const appVerifier = new RecaptchaVerifier('recaptcha',{},auth)
-  //   const check = async () => {
-  //     try {
-  //       if (currentUser) {
-  //         const mfaAssertion = await multiFactor(currentUser).getSession()
-  //         const phoneInfoOptions = {
-  //           phoneNumber: '+918971892050',
-  //           session: mfaAssertion
-  //         };
-  //         const phoneAuthProvider = new PhoneAuthProvider(auth)
-  //         const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions,appVerifier)
-  //         const cred = PhoneAuthProvider.credential(verificationId,'564565')
-  //         const assertion = PhoneMultiFactorGenerator.assertion(cred)
-  //         multiFactor(currentUser).enroll(assertion)
 
-  //       }
+  useEffect(() => {
+    const currentUser = auth?.currentUser
+    console.log("current", currentUser);
+    console.log("User", User);
 
-  //     }
 
-  //     catch (error) {
-  //       console.log(error);
+    auth.settings.appVerificationDisabledForTesting = true
+    const appVerifier = new RecaptchaVerifier('recaptcha', {}, auth)
+    const check = async () => {
+      try {
+        if (currentUser) {
+          const mfaAssertion = await multiFactor(currentUser).getSession()
+          const phoneInfoOptions = {
+            phoneNumber: '+918971892050',
+            session: mfaAssertion
+          };
+          const phoneAuthProvider = new PhoneAuthProvider(auth)
+          const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, appVerifier)
+          const cred = PhoneAuthProvider.credential(verificationId, '564565')
+          const assertion = PhoneMultiFactorGenerator.assertion(cred)
+          multiFactor(currentUser).enroll(assertion)
 
-  //     }
-  //   }
-  //   check()
-  // }, [])
+        }
+
+      }
+
+      catch (error) {
+        console.log(error);
+      }
+    }
+    check()
+  }, [])
+
+
+
   if (auth.currentUser) {
     console.log(multiFactor(auth.currentUser).enrolledFactors);
   }
