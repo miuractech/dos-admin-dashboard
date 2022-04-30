@@ -10,12 +10,20 @@ import { logoutUser } from '../../../redux-tool/auth'
 /* eslint-disable-next-line */
 export interface VerifyEmailProps { }
 
-export function VerifyEmail(props: VerifyEmailProps) {
+function VerifyEmail(props: VerifyEmailProps) {
   const dispatch = useDispatch();
   const { User } = useSelector((state: RootState) => state.User)
 
-
-
+  const send = async() => {
+    try {
+        if (auth?.currentUser) {
+          await sendEmailVerification(auth?.currentUser)
+        }
+    }catch (error) {
+       console.log(error);
+       
+    }
+  }
   return (
 
     <div className='container'>
@@ -32,11 +40,7 @@ export function VerifyEmail(props: VerifyEmailProps) {
             <p>Still can't find the mail</p>
             <Button
               variant='contained'
-              onClick={() => {
-                if (auth?.currentUser) {
-                  sendEmailVerification(auth?.currentUser)
-                }
-              }}
+              onClick={send}
             >
               Resend Email
             </Button>
@@ -45,7 +49,7 @@ export function VerifyEmail(props: VerifyEmailProps) {
 
       </div>
     </div>
-  );
+  )
 }
 
-export default VerifyEmail;
+export default VerifyEmail

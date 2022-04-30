@@ -31,6 +31,7 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const userEmail = useSelector((state: RootState) => state.User.userDetails.email)
+  const { phone, storeName, fullName } = useSelector((state: RootState) => state.User.userDetails)
   const { error } = useSelector((state: RootState) => state.User)
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -39,7 +40,7 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
 
   const onSumit = (data: any) => {
     if (data.password === data.confirmPassword) {
-      dispatch(createUser({ email: userEmail, password: data.password }))
+      dispatch(createUser({ email: userEmail, password: data.password, storeName: storeName, phone:phone, fullName:fullName}))
     } else if (data.password !== data.confirmPassword) {
       setErr("Passwords don't match")
     }

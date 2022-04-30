@@ -1,6 +1,6 @@
 import InputField from '../../../UI/input-field/input-field'
-import React from 'react'
-import { Button } from '@mui/material'
+import React, { useState } from 'react'
+import { Alert, AlertTitle, Button } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,25 +19,43 @@ export const PasswordReset = () => {
         resolver: yupResolver(schema),
     })
 
-    // const onSubmit = async (data: any) => {
-    //     try {
-    //         await sendPasswordResetEmail(auth, data.email)
-    //     } catch (error) {
+    const [alert, setAlert] = useState('')
+    const [emailsSuccess, setEmailsSuccess] = useState<boolean | undefined | 'loading'>(undefined)
 
-    //     }
-    // }
+    const onSubmit = async (data: any) => {
+        setEmailsSuccess('loading')
+        try {
+            await sendPasswordResetEmail(auth, data.email)
+            setEmailsSuccess(true)
+            setAlert("Password reset link sent")
+        } catch (error:any) {
+            setEmailsSuccess(false)
+            setAlert(error.message);
+            console.log(error);
+            
+        }
+    }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+
+                <div className='alert'>
+                   { alert && <Alert severity="success">
+                        <AlertTitle>Success</AlertTitle>
+                        {alert} — <strong>check it out!</strong>
+                    </Alert>}
+                </div>      
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className='container'>
                 <div className='form'>
                     <div>
                         <h3 style={{ color: "black" }}>RESET PASSWORD</h3>
                     </div>
                     <InputField fullWidth color='primary' placeholder="Email id" type="text" forminput={{ ...register("email") }} />
-                    <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} >Get Link</Button>
+                    <Button type='submit' disabled={Boolean(emailsSuccess)} variant='contained' color={emailsSuccess?'success':'primary'} fullWidth style={{ height: 56 }} >{emailsSuccess?'Link Sent':'Get Link'}</Button>
                 </div>
             </div>
-        </form>
+            </form>
+        </div>
     )
 }

@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { UserDetailState } from '../types'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
+import { getAuth, updateProfile,  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
 import { app } from '../firebaseConfig/config';
+import { collection, addDoc,setDoc , doc} from "firebase/firestore"; 
+import {db} from "../firebaseConfig/config"
 
 export const auth = getAuth(app);
 
@@ -20,37 +22,22 @@ const initialState: UserDetailState = {
 type createPayloadType = {
   email: string
   password: string
+  storeName: string
+  phone: string
+  fullName:string
 }
-
-// export const verificationEmail = createAsyncThunk("User/verificationEmail",
-//   async () => {
-//     try{
-//      
-//       return  {response}
-//     }
-//     catch (error:any) {
-//           const errorCode = error.code;
-//           console.log(errorCode);
-//           return rejectWithValue(error)
-//         }
-//   }
-// )
-
 
 export const createUser = createAsyncThunk("User/createUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
     try {
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
+      await setDoc(doc(db,"reSellers", response.user.uid), {
+         email: response.user.email,
+         phone: payload.phone,
+         storeName: payload.storeName,
+         fullName:payload.fullName
+        })
       await sendEmailVerification(response.user)
-
-      const interval = await setInterval(() => {
-        response.user.reload()
-        if (response.user.emailVerified) {
-          clearInterval(interval)
-          window.location.reload()
-        }
-      }, 1000);
-
       return { response }
 
     }
@@ -113,6 +100,7 @@ export const UserSlice = createSlice({
     },
     [createUser.fulfilled.toString()]: (state, action) => {
       state.loading = false
+
     },
     [loginUser.fulfilled.toString()]: (state, action) => {
       state.loading = false

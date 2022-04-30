@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 
-import Login from './reauth';
+import VerifyPhone from './verify-phone';
 
-describe('Login', () => {
+describe('VerifyPhone', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<Login />);
+    const { baseElement } = render(<VerifyPhone />);
     expect(baseElement).toBeTruthy();
   });
 });

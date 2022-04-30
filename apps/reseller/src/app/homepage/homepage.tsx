@@ -4,59 +4,72 @@ import { logoutUser } from '../../redux-tool/auth';
 import './homepage.css';
 import { RootState } from '../../redux-tool/store';
 import { auth } from '../../redux-tool/auth';
-import { multiFactor, signInWithPhoneNumber, PhoneAuthProvider, RecaptchaVerifier, PhoneMultiFactorGenerator } from 'firebase/auth';
+import { multiFactor, signInWithPhoneNumber, PhoneAuthProvider, RecaptchaVerifier, PhoneMultiFactorGenerator, updateProfile } from 'firebase/auth';
 import { useEffect } from 'react';
 import firebase from 'firebase/app'
-import { app } from '../../firebaseConfig/config';
+import { app, db } from '../../firebaseConfig/config';
+import {doc, getDoc} from "firebase/firestore"; 
 /* eslint-disable-next-line */
 export interface HomepageProps { }
 
-export function Homepage(props: HomepageProps) {
+  export function Homepage(props: HomepageProps) {
   const dispatch = useDispatch()
-  const { User } = useSelector((state: RootState) => state.User)
+    const { email, phone, fullName, storeName } = useSelector((state: RootState) => state.User.userDetails)
+    
+    console.log(email, phone, fullName, storeName);
+    
   const logout = () => {
     dispatch(logoutUser())
   }
 
+  const currentUser = auth?.currentUser
 
+//   const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
+//  'size': 'invisible',
+//     'callback': (response: any) => {
+//     const onSolvedRecaptcha = async () => {
+//       try {
+//         if (currentUser) {
+//           const mfaAssertion = await multiFactor(currentUser).getSession()
+//           const phoneInfoOptions = {
+//             phoneNumber: '+918971892050',
+//             session: mfaAssertion
+//           };
+//           const phoneAuthProvider = new PhoneAuthProvider(auth)
+//           const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
+//           const verificationCode = prompt('verificationCode')
+//           if(verificationCode){
+//             const cred = PhoneAuthProvider.credential(verificationId, verificationCode)
+//             const assertion = PhoneMultiFactorGenerator.assertion(cred)
+//             multiFactor(currentUser).enroll(assertion)
+//           }
 
-  useEffect(() => {
-    const currentUser = auth?.currentUser
-    console.log("current", currentUser);
-    console.log("User", User);
+//         }
 
+//       }
+//       catch (error) {
+//         console.log(error);
+//       }
+//     }
+//  }
+// }, auth);
 
-    auth.settings.appVerificationDisabledForTesting = true
-    const appVerifier = new RecaptchaVerifier('recaptcha', {}, auth)
-    const check = async () => {
-      try {
-        if (currentUser) {
-          const mfaAssertion = await multiFactor(currentUser).getSession()
-          const phoneInfoOptions = {
-            phoneNumber: '+918971892050',
-            session: mfaAssertion
-          };
-          const phoneAuthProvider = new PhoneAuthProvider(auth)
-          const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, appVerifier)
-          const cred = PhoneAuthProvider.credential(verificationId, '564565')
-          const assertion = PhoneMultiFactorGenerator.assertion(cred)
-          multiFactor(currentUser).enroll(assertion)
+ 
 
-        }
-
-      }
-
-      catch (error) {
-        console.log(error);
-      }
-    }
-    check()
-  }, [])
+ 
+//   useEffect(() => {
+    
+//     // auth.settings.appVerificationDisabledForTesting = true
+//     // const appVerifier = new RecaptchaVerifier('recaptcha', {}, auth)
+//     // const check = 
+//        onSolvedRecaptcha()
+//   }, [])
 
 
 
   if (auth.currentUser) {
     console.log(multiFactor(auth.currentUser).enrolledFactors);
+    console.log(auth.currentUser);
   }
 
 
