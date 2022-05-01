@@ -1,5 +1,5 @@
 import { RootState } from '../../../redux-tool/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import './verify-phone.css';
 import { useEffect, useState } from 'react';
 import { multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator, RecaptchaVerifier } from 'firebase/auth';
@@ -16,17 +16,14 @@ export function VerifyPhone(props: VerifyPhoneProps) {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm()
   const [verificationID, setVerificationID] = useState("")
   const [err, setErr] = useState("")
-  const dispatch = useDispatch()
 
   const currentUser = auth?.currentUser
+  // auth.signOut()
 
   useEffect(() => {
 
     const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
       'size': 'invisible',
-      'callback': (response: any) => {
-        // console.log(response);
-      }
     }, auth);
     const onSolvedRecaptcha = async () => {
       try {
@@ -36,8 +33,8 @@ export function VerifyPhone(props: VerifyPhoneProps) {
             phoneNumber: phone,
             session: mfaAssertion
           };
-          console.log('phoneInfoOptions',phoneInfoOptions);
-          
+          console.log('phoneInfoOptions', phoneInfoOptions);
+
           const phoneAuthProvider = new PhoneAuthProvider(auth)
           const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
           setVerificationID(verificationId)

@@ -10,6 +10,7 @@ import { submit } from '../../../redux-tool/auth';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { countryCodes } from './CountryCodes';
 
 const schema = yup.object().shape({
   email: yup.string().email('email must look like abc@example.com').required('email feild cannot be empty')
@@ -30,10 +31,17 @@ export function Registration(props: Registration1Props) {
 
   const storeName = params.get("storeName")
   const [selected, setSelected] = useState("IN");
+  const [dialCode, setDialCode] = useState("")
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(schema),
   })
+
   const onSubmit = (data: any) => {
+    if (selected === "IN") {
+      data.phone = "+91" + data.phone
+    } else {
+      data.phone = dialCode + data.phone
+    }
     dispatch(submit(data))
     navigate("/password")
   }
@@ -42,7 +50,17 @@ export function Registration(props: Registration1Props) {
     setValue('storeName', storeName)
   }, [setValue, storeName])
 
-  console.log('errors', errors)
+
+  const selectedSize = 15
+
+
+  const onSelect = (ID: any) => {
+    setSelected(ID)
+    const phoneCode = countryCodes.find(({ code }) => code === ID);
+    if (phoneCode) {
+      setDialCode(phoneCode.dial_code);
+    }
+  }
 
   return (
     <div>
@@ -56,8 +74,9 @@ export function Registration(props: Registration1Props) {
               <ReactFlagsSelect
                 className="menu-flags"
                 searchable
+                selectedSize={selectedSize}
                 selected={selected}
-                onSelect={(code) => setSelected(code)}
+                onSelect={onSelect}
               />
               <InputField fullWidth color='primary' placeholder="Enter Your Phone Number" type="text" forminput={{ ...register("phone") }} />
             </div>

@@ -15,10 +15,6 @@ export const RegistrationHome = ({ changed, clicked, storeName }: RegistrationHo
 
     return (
         <div>
-            <div className='signUpBar'>
-                <img style={{ width: "30%", minWidth: "300px" }} src="../../../assets/images/logo.svg" alt="DropOut Logo" />
-                <Button style={{ alignSelf: "center" }} color='secondary' variant='outlined'>Sign In</Button>
-            </div>
             <div className="main" >
                 <div className='center'>
                     <h1>Register With Us!</h1>

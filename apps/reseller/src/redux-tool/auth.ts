@@ -33,7 +33,7 @@ export const createUser = createAsyncThunk("User/createUser",
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
       await setDoc(doc(db, "reSellers", response.user.uid), {
         email: response.user.email,
-        phone: `+91${payload.phone}`,
+        phone: payload.phone,
         storeName: payload.storeName,
         fullName: payload.fullName
       })
@@ -49,19 +49,19 @@ export const createUser = createAsyncThunk("User/createUser",
   }
 )
 type loginPayloadType = {
-  data:createPayloadType,
-  onSuccess:any
+  data: createPayloadType,
+  onSuccess: any
 }
 export const loginUser = createAsyncThunk("User/loginUser",
   async (payload: loginPayloadType, { rejectWithValue }) => {
     try {
-      
+
       const response = await signInWithEmailAndPassword(auth, payload.data.email, payload.data.password)
       return response.user
     }
     catch (error: any) {
       const errorCode = error.code;
-      console.log(errorCode );
+      console.log(errorCode);
       return rejectWithValue(error)
     }
 
