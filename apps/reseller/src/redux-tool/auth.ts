@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { UserDetailState } from '../types'
 import { getAuth, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
 import { app } from '../firebaseConfig/config';
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig/config"
 
 export const auth = getAuth(app);
@@ -48,16 +48,20 @@ export const createUser = createAsyncThunk("User/createUser",
     }
   }
 )
-
+type loginPayloadType = {
+  data:createPayloadType,
+  onSuccess:any
+}
 export const loginUser = createAsyncThunk("User/loginUser",
-  async (payload: createPayloadType, { rejectWithValue }) => {
+  async (payload: loginPayloadType, { rejectWithValue }) => {
     try {
-      const response = await signInWithEmailAndPassword(auth, payload.email, payload.password)
+      
+      const response = await signInWithEmailAndPassword(auth, payload.data.email, payload.data.password)
       return response.user
     }
     catch (error: any) {
       const errorCode = error.code;
-      console.log(errorCode);
+      console.log(errorCode );
       return rejectWithValue(error)
     }
 
@@ -104,11 +108,13 @@ export const UserSlice = createSlice({
     },
     [loginUser.fulfilled.toString()]: (state, action) => {
       state.loading = false
-      state.User = action.payload
+      // console.log('action.payload',action.payload);
+      // state.userDetails = action.payload.userData
+      // state.error = action.payload.error
     },
     [loginUser.rejected.toString()]: (state, action) => {
       state.loading = false
-      state.error = action.payload.message
+      state.error = action.payload
     },
     [loginUser.pending.toString()]: (state, action) => {
       state.loading = true

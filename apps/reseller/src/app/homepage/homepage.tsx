@@ -22,48 +22,8 @@ export interface HomepageProps { }
     dispatch(logoutUser())
   }
 
-  const currentUser = auth?.currentUser
+  
 
-//   const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
-//  'size': 'invisible',
-//     'callback': (response: any) => {
-//     const onSolvedRecaptcha = async () => {
-//       try {
-//         if (currentUser) {
-//           const mfaAssertion = await multiFactor(currentUser).getSession()
-//           const phoneInfoOptions = {
-//             phoneNumber: '+918971892050',
-//             session: mfaAssertion
-//           };
-//           const phoneAuthProvider = new PhoneAuthProvider(auth)
-//           const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-//           const verificationCode = prompt('verificationCode')
-//           if(verificationCode){
-//             const cred = PhoneAuthProvider.credential(verificationId, verificationCode)
-//             const assertion = PhoneMultiFactorGenerator.assertion(cred)
-//             multiFactor(currentUser).enroll(assertion)
-//           }
-
-//         }
-
-//       }
-//       catch (error) {
-//         console.log(error);
-//       }
-//     }
-//  }
-// }, auth);
-
- 
-
- 
-//   useEffect(() => {
-    
-//     // auth.settings.appVerificationDisabledForTesting = true
-//     // const appVerifier = new RecaptchaVerifier('recaptcha', {}, auth)
-//     // const check = 
-//        onSolvedRecaptcha()
-//   }, [])
 
 
 

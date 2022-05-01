@@ -19,11 +19,6 @@ export function VerifyPhone(props: VerifyPhoneProps) {
   const dispatch = useDispatch()
 
   const currentUser = auth?.currentUser
-  // auth.signOut()
-
-  console.log(phone);
-
-
 
   useEffect(() => {
 
@@ -35,12 +30,14 @@ export function VerifyPhone(props: VerifyPhoneProps) {
     }, auth);
     const onSolvedRecaptcha = async () => {
       try {
-        if (currentUser) {
+        if (currentUser && phone) {
           const mfaAssertion = await multiFactor(currentUser).getSession()
           const phoneInfoOptions = {
-            phoneNumber: "+918971892050",
+            phoneNumber: phone,
             session: mfaAssertion
           };
+          console.log('phoneInfoOptions',phoneInfoOptions);
+          
           const phoneAuthProvider = new PhoneAuthProvider(auth)
           const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
           setVerificationID(verificationId)
@@ -51,7 +48,7 @@ export function VerifyPhone(props: VerifyPhoneProps) {
       }
     }
     onSolvedRecaptcha()
-  }, [])
+  }, [currentUser, phone])
 
   let userMultiFactor: any[] = [];
   if (currentUser) userMultiFactor = multiFactor(currentUser).enrolledFactors
@@ -62,7 +59,6 @@ export function VerifyPhone(props: VerifyPhoneProps) {
         if (data.OTP) {
           const cred = PhoneAuthProvider.credential(verificationID, data.OTP)
           const assertion = await PhoneMultiFactorGenerator.assertion(cred)
-          console.log(assertion);
           if (currentUser) {
             await multiFactor(currentUser).enroll(assertion)
             currentUser.reload()

@@ -1,3 +1,4 @@
+import { FirebaseError } from "firebase/app"
 import { User } from "firebase/auth"
 
 export type user = {
@@ -12,7 +13,7 @@ export type user = {
 export interface UserDetailState {
     userDetails: user
     loading: boolean
-    error: null
+    error: null | FirebaseError
     User: User | null | undefined
 
 }
