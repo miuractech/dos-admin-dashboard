@@ -5,7 +5,7 @@ import Homepage from './homepage/homepage';
 import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import {  multiFactor, onAuthStateChanged } from 'firebase/auth';
+import { multiFactor, onAuthStateChanged } from 'firebase/auth';
 import { setUser, auth, submit } from '../redux-tool/auth';
 import { CircularProgress } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
@@ -15,8 +15,8 @@ import RegistrationPassword from './Auth/confrimPassword/registration-password';
 import Login from './Auth/loginpage/login';
 import VerifyEmail from './Auth/verify-email/verify-email';
 import { PasswordReset } from './Auth/loginpage/passwordReset';
-import { app, db } from '../firebaseConfig/config';
-import {doc, getDoc} from "firebase/firestore"; 
+import { db } from '../firebaseConfig/config';
+import { doc, getDoc } from "firebase/firestore";
 import VerifyPhone from './Auth/verify-phone/verify-phone';
 
 export function App() {
@@ -25,20 +25,20 @@ export function App() {
   const { loading } = useSelector((state: RootState) => state.User)
 
   useEffect(() => {
-    const Unsubscribe =  onAuthStateChanged(auth, async(cred) => {
+    const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
       if (cred) {
-      const docRef = doc(db, "reSellers", cred.uid);
+        const docRef = doc(db, "reSellers", cred.uid);
         const docSnap = await (await getDoc(docRef)).data()
         dispatch(submit(docSnap))
-    }
+      }
     })
 
     return () => Unsubscribe()
 
   }, [])
   let userMultiFactor: any[] = [];
-  if(User) userMultiFactor = multiFactor(User).enrolledFactors
+  if (User) userMultiFactor = multiFactor(User).enrolledFactors
   console.log(userMultiFactor)
   if (loading) {
     return (
@@ -69,12 +69,12 @@ export function App() {
       <VerifyEmail />
     );
   }
-  else if(userMultiFactor && userMultiFactor.length===0 ){
-    return(
+  else if (userMultiFactor && userMultiFactor.length === 0) {
+    return (
       <VerifyPhone />
     )
   }
-  else if (User?.emailVerified && userMultiFactor.length >0 ) {
+  else if (User?.emailVerified && userMultiFactor.length > 0) {
     return (
       <Routes>
         <Route path="/home" element={<Homepage />} />

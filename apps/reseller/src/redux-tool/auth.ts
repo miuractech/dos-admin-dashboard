@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { UserDetailState } from '../types'
-import { getAuth, updateProfile,  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
+import { getAuth, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "firebase/auth";
 import { app } from '../firebaseConfig/config';
-import { collection, addDoc,setDoc , doc} from "firebase/firestore"; 
-import {db} from "../firebaseConfig/config"
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { db } from "../firebaseConfig/config"
 
 export const auth = getAuth(app);
 
@@ -24,19 +24,19 @@ type createPayloadType = {
   password: string
   storeName: string
   phone: string
-  fullName:string
+  fullName: string
 }
 
 export const createUser = createAsyncThunk("User/createUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
     try {
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
-      await setDoc(doc(db,"reSellers", response.user.uid), {
-         email: response.user.email,
-         phone: payload.phone,
-         storeName: payload.storeName,
-         fullName:payload.fullName
-        })
+      await setDoc(doc(db, "reSellers", response.user.uid), {
+        email: response.user.email,
+        phone: `+91${payload.phone}`,
+        storeName: payload.storeName,
+        fullName: payload.fullName
+      })
       await sendEmailVerification(response.user)
       return { response }
 
