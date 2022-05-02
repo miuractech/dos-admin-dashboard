@@ -1,12 +1,13 @@
 import { RootState } from '../../../redux-tool/store';
 import { useSelector } from 'react-redux';
 import './verify-phone.css';
-import { useEffect, useState } from 'react';
-import { multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator, RecaptchaVerifier } from 'firebase/auth';
+import { multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator } from 'firebase/auth';
 import { auth } from '../../../redux-tool/auth';
 import { Button, Typography } from '@mui/material';
 import InputField from '../../../UI/input-field/input-field';
 import { useForm } from 'react-hook-form';
+import { useMfaFirebase } from '@miurac/mfa-firebase';
+import { useState } from 'react';
 
 /* eslint-disable-next-line */
 export interface VerifyPhoneProps { }
@@ -14,51 +15,21 @@ export interface VerifyPhoneProps { }
 export function VerifyPhone(props: VerifyPhoneProps) {
   const phone = useSelector((state: RootState) => state.User.userDetails.phone)
   const { register, handleSubmit, formState: { errors }, setValue } = useForm()
-  const [verificationID, setVerificationID] = useState("")
-  const [err, setErr] = useState("")
+  const [OTP, setOTP] = useState("")
 
   const currentUser = auth?.currentUser
-  // auth.signOut()
 
-  useEffect(() => {
-
-    const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
-      'size': 'invisible',
-    }, auth);
-    const onSolvedRecaptcha = async () => {
-      try {
-        if (currentUser && phone) {
-          const mfaAssertion = await multiFactor(currentUser).getSession()
-          const phoneInfoOptions = {
-            phoneNumber: phone,
-            session: mfaAssertion
-          };
-          console.log('phoneInfoOptions', phoneInfoOptions);
-
-          const phoneAuthProvider = new PhoneAuthProvider(auth)
-          const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-          setVerificationID(verificationId)
-        }
-      }
-      catch (error: any) {
-        setErr(error.message);
-      }
-    }
-    onSolvedRecaptcha()
-  }, [currentUser, phone])
+  const {verificationID, err} = useMfaFirebase({auth, phone, currentUser, OTP})
 
   let userMultiFactor: any[] = [];
   if (currentUser) userMultiFactor = multiFactor(currentUser).enrolledFactors
 
   const onSubmit = async (data: any) => {
+    setOTP(data.OTP)
     try {
       if (userMultiFactor.length === 0) {
         if (data.OTP) {
-          const cred = PhoneAuthProvider.credential(verificationID, data.OTP)
-          const assertion = await PhoneMultiFactorGenerator.assertion(cred)
-          if (currentUser) {
-            await multiFactor(currentUser).enroll(assertion)
-            currentUser.reload()
+         
             // const userMultiFactor = multiFactor(currentUser).enrolledFactors
             // await multiFactor(currentUser).unenroll(userMultiFactor[0])
           }

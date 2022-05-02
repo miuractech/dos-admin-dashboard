@@ -1,0 +1,43 @@
+{
+  "root": "libs/mfa-firebase",
+  "sourceRoot": "libs/mfa-firebase/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/mfa-firebase",
+        "tsConfig": "libs/mfa-firebase/tsconfig.lib.json",
+        "project": "libs/mfa-firebase/package.json",
+        "entryFile": "libs/mfa-firebase/src/index.ts",
+        "external": ["react/jsx-runtime"],
+        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "compiler": "babel",
+        "assets": [
+          {
+            "glob": "libs/mfa-firebase/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/mfa-firebase/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/mfa-firebase"],
+      "options": {
+        "jestConfig": "libs/mfa-firebase/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

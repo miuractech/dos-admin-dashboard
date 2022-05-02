@@ -5,6 +5,7 @@
     "admin-dashboard-e2e": "apps/admin-dashboard-e2e",
     "assets": "libs/assets",
     "global": "libs/global",
+    "mfa-firebase": "libs/mfa-firebase",
     "reseller": "apps/reseller",
     "reseller-e2e": "apps/reseller-e2e"
   }

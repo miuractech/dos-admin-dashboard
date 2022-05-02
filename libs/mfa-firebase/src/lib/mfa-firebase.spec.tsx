@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 
-import ReactFlags from './react-flags';
+import MfaFirebase from './mfa-firebase';
 
-describe('ReactFlags', () => {
+describe('MfaFirebase', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<ReactFlags />);
+    const { baseElement } = render(<MfaFirebase />);
     expect(baseElement).toBeTruthy();
   });
 });

@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@admin/assets": ["libs/assets/src/index.ts"],
-      "@dos/global": ["libs/global/src/index.ts"]
+      "@dos/global": ["libs/global/src/index.ts"],
+      "@miurac/mfa-firebase": ["libs/mfa-firebase/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

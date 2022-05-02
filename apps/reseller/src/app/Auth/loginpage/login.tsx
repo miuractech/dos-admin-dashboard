@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux-tool/store';
 import { setUser } from '../../../redux-tool/auth';
 import { useEffect, useState } from 'react';
-import { getMultiFactorResolver, multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator, RecaptchaVerifier, MultiFactorResolver } from 'firebase/auth';
+import { getMultiFactorResolver, PhoneAuthProvider, PhoneMultiFactorGenerator, RecaptchaVerifier, MultiFactorResolver } from 'firebase/auth';
 
 /* eslint-disable-next-line */
 export interface LoginProps { }
@@ -32,33 +32,12 @@ export function Login(props: LoginProps) {
     dispatch(loginUser({ data, onSuccess: () => setOptCheck(true) }))
   }
 
-  const onOtpSubmit = async (data: any) => {
-    try {
-      if (resolver) {
-        const cred = PhoneAuthProvider.credential(verificationId, data.OTP)
-        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
-        await resolver.resolveSignIn(multiFactorAssertion)
-        await auth?.currentUser?.reload()
-        const newUser = auth.currentUser
-
-        dispatch(setUser(newUser))
-      }
-
-    } catch (error: any) {
-      console.log(error.message);
-
-    }
-  }
-
   useEffect(() => {
     const secondAuth = async () => {
       try {
         if (error && (error.code === 'auth/multi-factor-auth-required')) {
           const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
             'size': 'invisible',
-            'callback': (response: any) => {
-              // console.log(response);
-            }
           }, auth);
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -89,6 +68,24 @@ export function Login(props: LoginProps) {
 
 
   }, [error])
+
+    const onOtpSubmit = async (data: any) => {
+    try {
+      if (resolver) {
+        const cred = PhoneAuthProvider.credential(verificationId, data.OTP)
+        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+        await resolver.resolveSignIn(multiFactorAssertion)
+        await auth?.currentUser?.reload()
+        const newUser = auth.currentUser
+
+        dispatch(setUser(newUser))
+      }
+
+    } catch (error: any) {
+      console.log(error.message);
+
+    }
+  }
 
 
   return (

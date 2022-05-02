@@ -1,3 +1,4 @@
+import { useMfaFirebase } from '@miurac/mfa-firebase';
 import { Facebook, Instagram, LinkedIn, Twitter, YouTube } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import './footer.css';
@@ -6,17 +7,19 @@ import './footer.css';
 export interface FooterProps { }
 
 export function Footer(props: FooterProps) {
+  
+  
   return (
     <div>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <div className="footer-text">
             <img style={{ width: '100%', maxWidth: 300 }} src="../../assets/images/logo.svg" alt="logo" />
-            <h3 className='h3Color'>Address</h3>
+            <h3 className='h3Color'>Address</h3> 
             <p style={{ color: "white" }}>Q427, Sukanta Nagar, Salt Lake, Sector 4,<br /> Kolkata - 700098, India</p>
             <br />
             <h3 className='h3Color'>Follow us</h3>
-            <div className='icons'>
+            <div className='icons' >
               <Instagram className='icon' />
               <YouTube className='icon' />
               <LinkedIn className='icon' />
