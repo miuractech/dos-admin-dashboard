@@ -72,39 +72,32 @@ export function VerifyPhone(props: VerifyPhoneProps) {
       {alert === "OTP sent successfully" && <Alert severity="success">{alert}</Alert>}
       {alert === "There was an error please click resend" && <Alert severity="error">{alert}</Alert>}
       {alert === "Firebase: Error (auth/requires-recent-login)." && <Alert severity="error">{alert}</Alert>}
-      {!requestOTP ?
-        <div className='container'>
-          <div className='form'>
+      <div className='container'>
+        <div className='form'>
+          {!requestOTP ?
             <div>
               <h3 style={{ color: "black" }}>Verification</h3>
               <h4 style={{ textAlign: "center" }}>Registered Mobile number is - {phone}</h4>
+              <Button fullWidth onClick={clicked} type='submit' variant='contained'>GET OTP</Button>
+              <p style={{ textAlign: "right" }}>Somthing went wrong? <strong onClick={signOut} style={{ color: '#167AF9', cursor: "pointer" }}>Go Back</strong></p>
             </div>
-            <Button onClick={clicked} type='submit' variant='contained'>GET OTP</Button>
-            <p style={{ textAlign: "right" }}>Somthing went wrong? <strong onClick={signOut} style={{ color: '#167AF9', cursor: "pointer" }}>Go Back</strong></p>
-            <div id="recaptcha"></div>
-          </div>
-        </div>
-        :
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='container'>
-            <div className='form'>
+            :
+            <div>
               <div>
                 <h3 style={{ color: "black" }}>Verification</h3>
                 <h4 style={{ textAlign: "center" }}>OTP SENT TO MOBILE NUMBER - {phone}</h4>
               </div>
               <InputField fullWidth color='primary' placeholder="Enter OTP" type="number" style={{ textDecoration: "none" }} forminput={{ ...register("OTP") }} />
-              <Button type='submit' variant='contained'>verify</Button>
-              {err && <Typography variant='caption' color={'error'} >
-                {err}
-              </Typography>}
+              <Button fullWidth type='submit' variant='contained'>verify</Button>
+              {err && <Typography variant='caption' color={'error'} >{err}</Typography>}
               <p><strong onClick={resend} style={{ color: '#167AF9', cursor: "pointer" }}>Resend OTP</strong></p>
             </div>
-          </div>
-          <div id="recaptcha"></div>
-        </form>
-      }
-
+          }
+        </div>
+        <div id="recaptcha"></div>
+      </div >
     </div >
+
   );
 }
 

@@ -8,24 +8,16 @@ import { multiFactor, signInWithPhoneNumber, PhoneAuthProvider, RecaptchaVerifie
 import { useEffect } from 'react';
 import firebase from 'firebase/app'
 import { app, db } from '../../firebaseConfig/config';
-import {doc, getDoc} from "firebase/firestore"; 
+import { doc, getDoc } from "firebase/firestore";
 /* eslint-disable-next-line */
 export interface HomepageProps { }
 
-  export function Homepage(props: HomepageProps) {
+export function Homepage(props: HomepageProps) {
   const dispatch = useDispatch()
-    const { email, phone, fullName, storeName } = useSelector((state: RootState) => state.User.userDetails)
-    
-    console.log(email, phone, fullName, storeName);
-    
+
   const logout = () => {
     dispatch(logoutUser())
   }
-
-  
-
-
-
 
   if (auth.currentUser) {
     console.log(multiFactor(auth.currentUser).enrolledFactors);
@@ -36,11 +28,6 @@ export interface HomepageProps { }
   return (
     <div style={{ textAlign: "center" }}>
       <h1>logged in</h1>
-      <div
-        id='recaptcha'
-      >
-
-      </div>
       <Button
         onClick={logout}
         variant='contained' color='primary'>Log Out</Button>

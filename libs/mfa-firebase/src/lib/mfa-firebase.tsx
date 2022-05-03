@@ -16,25 +16,13 @@ export const useMfaFirebase = ({ auth }: MfaFirebaseProps) => {
   const currentUser = auth.currentUser
 
 
-  useEffect(() => {
-    if (currentUser) {
-
-
-      setRecaptchaVerifier(recaptchaVerifier)
-    }
-  }, [currentUser, auth])
-
-
-
   const getOTP = async ({ onSuccess, onFail, phone }: any) => {
     try {
       if (currentUser && phone) {
-        if (!recaptchaVerifier) {
-          const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
-            'size': 'invisible',
-          }, auth);
-          setRecaptchaVerifier(recaptchaVerifier)
-        }
+        const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
+          'size': 'invisible',
+        }, auth);
+        setRecaptchaVerifier(recaptchaVerifier)
         const mfaAssertion = await multiFactor(currentUser).getSession()
         setmfaAssertion(mfaAssertion)
         const phoneInfoOptions = {
@@ -42,9 +30,9 @@ export const useMfaFirebase = ({ auth }: MfaFirebaseProps) => {
           session: mfaAssertion
         };
         const phoneAuthProvider = new PhoneAuthProvider(auth)
-        if (recaptchaVerifier) {
-          const Id = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-          setVerificationId(Id)
+        const Id = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
+        setVerificationId(Id)
+        if (onSuccess) {
           onSuccess()
         }
       }
@@ -58,12 +46,13 @@ export const useMfaFirebase = ({ auth }: MfaFirebaseProps) => {
 
   const verifyOtp = async ({ OTP, onSuccess, onFail }: any) => {
     try {
-      if (verificationId && currentUser) {
-        const cred = PhoneAuthProvider.credential(verificationId, OTP)
-        const assertion = await PhoneMultiFactorGenerator.assertion(cred)
-        await multiFactor(currentUser).enroll(assertion)
-        currentUser.reload()
-        if (onSuccess) {
+      if (verificationId && recaptchaVerifier) {
+        const currentUser = auth.currentUser
+        if (currentUser) {
+          const cred = PhoneAuthProvider.credential(verificationId, OTP)
+          const assertion = await PhoneMultiFactorGenerator.assertion(cred)
+          await multiFactor(currentUser).enroll(assertion)
+          currentUser.reload()
           onSuccess()
         }
       }
@@ -77,12 +66,6 @@ export const useMfaFirebase = ({ auth }: MfaFirebaseProps) => {
   const resendOTP = async ({ onSuccess, onFail, phone }: any) => {
     try {
       if (currentUser && phone) {
-        if (!recaptchaVerifier) {
-          const recaptchaVerifier = new RecaptchaVerifier('recaptcha', {
-            'size': 'invisible',
-          }, auth);
-          setRecaptchaVerifier(recaptchaVerifier)
-        }
         const phoneInfoOptions = {
           phoneNumber: phone,
           session: mfaAssertion
@@ -95,6 +78,8 @@ export const useMfaFirebase = ({ auth }: MfaFirebaseProps) => {
         }
       }
     } catch (error: any) {
+      console.log(error);
+
       onFail(error);
     }
   }
