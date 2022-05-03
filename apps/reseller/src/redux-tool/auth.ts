@@ -92,7 +92,6 @@ export const UserSlice = createSlice({
       state.User = action.payload
       state.loading = false
     }
-
   },
   extraReducers: {
     [createUser.pending.toString()]: (state, action) => {

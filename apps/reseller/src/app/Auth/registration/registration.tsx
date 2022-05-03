@@ -13,9 +13,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { countryCodes } from './CountryCodes';
 
 const schema = yup.object().shape({
-  email: yup.string().email('email must look like abc@example.com').required('email feild cannot be empty')
-})
-  .required();
+  email: yup.string().email('email must look like abc@example.com').required('email cannot be empty'),
+  phone: yup.number().positive().integer().required("mobile number cannot be empty"),
+  fullName: yup.string().min(3, "minimum of 3 characters required").required("name cannot be empty"),
+  storeName: yup.string().required("storename cannot be empty")
+}).required();
 
 
 
@@ -80,18 +82,26 @@ export function Registration(props: Registration1Props) {
               />
               <InputField fullWidth color='primary' placeholder="Enter Your Phone Number" type="text" forminput={{ ...register("phone") }} />
             </div>
+            {errors['phone'] && <Typography variant='caption' color={'error'} >
+              {errors['phone']?.message}
+            </Typography>}
             <InputField color='primary' placeholder="Enter Your Full Name" type="text" forminput={{ ...register("fullName") }} />
+            {errors['fullName'] && <Typography variant='caption' color={'error'} >
+              {errors['fullName']?.message}
+            </Typography>}
             <InputField color='primary' placeholder="Enter Email Address" type="text" forminput={{ ...register("email") }} />
             {errors['email'] && <Typography variant='caption' color={'error'} >
               {errors['email']?.message}
             </Typography>}
             <InputField placeholder='Company or Business name' color='primary' type="text" forminput={{ ...register("storeName") }} />
+            {errors['storeName'] && <Typography variant='caption' color={'error'} >
+              {errors['storeName']?.message}
+            </Typography>}
             <Button type='submit' variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
             <p style={{ textAlign: "center" }}>Already have an account? <strong onClick={() => navigate("/login")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign In</strong></p>
           </div>
         </div>
       </form>
-      <Prequisits />
     </div>
   );
 }
