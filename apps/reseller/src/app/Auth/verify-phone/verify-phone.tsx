@@ -38,13 +38,16 @@ export function VerifyPhone(props: VerifyPhoneProps) {
 
     resendOTP({
       onSuccess: () => {
-          const timerId = setInterval(() => {
-            if (seconds === 0) {
-              clearTimeout(timerId);
-              setTimer(true)
-            } else {
-              setSeconds(t => t - 1)
-            }
+        const timerId = setInterval(() => {
+            setSeconds(t => {
+              if (t === 0) {
+                clearTimeout(timerId);
+                setTimer(false)
+                return 30
+              }else{
+                return t - 1
+              }
+            })
           }, 1000);
         setAlert("OTP sent successfully")
         setTimer(true)
