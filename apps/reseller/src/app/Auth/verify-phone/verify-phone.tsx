@@ -17,6 +17,8 @@ export function VerifyPhone(props: VerifyPhoneProps) {
   const [alert, setAlert] = useState<string>("")
   const [requestOTP, setRequestOTP] = useState(false)
   const [err, setErr] = useState("")
+  const [timer, setTimer] = useState(true)
+  const [seconds, setSeconds] = useState<number>(30)
 
   const currentUser = auth?.currentUser
 
@@ -33,10 +35,13 @@ export function VerifyPhone(props: VerifyPhoneProps) {
 
 
   const resend = () => {
+
     resendOTP({
-      onSuccess: () => setAlert("OTP sent successfully"), onFail: (error: any) => {
+      onSuccess: () => {
+        setAlert("OTP sent successfully")
+        setTimer(true)
+      }, onFail: (error: any) => {
         setAlert("There was an error please click resend")
-        console.log(error);
       }, phone
     })
   }
@@ -67,11 +72,33 @@ export function VerifyPhone(props: VerifyPhoneProps) {
     }, 3000)
   }
 
+  // const timerId = setInterval(() => {
+  //   if (seconds === -1) {
+  //     clearTimeout(timerId);
+  //     setTimer(false)
+  //   } else {
+  //     setSeconds(t => t - 1)
+  //   }
+  // }, 1000);
+
+
+
+  // useEffect(() => {
+  //   if (seconds > 0) {
+  //     setTimeout(() => setSeconds(seconds - 1), 1000);
+  //   } else {
+  //     setSeconds('BOOOOM!');
+  //   }
+  // });
+
   return (
     <div>
-      {alert === "OTP sent successfully" && <Alert severity="success">{alert}</Alert>}
-      {alert === "There was an error please click resend" && <Alert severity="error">{alert}</Alert>}
-      {alert === "Firebase: Error (auth/requires-recent-login)." && <Alert severity="error">{alert}</Alert>}
+      <div style={{ position: "absolute", width: "100%" }}>
+        {alert === "OTP sent successfully" && <Alert severity="success">{alert}</Alert>}
+        {alert === "There was an error please click resend" && <Alert severity="error">{alert}</Alert>}
+        {alert === "Timeout please re-login" && <Alert severity="error">{alert}</Alert>}
+        {alert === "too-many-requests please try after some time" && <Alert severity='error'>{alert}</Alert>}
+      </div>
       <div className='container'>
         <div className='form'>
           {!requestOTP ?
@@ -80,6 +107,7 @@ export function VerifyPhone(props: VerifyPhoneProps) {
               <h4 style={{ textAlign: "center" }}>Registered Mobile number is - {phone}</h4>
               <Button fullWidth onClick={clicked} type='submit' variant='contained'>GET OTP</Button>
               <p style={{ textAlign: "right" }}>Somthing went wrong? <strong onClick={signOut} style={{ color: '#167AF9', cursor: "pointer" }}>Go Back</strong></p>
+              {timer ? <p><strong>wait for to resend OTP : {seconds} seconds</strong></p> : <p><strong onClick={resend} style={{ color: '#167AF9', cursor: "pointer" }}>Resend OTP</strong></p>}
             </div>
             :
             <div>
@@ -90,7 +118,7 @@ export function VerifyPhone(props: VerifyPhoneProps) {
               <InputField fullWidth color='primary' placeholder="Enter OTP" type="number" style={{ textDecoration: "none" }} forminput={{ ...register("OTP") }} />
               <Button fullWidth type='submit' variant='contained'>verify</Button>
               {err && <Typography variant='caption' color={'error'} >{err}</Typography>}
-              <p><strong onClick={resend} style={{ color: '#167AF9', cursor: "pointer" }}>Resend OTP</strong></p>
+
             </div>
           }
         </div>
