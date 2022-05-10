@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useSubject } from 'rxf-rewrite/dist';
+import { CMI } from '../Options/CMI';
 import { Coupons } from '../pages/c&g';
 import { Customers } from '../pages/coustomers';
 import { Logout } from '../pages/logout';
@@ -9,12 +10,14 @@ import { Meta } from '../pages/meta';
 import { Orders } from '../pages/orders';
 import { Products } from '../pages/products';
 
+
 import {
   selectedSideNavItem$,
   SideNavItemObject,
   sideNavToggled$,
 } from './shared';
 import SideNavBar from './sidenav';
+// import { CMI } from './sidenav/mock';
 
 const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);
@@ -38,6 +41,7 @@ const Main: React.FC = () => {
           <Route path="/customers" element={<Customers />} />
           <Route path="/meta" element={<Meta />} />
           <Route path="/couponsgifts" element={<Coupons />} />
+          <Route path="/cmi" element={<CMI />} />
           <Route path="/logout" element={<Logout />} />
         </Routes>
       </div>
