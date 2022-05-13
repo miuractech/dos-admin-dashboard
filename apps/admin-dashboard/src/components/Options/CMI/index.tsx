@@ -5,6 +5,7 @@ import { Topbar } from '../components/topbar';
 import { CMITopbarObject } from './topBarContents';
 
 export const CMI = () => {
+    
     return (
         <div className={styles['root']}>
             <Topbar topbarObject={CMITopbarObject} />

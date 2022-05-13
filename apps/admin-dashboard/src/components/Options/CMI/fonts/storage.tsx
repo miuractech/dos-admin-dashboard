@@ -1,10 +1,9 @@
 import { storage } from "../../../../config/firebase.config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { v4 as uuidv4 } from 'uuid';
+
 const useStorage = () => {
-    const uniID = uuidv4();
     const upload = ({ file, path, onsuccess, name, onFail, onProgress }: any) => {
-        const storageRef = ref(storage, `/${path}/${name ? name : uniID}`);
+        const storageRef = ref(storage, `/${path}/${name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
         uploadTask.on(
             "state_changed",
@@ -17,7 +16,7 @@ const useStorage = () => {
             (err) => onFail(err),
             async () => {
                 const url = await getDownloadURL(uploadTask.snapshot.ref);
-                onsuccess(url, uniID)
+                onsuccess(url)
             }
         );
 

@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../../../config/firebase.config'
+import PopUpAction from './popUpAction';
 
 type DataGripPorps = {
     changed: (row: any) => void
@@ -13,10 +14,10 @@ type DataGripPorps = {
 export const DataGrid = ({ changed }: DataGripPorps) => {
 
 
+    const [popUpInfo, setpopUpInfo] = useState<any>(null)
     const [font, setFont] = useState<any[]>([])
 
     const fontsCollectionRef = collection(firestore, "Fonts")
-
     useEffect(() => {
 
         const unsub = onSnapshot(fontsCollectionRef, (snapshot: any) => {
@@ -45,12 +46,12 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
         '& .MuiSwitch-switchBase': {
             padding: 0,
             margin: 2,
-            transitionDuration: '300ms',
+            transitionDuration: '3000ms',
             '&.Mui-checked': {
                 transform: 'translateX(16px)',
                 color: '#fff',
                 '& + .MuiSwitch-track': {
-                    backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : theme.palette.primary.light,
                     opacity: 1,
                     border: 0,
                 },
@@ -109,8 +110,23 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
             name: "Action",
             cell: (row: any) =>
                 <div style={{ width: "200px", display: "flex", justifyContent: "space-evenly" }}>
-                    <Button variant='outlined'>Edit</Button>
-                    <Button color="error" variant='outlined'>Delete</Button>
+                    <Button variant='outlined' onClick={async()=>{
+                            try {
+                                const response= await fetch(row.url,{
+                                    method: 'GET',
+                                })
+                                const blob = await response.blob()
+                                
+                                setpopUpInfo({...row, file:new File([blob], `${row.fontName}.ttf`)})
+                            } catch (error) {
+                                console.log(error);
+                                
+                            }
+                        
+                        }}>Edit</Button>
+                    {/* <Button color="error" variant='outlined'>Delete</Button> */}
+
+                    
                 </div>,
             width: "200px",
 
@@ -139,17 +155,26 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
 
 
     return (
-        <DataTable
+        <>
+            <DataTable
 
-            columns={coloum}
-            data={font}
-            pagination
-            fixedHeader
-            fixedHeaderScrollHeight='50vh'
-            highlightOnHover
-            customStyles={customStyles}
+                columns={coloum}
+                data={font}
+                pagination
+                fixedHeader
+                fixedHeaderScrollHeight='50vh'
+                highlightOnHover
+                customStyles={customStyles}
 
 
-        />
+            />
+            <PopUpAction 
+            open={Boolean(popUpInfo)} 
+            handleClose={()=>setpopUpInfo(null)}
+            fontNameInput={popUpInfo?.fontName}
+            fontFileInput={popUpInfo?.file}
+            id={popUpInfo?.id}
+            />
+        </>
     )
 }
