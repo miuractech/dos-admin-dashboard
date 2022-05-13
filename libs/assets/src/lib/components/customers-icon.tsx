@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomersIcon: React.FC<{ stroke: string }> = ({ stroke }) => {
+const CMIIcon: React.FC<{ stroke: string }> = ({ stroke }) => {
   return (
     <svg
       width="24"
@@ -17,4 +17,4 @@ const CustomersIcon: React.FC<{ stroke: string }> = ({ stroke }) => {
   );
 };
 
-export default CustomersIcon;
+export default CMIIcon;

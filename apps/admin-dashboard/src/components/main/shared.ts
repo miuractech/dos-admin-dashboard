@@ -1,13 +1,12 @@
 import { BehaviorSubject } from 'rxjs';
 import Meta from './meta';
-import {
-  Coupons,
-  Customers,
-  Logout,
-  Merchants,
-  Orders,
-  Products,
-} from './sidenav/mock';
+import { CMI } from '../Options/CMI';
+import { Coupons } from '../Options/c&g';
+import { Customers } from '../Options/coustomers';
+import { Logout } from '../Options/logout';
+import { Merchants } from '../Options/merchents';
+import { Orders } from '../Options/orders';
+import { Products } from '../Options/products';
 
 // To Control the State of Selected SideNav Item
 export const selectedSideNavItem$ = new BehaviorSubject('META');
@@ -22,6 +21,7 @@ export const SideNavItemObject: {
   MERCHANTS: { value: 'Merchants', mainComponent: Merchants },
   CUSTOMERS: { value: 'Customers', mainComponent: Customers },
   META: { value: 'Meta', mainComponent: Meta },
+  CMI: { value: 'CMI', mainComponent: CMI },
   COUPONS_AND_GIFTS: { value: 'Coupons and Gifts', mainComponent: Coupons },
   LOGOUT: { value: 'Logout', mainComponent: Logout },
 };

@@ -99,9 +99,9 @@ const ProductSubCategory: React.FC = () => {
               className={
                 selectedProductFamily$.value?.name === f.name
                   ? clsx([
-                      styles['text-container'],
-                      styles['text-after-selector'],
-                    ])
+                    styles['text-container'],
+                    styles['text-after-selector'],
+                  ])
                   : styles['text-container']
               }
             >
@@ -247,112 +247,112 @@ const Form: React.FC<{
   productSubCategoryNameDefaultValue,
   onCompleteText,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<{ name: string; categoryId: string }>({
-    resolver: yupResolver(validationSchema),
-  });
-  const dispatch = useDispatch();
-  const categories = useSelector(
-    (state: RootState) => state.metaProductCategory
-  );
-
-  React.useEffect(() => {
-    const filtered = categories.metaProductCategories.filter(
-      (a) => a.familyId === selectedProductFamily$.value?.id
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<{ name: string; categoryId: string }>({
+      resolver: yupResolver(validationSchema),
+    });
+    const dispatch = useDispatch();
+    const categories = useSelector(
+      (state: RootState) => state.metaProductCategory
     );
-    dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
-  }, [selectedProductFamily$.value, categories.metaProductCategories]);
 
-  function submit(data: { name: string; categoryId: string }) {
-    submitFormFunc(data.name, data.categoryId);
-  }
+    React.useEffect(() => {
+      const filtered = categories.metaProductCategories.filter(
+        (a) => a.familyId === selectedProductFamily$.value?.id
+      );
+      dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
+    }, [selectedProductFamily$.value, categories.metaProductCategories]);
 
-  return (
-    <div className={styles['product-form']}>
-      <div className={styles['product-form-heading']}>
-        <div></div>
-        <h3>Product Sub-Category</h3>
-        <ButtonWithoutStyles clickAction={() => unmountFunc()}>
-          <CloseCircle />
-        </ButtonWithoutStyles>
-      </div>
-      <form onSubmit={handleSubmit(submit)}>
-        <div className={styles['product-form-body']}>
-          <label>Sub Category Name:</label>
-          <div>
-            <ApplicationTextInput
-              defaultValue={productSubCategoryNameDefaultValue}
-              {...register('name')}
-            />
-            <InfoText
-              text={
-                errors.name?.message !== undefined ? errors.name.message : ''
-              }
-              fontFamily="Montserrat"
-              variant="error"
-            />
-            <InfoText
-              text={dbError !== null ? dbError.message : ''}
-              fontFamily="Montserrat"
-              variant="error"
-            />
-          </div>
+    function submit(data: { name: string; categoryId: string }) {
+      submitFormFunc(data.name, data.categoryId);
+    }
 
-          <label>Category: </label>
-          <ApplicationSelectInput {...register('categoryId')}>
-            {categories.metaProductCategoriesByFamily.map((c) => (
-              <option value={c.id}>{c.name}</option>
-            ))}
-          </ApplicationSelectInput>
+    return (
+      <div className={styles['product-form']}>
+        <div className={styles['product-form-heading']}>
+          <div></div>
+          <h3>Product Sub-Category</h3>
+          <ButtonWithoutStyles clickAction={() => unmountFunc()}>
+            <CloseCircle />
+          </ButtonWithoutStyles>
         </div>
-        <div
-          className={
-            loadingFlag
-              ? clsx(
+        <form onSubmit={handleSubmit(submit)}>
+          <div className={styles['product-form-body']}>
+            <label>Sub Category Name:</label>
+            <div>
+              <ApplicationTextInput
+                defaultValue={productSubCategoryNameDefaultValue}
+                {...register('name')}
+              />
+              <InfoText
+                text={
+                  errors.name?.message !== undefined ? errors.name.message : ''
+                }
+                fontFamily="Montserrat"
+                variant="error"
+              />
+              <InfoText
+                text={dbError !== null ? dbError.message : ''}
+                fontFamily="Montserrat"
+                variant="error"
+              />
+            </div>
+
+            <label>Category: </label>
+            <ApplicationSelectInput {...register('categoryId')}>
+              {categories.metaProductCategoriesByFamily.map((c) => (
+                <option value={c.id}>{c.name}</option>
+              ))}
+            </ApplicationSelectInput>
+          </div>
+          <div
+            className={
+              loadingFlag
+                ? clsx(
                   styles['form-button-container'],
                   styles['form-button-container-loading']
                 )
-              : styles['form-button-container']
-          }
-        >
-          {loadingFlag ? (
-            <ApplicationSpinner />
-          ) : (
-            <>
-              <div style={{ height: 50, width: 100 }}>
-                <ApplicationButton
-                  variant="cancel"
-                  clickAction={() => unmountFunc()}
-                  dimension={{ height: '100%', width: '100%' }}
-                >
-                  Cancel
-                </ApplicationButton>
-              </div>
-              <div style={{ height: 50, width: 100 }}>
-                <ApplicationButton
-                  variant="default-not-padding"
-                  clickAction={handleSubmit(submit)}
-                  dimension={{ height: '100%', width: '100%' }}
-                >
-                  Save
-                </ApplicationButton>
-              </div>
-            </>
-          )}
-        </div>
-      </form>
-      {completed && (
-        <InfoText
-          text={onCompleteText}
-          fontFamily="Montserrat"
-          variant="success"
-        />
-      )}
-    </div>
-  );
-};
+                : styles['form-button-container']
+            }
+          >
+            {loadingFlag ? (
+              <ApplicationSpinner />
+            ) : (
+              <>
+                <div >
+                  <ApplicationButton
+                    variant="cancel"
+                    clickAction={() => unmountFunc()}
+                    dimension={{ height: '100%', width: '100%' }}
+                  >
+                    Cancel
+                  </ApplicationButton>
+                </div>
+                <div style={{ height: 50, width: 100 }}>
+                  <ApplicationButton
+                    variant="default-not-padding"
+                    clickAction={handleSubmit(submit)}
+                    dimension={{ height: '100%', width: '100%' }}
+                  >
+                    Save
+                  </ApplicationButton>
+                </div>
+              </>
+            )}
+          </div>
+        </form>
+        {completed && (
+          <InfoText
+            text={onCompleteText}
+            fontFamily="Montserrat"
+            variant="success"
+          />
+        )}
+      </div>
+    );
+  };
 
 export default ProductSubCategory;

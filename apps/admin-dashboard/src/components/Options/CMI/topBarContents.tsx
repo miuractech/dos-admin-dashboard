@@ -1,12 +1,14 @@
 import { topbarProps } from "../components/topbar";
+import { Art } from "./arts";
+import { Fonts } from "./fonts/fonts";
 
 export const CMITopbarObject: topbarProps = {
-    FONT: {
+    font: {
         value: 'Font',
-        mainComponent: () => <>ProductFamily</>,
+        mainComponent: Fonts
     },
-    ART: {
+    art: {
         value: 'Art',
-        mainComponent: () => <>'ProductFamily'</>,
-    },
+        mainComponent: Art
+    }
 };

@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../../main/meta/styles/meta.module.scss';
-
+import { useSelector } from 'react-redux';
+import { RootState } from 'apps/admin-dashboard/src/store';
 export type topbarProps = {
     [key: string]: {
         value: string;
@@ -13,7 +14,9 @@ type topBarPropTypes = {
 }
 
 export const Topbar = ({ topbarObject }: topBarPropTypes) => {
-    const [selected, setSelected] = useState<string>(Object.keys(topbarObject)[0])
+    // const [selected, setSelected] = useState<string>(Object.keys(topbarObject)[0])
+    const selected = useSelector((state: RootState) => state.topbar.path)
+    const navigate = useNavigate()
 
     return (
         <div className={styles['topbar']}>
@@ -25,7 +28,9 @@ export const Topbar = ({ topbarObject }: topBarPropTypes) => {
                             ? clsx(styles['header-text-container'], styles['text-after'])
                             : styles['header-text-container']
                     }
-                    onClick={() => setSelected(item)}
+                    onClick={() => {
+                        navigate(`/cmi/${item}`)
+                    }}
                 >
                     <h3>{topbarObject[item].value}</h3>
                 </div>

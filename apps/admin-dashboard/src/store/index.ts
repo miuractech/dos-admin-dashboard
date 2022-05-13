@@ -5,7 +5,7 @@ import metaProductCategoryReducers from '../Midl/meta-products/store/meta-produc
 import metaProductSubCategoryReducers from '../Midl/meta-products/store/meta-product.subcategory.slice';
 import adminUserReducers from '../Midl/auth/store/admin.user.slice';
 import metaProductTypeReducers from '../Midl/meta-products/store/meta-product.type.slice';
-
+import topbarReducer from '../components/Options/components/top-bar.slice'
 export const store = configureStore({
   reducer: {
     adminUser: adminUserReducers,
@@ -13,6 +13,7 @@ export const store = configureStore({
     metaProductCategory: metaProductCategoryReducers,
     metaProductSubCategory: metaProductSubCategoryReducers,
     metaProductType: metaProductTypeReducers,
+    topbar: topbarReducer
   },
   middleware: (middleware) =>
     middleware({

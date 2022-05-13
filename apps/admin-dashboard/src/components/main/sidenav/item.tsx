@@ -30,6 +30,9 @@ const SideNavItem: React.FC<{
       case 'META':
         navigate('/meta');
         break;
+      case 'CMI':
+        navigate('/cmi');
+        break;
       case 'COUPONS_AND_GIFTS':
         navigate('/couponsgifts');
         break;

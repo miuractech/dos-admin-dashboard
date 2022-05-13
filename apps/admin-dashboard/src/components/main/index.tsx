@@ -1,15 +1,9 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { useSubject } from 'rxf-rewrite/dist';
 import { CMI } from '../Options/CMI';
-import { Coupons } from '../pages/c&g';
-import { Customers } from '../pages/coustomers';
-import { Logout } from '../pages/logout';
-import { Merchants } from '../pages/merchents';
-import { Meta } from '../pages/meta';
-import { Orders } from '../pages/orders';
-import { Products } from '../pages/products';
-
+import { Coupons } from '../Options/c&g';
+import styles from './meta/styles/meta.module.scss';
 
 import {
   selectedSideNavItem$,
@@ -17,7 +11,14 @@ import {
   sideNavToggled$,
 } from './shared';
 import SideNavBar from './sidenav';
-// import { CMI } from './sidenav/mock';
+import { Orders } from '../Options/orders';
+import { Products } from '../Options/products';
+import { Merchants } from '../Options/merchents';
+import { Customers } from '../Options/coustomers';
+import { Meta } from '../Options/meta';
+import { Logout } from '../Options/logout';
+import { Fonts } from '../Options/CMI/fonts/fonts';
+import { Art } from '../Options/CMI/arts';
 
 const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);
@@ -41,7 +42,10 @@ const Main: React.FC = () => {
           <Route path="/customers" element={<Customers />} />
           <Route path="/meta" element={<Meta />} />
           <Route path="/couponsgifts" element={<Coupons />} />
-          <Route path="/cmi" element={<CMI />} />
+          <Route path="/cmi" element={<CMI />} >
+            <Route path="/cmi/font" element={<Fonts />} />
+            <Route path="/cmi/art" element={<Art />} />
+          </Route>
           <Route path="/logout" element={<Logout />} />
         </Routes>
       </div>

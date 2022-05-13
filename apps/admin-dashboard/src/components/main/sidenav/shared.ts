@@ -10,6 +10,7 @@ import {
   MetaIcon,
   OrdersIcon,
   ProductsIcon,
+  CMIIcon
 } from '@admin/assets';
 import React from 'react';
 
@@ -30,39 +31,44 @@ export const SideNavItemList: Array<{
   value: string;
   icon: React.FC<{ stroke: string }>;
 }> = [
-  {
-    id: Keys[0],
-    value: SideNavItemObject['ORDERS'].value,
-    icon: OrdersIcon,
-  },
-  {
-    id: Keys[1],
-    value: SideNavItemObject['PRODUCTS'].value,
-    icon: ProductsIcon,
-  },
-  {
-    id: Keys[2],
-    value: SideNavItemObject['MERCHANTS'].value,
-    icon: MerchantsIcon,
-  },
-  {
-    id: Keys[3],
-    value: SideNavItemObject['CUSTOMERS'].value,
-    icon: CustomersIcon,
-  },
-  {
-    id: Keys[4],
-    value: SideNavItemObject['META'].value,
-    icon: MetaIcon,
-  },
-  {
-    id: Keys[5],
-    value: SideNavItemObject['COUPONS_AND_GIFTS'].value,
-    icon: CouponsGiftsIcon,
-  },
-  {
-    id: Keys[6],
-    value: SideNavItemObject['LOGOUT'].value,
-    icon: LogoutIcon,
-  },
-];
+    {
+      id: Keys[0],
+      value: SideNavItemObject['ORDERS'].value,
+      icon: OrdersIcon,
+    },
+    {
+      id: Keys[1],
+      value: SideNavItemObject['PRODUCTS'].value,
+      icon: ProductsIcon,
+    },
+    {
+      id: Keys[2],
+      value: SideNavItemObject['MERCHANTS'].value,
+      icon: MerchantsIcon,
+    },
+    {
+      id: Keys[3],
+      value: SideNavItemObject['CUSTOMERS'].value,
+      icon: CustomersIcon,
+    },
+    {
+      id: Keys[4],
+      value: SideNavItemObject['META'].value,
+      icon: MetaIcon,
+    },
+    {
+      id: Keys[5],
+      value: SideNavItemObject['CMI'].value,
+      icon: CMIIcon,
+    },
+    {
+      id: Keys[6],
+      value: SideNavItemObject['COUPONS_AND_GIFTS'].value,
+      icon: CouponsGiftsIcon,
+    },
+    {
+      id: Keys[7],
+      value: SideNavItemObject['LOGOUT'].value,
+      icon: LogoutIcon,
+    },
+  ];
