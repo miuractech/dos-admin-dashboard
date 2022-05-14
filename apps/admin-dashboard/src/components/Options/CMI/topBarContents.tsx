@@ -1,5 +1,5 @@
 import { topbarProps } from "../components/topbar";
-import { Art } from "./arts";
+import { Art } from "./art/art";
 import { Fonts } from "./fonts/fonts";
 
 export const CMITopbarObject: topbarProps = {

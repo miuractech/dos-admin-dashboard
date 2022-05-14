@@ -18,7 +18,7 @@ import { Customers } from '../Options/coustomers';
 import { Meta } from '../Options/meta';
 import { Logout } from '../Options/logout';
 import { Fonts } from '../Options/CMI/fonts/fonts';
-import { Art } from '../Options/CMI/arts';
+import { Art } from '../Options/CMI/art/art';
 
 const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);

@@ -1,28 +1,25 @@
-import { AddIcon } from '@admin/assets'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { update } from '../../components/top-bar.slice'
-import { DataGrid } from './fontsTable'
-import "./style.css"
+import { AddIcon } from '@admin/assets'
 import ApplicationButton from '../../../global/buttons'
 import { firestore } from '../../../../config/firebase.config'
-import PopUpAction from './popUpFonts'
 import { doc, updateDoc } from 'firebase/firestore'
+import PopUpArt from './popUpArt'
+import { DataGridArt } from './artTable'
 
-export const Fonts = () => {
-
+export const Art = () => {
     const dispatch = useDispatch()
-
     useEffect(() => {
-        dispatch(update({ base: 'cmi', path: 'font' }))
-    }, [dispatch])
+        dispatch(update({ base: 'cmi', path: 'art' }))
+    }, [])
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const changed = async (row: any) => {
         try {
-            const updateRef = doc(firestore, "Fonts", row.id);
+            const updateRef = doc(firestore, "Arts", row.id);
             await updateDoc(updateRef, {
                 enabled: !row.enabled
             });
@@ -35,7 +32,7 @@ export const Fonts = () => {
     }
     return (
         <div className='main'>
-            <PopUpAction
+            <PopUpArt
                 open={open}
                 handleClose={handleClose}
             />
@@ -44,10 +41,10 @@ export const Fonts = () => {
                     variant="default"
                     clickAction={handleOpen}
                 >
-                    <AddIcon /> <span>Add Fonts</span>
+                    <AddIcon /> <span>Add Art</span>
                 </ApplicationButton>
             </div>
-            <DataGrid changed={changed} />
+            <DataGridArt changed={changed} />
         </div >
     )
 }

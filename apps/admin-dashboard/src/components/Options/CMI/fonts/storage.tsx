@@ -25,7 +25,3 @@ const useStorage = () => {
 };
 
 export default useStorage;
-
-function onsuccess(url: string) {
-    throw new Error("Function not implemented.");
-}
