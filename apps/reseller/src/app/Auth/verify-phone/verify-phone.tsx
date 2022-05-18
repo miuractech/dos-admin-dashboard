@@ -1,12 +1,13 @@
 import { RootState } from '../../../redux-tool/store';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import './verify-phone.css';
-import { auth } from '../../../redux-tool/auth';
+import { auth, setUser } from '../../../redux-tool/auth';
 import { Alert, AlertTitle, Button, Typography } from '@mui/material';
 import InputField from '../../../UI/input-field/input-field';
 import { useForm } from 'react-hook-form';
 import { useMfaFirebase } from '@miurac/mfa-firebase';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /* eslint-disable-next-line */
 export interface VerifyPhoneProps { }
@@ -19,15 +20,27 @@ export function VerifyPhone(props: VerifyPhoneProps) {
   const [err, setErr] = useState("")
   const [timer, setTimer] = useState(false)
   const [seconds, setSeconds] = useState<number>(30)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const currentUser = auth?.currentUser
 
   const { verifyOtp, resendOTP, getOTP } = useMfaFirebase({ auth, phone, currentUser })
 
+  const onSuccess = async () => {
+    try {
+      await auth?.currentUser?.reload()
+      navigate("/home")
+    } catch (error) {
+      console.log("error in onsuccess", error);
+
+    }
+  }
+
   const onSubmit = (data: any) => {
     const OTP = data.OTP
     verifyOtp({
-      onSuccess: null,
+      onSuccess: onSuccess,
       onFail: (error: any) => setErr(error),
       OTP
     })
@@ -39,16 +52,16 @@ export function VerifyPhone(props: VerifyPhoneProps) {
     resendOTP({
       onSuccess: () => {
         const timerId = setInterval(() => {
-            setSeconds(t => {
-              if (t === 0) {
-                clearTimeout(timerId);
-                setTimer(false)
-                return 30
-              }else{
-                return t - 1
-              }
-            })
-          }, 1000);
+          setSeconds(t => {
+            if (t === 0) {
+              clearTimeout(timerId);
+              setTimer(false)
+              return 30
+            } else {
+              return t - 1
+            }
+          })
+        }, 1000);
         setAlert("OTP sent successfully")
         setTimer(true)
       }, onFail: (error: any) => {
@@ -84,17 +97,6 @@ export function VerifyPhone(props: VerifyPhoneProps) {
   }
 
 
-
-
-
-  // useEffect(() => {
-  //   if (seconds > 0) {
-  //     setTimeout(() => setSeconds(seconds - 1), 1000);
-  //   } else {
-  //     setSeconds('BOOOOM!');
-  //   }
-  // });
-
   return (
     <div>
       <div style={{ position: "absolute", width: "100%" }}>
@@ -111,10 +113,10 @@ export function VerifyPhone(props: VerifyPhoneProps) {
               <h4 style={{ textAlign: "center" }}>Registered Mobile number is - {phone}</h4>
               <Button fullWidth onClick={clicked} type='submit' variant='contained'>GET OTP</Button>
               <p style={{ textAlign: "right" }}>Somthing went wrong? <strong onClick={signOut} style={{ color: '#167AF9', cursor: "pointer" }}>Go Back</strong></p>
-              
+
             </div>
             :
-            <div>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <h3 style={{ color: "black" }}>Verification</h3>
                 <h4 style={{ textAlign: "center" }}>OTP SENT TO MOBILE NUMBER - {phone}</h4>
@@ -123,7 +125,7 @@ export function VerifyPhone(props: VerifyPhoneProps) {
               <Button fullWidth type='submit' variant='contained'>verify</Button>
               {err && <Typography variant='caption' color={'error'} >{err}</Typography>}
               {timer ? <p><strong>wait for to resend OTP : {seconds} seconds</strong></p> : <p><strong onClick={resend} style={{ color: '#167AF9', cursor: "pointer" }}>Resend OTP</strong></p>}
-            </div>
+            </form>
           }
         </div>
         <div id="recaptcha"></div>

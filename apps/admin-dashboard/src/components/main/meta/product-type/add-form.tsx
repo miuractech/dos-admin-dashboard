@@ -223,6 +223,7 @@ const ProductDisplayImage: React.FC<{
             height="100%"
             width="100%"
             style={{ objectFit: 'cover' }}
+            alt=""
           />
         ) : (
           <>

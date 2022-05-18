@@ -72,6 +72,7 @@ const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
             height={100}
             width={100}
             style={{ objectFit: 'cover' }}
+            alt=""
           />
         </div>
         <ProductSizeField initial={item.size} setValue={setValue} />

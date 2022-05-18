@@ -88,7 +88,8 @@ const ImagesByColor: React.FC<{ item: TMetaProductType }> = ({ item }) => {
           marginTop: '1rem',
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          justifyContent: 'space-between',
+          gridRowGap: '20px',
+          justifyContent: 'space-between'
         }}
       >
         <ImageField
@@ -134,16 +135,24 @@ const ImagesByColor: React.FC<{ item: TMetaProductType }> = ({ item }) => {
           setValue={setValue}
         />
       </div>
-      <div>
+      <div style={{ marginTop: "20px" }}>
         {loading ? (
           <ApplicationSpinner />
         ) : (
-          <ApplicationButton
-            variant="default"
-            clickAction={() => handleSubmit(submit)}
-          >
-            Save
-          </ApplicationButton>
+          <div style={{ display: "flex", columnGap: "20px" }}>
+            <ApplicationButton
+              variant="cancel"
+              clickAction={() => handleSubmit(submit)}
+            >
+              Cancel
+            </ApplicationButton>
+            <ApplicationButton
+              variant="default"
+              clickAction={() => handleSubmit(submit)}
+            >
+              Save
+            </ApplicationButton>
+          </div>
         )}
       </div>
     </form>

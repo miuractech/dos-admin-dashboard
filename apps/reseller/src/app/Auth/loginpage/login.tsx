@@ -53,7 +53,6 @@ export function Login(props: LoginProps) {
             const phoneProvider = new PhoneAuthProvider(auth)
             const verificationId = await phoneProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
             setverificationId(verificationId)
-
           }
 
         }
@@ -61,15 +60,14 @@ export function Login(props: LoginProps) {
       } catch (error: any) {
         console.log(error);
       }
-
-
     }
+
     secondAuth()
 
 
   }, [error])
 
-    const onOtpSubmit = async (data: any) => {
+  const onOtpSubmit = async (data: any) => {
     try {
       if (resolver) {
         const cred = PhoneAuthProvider.credential(verificationId, data.OTP)
@@ -77,7 +75,6 @@ export function Login(props: LoginProps) {
         await resolver.resolveSignIn(multiFactorAssertion)
         await auth?.currentUser?.reload()
         const newUser = auth.currentUser
-
         dispatch(setUser(newUser))
       }
 

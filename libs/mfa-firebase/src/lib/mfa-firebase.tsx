@@ -52,7 +52,6 @@ export const useMfaFirebase = ({ auth }: MfaFirebaseProps) => {
           const cred = PhoneAuthProvider.credential(verificationId, OTP)
           const assertion = await PhoneMultiFactorGenerator.assertion(cred)
           await multiFactor(currentUser).enroll(assertion)
-          currentUser.reload()
           onSuccess()
         }
       }

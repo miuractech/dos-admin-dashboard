@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ApplicationButton from '../../../global/buttons'
 import ApplicationTextInput from '../../../global/text-input';
 import { firestore } from '../../../../config/firebase.config'
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { doc, increment, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { useDropzone } from 'react-dropzone';
 import { Clear, DriveFolderUpload } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,8 +16,9 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 700,
     bgcolor: 'background.paper',
-    boxShadow: 24,
     p: 4,
+    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    borderRadius: "25px"
 };
 
 type Props = {
@@ -88,13 +89,19 @@ export default function PopUpArt({ open, handleClose, artNameInput, id, url }: P
     ));
 
     const onsuccess = async (url: string, name: string) => {
+        const onsuccessBatch = writeBatch(firestore);
         try {
-            await setDoc(doc(firestore, "Arts", name), {
+            onsuccessBatch.set(doc(firestore, "Arts", name), {
                 artName: artName,
                 createdAt: serverTimestamp(),
                 url: url,
                 enabled: true
             });
+            const CMIartscountRef = doc(firestore, "meta", "count");
+            onsuccessBatch.update(CMIartscountRef, {
+                CMIarts: increment(1)
+            });
+            await onsuccessBatch.commit()
             setArtFile(null)
             setfileSelected(false)
             setAlert(true)

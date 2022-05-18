@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ApplicationButton from '../../../global/buttons'
 import ApplicationTextInput from '../../../global/text-input';
 import { firestore } from '../../../../config/firebase.config'
-import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
-import { useForm } from 'react-hook-form'
+import { doc, increment, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { useDropzone } from 'react-dropzone';
 import { Clear, DriveFolderUpload } from '@mui/icons-material';
 import useStorage from './storage';
@@ -17,19 +16,20 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 700,
     bgcolor: 'background.paper',
-    boxShadow: 24,
     p: 4,
+    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    borderRadius: "25px"
 };
 
 type Props = {
-    open:boolean,
-    handleClose:any,
-    fontNameInput?:null|string,
+    open: boolean,
+    handleClose: any,
+    fontNameInput?: null | string,
     fontFileInput?: null | File,
-    id?:string,
+    id?: string,
 }
 
-export default function PopUpAction({open,handleClose,fontNameInput,fontFileInput,id}: Props) {
+export default function PopUpAction({ open, handleClose, fontNameInput, fontFileInput, id }: Props) {
     const { upload } = useStorage()
 
     const [error, setError] = useState('')
@@ -39,6 +39,7 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
     const [alert, setAlert] = useState(false)
     const FolderName = "fonts"
     const [fontName, setfontName] = useState("")
+    const [previweFont, setpreviweFont] = useState("")
     const {
         acceptedFiles,
         fileRejections,
@@ -60,19 +61,19 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
 
     }, [acceptedFiles])
     useEffect(() => {
-      if(fontNameInput){
-          setfontName(fontNameInput)
-      }
-      if(fontFileInput){
-          setFontFile(fontFileInput)
-          setfileSelected(true)
-      }
+        if (fontNameInput) {
+            setfontName(fontNameInput)
+        }
+        if (fontFileInput) {
+            setFontFile(fontFileInput)
+            setfileSelected(true)
+        }
 
 
 
 
-    }, [fontNameInput,fontFileInput])
-    
+    }, [fontNameInput, fontFileInput])
+
 
 
     const AcceptedFileItems = () => (
@@ -81,11 +82,11 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
         </li>
     );
 
-    const fileRejectionItems = fileRejections.map(({ file, errors }:any) => (
+    const fileRejectionItems = fileRejections.map(({ file, errors }: any) => (
         <li key={file.name}>
             {file.name} - {file.size} bytes
             <ul>
-                {errors.map((e:any) => (
+                {errors.map((e: any) => (
                     <li key={e.code}>{e.message}</li>
                 ))}
             </ul>
@@ -93,16 +94,19 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
     ));
 
     const onsuccess = async (url: string, name: string) => {
+        const onsuccessBatch = writeBatch(firestore);
         try {
-            console.log('start of set doc',url, name);
-            
-            await setDoc(doc(firestore, "Fonts", name), {
+            onsuccessBatch.set(doc(firestore, "Fonts", name), {
                 fontName: fontName,
                 createdAt: serverTimestamp(),
                 url: url,
                 enabled: true
             });
-            console.log('end of set doc');
+            const fontscountRef = doc(firestore, "meta", "count");
+            onsuccessBatch.update(fontscountRef, {
+                Fonts: increment(1)
+            });
+            await onsuccessBatch.commit()
             setFontFile(null)
             setfileSelected(false)
             setAlert(true)
@@ -119,9 +123,9 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
     const save = () => {
         if (!fontFile) return
         setprogress(true)
-        const name = id?id:`${uuidv4()}.ttf`
+        const name = id ? id : `${uuidv4()}.ttf`
         upload({
-            file: fontFile,name, path: FolderName, onsuccess:(url:string)=>onsuccess(url,name), onFail: (err: any) => console.log(err), onProgress: (prog: string) => setProg(prog),
+            file: fontFile, name, path: FolderName, onsuccess: (url: string) => onsuccess(url, name), onFail: (err: any) => console.log(err), onProgress: (prog: string) => setProg(prog),
         })
     }
 
@@ -130,16 +134,16 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
         setfontName(name)
     }
 
-    
-  return (
-      <>
-       <div style={{ position: "absolute", top: "5px", right: "10px" }}>
+
+    return (
+        <>
+            <div style={{ position: "absolute", top: "5px", right: "10px" }}>
                 {alert && <Alert onClose={() => { setAlert(false) }}>This is a success alert — check it out!</Alert>}
                 {error && <Alert onClose={() => { setError("") }} severity="error">{error}</Alert>}
             </div>
-    <Modal
+            <Modal
                 open={open}
-                onClose={()=>{
+                onClose={() => {
                     setFontFile(null)
                     setfontName('')
                     setProg('')
@@ -148,7 +152,7 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
                     setprogress(false)
                     setfileSelected(false)
                     handleClose()
-                    
+
                 }}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
@@ -217,6 +221,6 @@ export default function PopUpAction({open,handleClose,fontNameInput,fontFileInpu
                     }
                 </Box>
             </Modal>
-      </>
-  )
+        </>
+    )
 }

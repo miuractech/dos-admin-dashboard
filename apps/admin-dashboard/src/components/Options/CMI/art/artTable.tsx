@@ -1,11 +1,11 @@
-import { Button, CircularProgress, FormControlLabel, Input, Switch, SwitchProps, TextField, Typography } from '@mui/material'
-import React, { useEffect, useMemo, useState } from 'react'
+import { Button, CircularProgress, FormControlLabel } from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
 import DataTable from "react-data-table-component"
-import { styled } from '@mui/material/styles';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, doc, DocumentData, getDoc, limit, onSnapshot, orderBy, query, QueryDocumentSnapshot, QuerySnapshot, startAfter } from 'firebase/firestore';
 import { firestore } from '../../../../config/firebase.config'
 import PopUpArt from './popUpArt';
-import { FilterComponent } from '../../components/filterComponent';
+import { SubHeaderComponent } from '../../components/filterComponent';
+import { IOSSwitch } from '../../../global/button_IOS/IOS';
 
 type DataGripPorps = {
     changed: (row: any) => void
@@ -14,105 +14,137 @@ type DataGripPorps = {
 export const DataGridArt = ({ changed }: DataGripPorps) => {
 
     const [popUpInfo, setpopUpInfo] = useState<any>(null)
-    const [arts, setArts] = useState<any[]>([])
+    const [allArts, setAllArts] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState("")
-    const [filterText, setFilterText] = useState('');
+    const [filterText, setFilterText] = useState("");
+    const [lastVisibleRecords, setlastVisibleRecords] = useState<QueryDocumentSnapshot<DocumentData>[]>([])
+    const [numberOfRows, setNumberOfRows] = useState(0)
+    const [fetchNext, setFetchNext] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
 
     const artsCollectionRef = collection(firestore, "Arts")
+    const countRef = doc(firestore, "meta", "count")
+
+
+    const count = async () => {
+        try {
+            const countSnap = await getDoc(countRef)
+            if (countSnap.exists()) {
+                setNumberOfRows(countSnap.data()['CMIarts'])
+            }
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
     useEffect(() => {
-
-        const unsub = onSnapshot(artsCollectionRef, (snapshot: any) => {
-
-            const arr: any[] = []
-            snapshot.docs.forEach((doc: any) => {
-                arr.push({ ...doc.data(), id: doc.id })
-            })
-            // console.log(arr);
-
-            setArts(arr)
+        const first = query(artsCollectionRef, orderBy("createdAt"), limit(10));
+        const unsub = onSnapshot(first, (snapshot: any) => {
+            const Doc = snapshot.docs.map((arts: any) => ({ ...arts.data(), id: arts.id }))
+            setAllArts(Doc)
             setLoading(false)
-
+            const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+            setlastVisibleRecords([lastVisible])
+            count()
         })
+
+        return () => unsub()
+
+    }, [])
+
+    const useDidMountEffect = (func: any, deps: any) => {
+        const didMount = useRef(false);
+
+        useEffect(() => {
+            if (didMount.current) func();
+            else didMount.current = true;
+        }, deps);
+    }
+
+    useDidMountEffect(() => {
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        let unsub = () => { }
+        setFetchNext(true)
+        if (currentPage === 1) {
+
+            const first = query(artsCollectionRef, orderBy("createdAt"), limit(10));
+            unsub = onSnapshot(first, (snapshot: QuerySnapshot<DocumentData>) => {
+                const iscollectionEmpty = snapshot.size === 0
+                if (!iscollectionEmpty) {
+                    const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+                    const Doc = snapshot.docs.map((arts: any) => ({ ...arts.data(), id: arts.id }))
+                    setAllArts(Doc)
+                    setFetchNext(false)
+                    if (currentPage > lastVisibleRecords.length) {
+                        setlastVisibleRecords([...lastVisibleRecords, lastVisible])
+                    }
+                } else {
+                    console.log("collection is empty");
+
+                }
+
+            })
+        } else {
+            const next = query(artsCollectionRef,
+                orderBy("createdAt"),
+                startAfter(lastVisibleRecords[currentPage - 2]),
+                limit(10));
+            unsub = onSnapshot(next, (snapshot: QuerySnapshot<DocumentData>) => {
+                const iscollectionEmpty = snapshot.size === 0
+                if (!iscollectionEmpty) {
+                    const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+                    const Doc = snapshot.docs.map((arts) => ({ ...arts.data(), id: arts.id }))
+                    setAllArts(Doc)
+                    setFetchNext(false)
+                    count()
+                    if (currentPage > lastVisibleRecords.length) {
+                        setlastVisibleRecords([...lastVisibleRecords, lastVisible])
+                    }
+                } else {
+                    console.log("collection is empty");
+
+                }
+
+
+            })
+        }
+
 
         return () => {
             unsub()
         }
 
-    }, [])
+    }, [currentPage]);
 
 
-    const IOSSwitch = styled((props: SwitchProps) => (
-        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-    ))(({ theme }) => ({
-        width: 42,
-        height: 26,
-        padding: 0,
-        '& .MuiSwitch-switchBase': {
-            padding: 0,
-            margin: 2,
-            transitionDuration: '3000ms',
-            '&.Mui-checked': {
-                transform: 'translateX(16px)',
-                color: '#fff',
-                '& + .MuiSwitch-track': {
-                    backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : theme.palette.primary.light,
-                    opacity: 1,
-                    border: 0,
-                },
-                '&.Mui-disabled + .MuiSwitch-track': {
-                    opacity: 0.5,
-                },
-            },
-            '&.Mui-focusVisible .MuiSwitch-thumb': {
-                color: '#33cf4d',
-                border: '6px solid #fff',
-            },
-            '&.Mui-disabled .MuiSwitch-thumb': {
-                color:
-                    theme.palette.mode === 'light'
-                        ? theme.palette.grey[100]
-                        : theme.palette.grey[600],
-            },
-            '&.Mui-disabled + .MuiSwitch-track': {
-                opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
-            },
-        },
-        '& .MuiSwitch-thumb': {
-            boxSizing: 'border-box',
-            width: 22,
-            height: 22,
-        },
-        '& .MuiSwitch-track': {
-            borderRadius: 26 / 2,
-            backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
-            opacity: 1,
-            transition: theme.transitions.create(['background-color'], {
-                duration: 500,
-            }),
-        },
-    }));
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+    }
 
 
     const customStyles = {
         rows: {
             style: {
-                minHeight: '72px', // override the row height
+                minHeight: '72px',
             },
         },
         headCells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for head cells
+                paddingLeft: '8px',
                 paddingRight: '8px',
             },
         },
         cells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for data cells
+                paddingLeft: '8px',
                 paddingRight: '8px',
             },
         },
     };
+
 
     const coloum = [
 
@@ -127,17 +159,17 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
 
         },
         {
-            name: "Art Name",
+            name: <div style={{ fontSize: 15, fontWeight: "block" }}>Art Name</div>,
             selector: (a: any) => a.artName,
             sortable: true
         },
         {
-            name: "Preview",
+            name: <div style={{ fontSize: 15 }}>Preview</div>,
             cell: (row: any) => <img style={{ display: "block", margin: "8px auto", maxWidth: 250, maxHeight: 100 }} src={row.url} alt={row.artName} />
         },
 
         {
-            name: <div style={{ fontSize: 25 }}>Action</div>,
+            name: <div style={{ fontSize: 15 }}>Action</div>,
             cell: (row: any) =>
                 <div style={{ width: "200px", display: "flex", justifyContent: "space-evenly" }}>
                     <Button variant='outlined' onClick={async () => {
@@ -165,30 +197,27 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
         },
     ]
 
-
-    console.log('test')
-    const filteredItems = arts.filter(
-        (item: any) => item.artName && item.artName.toLowerCase().includes(filterText.toLowerCase()),
-    );
-
-
-
-
-    console.log("hey");
-    // console.log(filteredItems);
+    // const filteredItems = allArts.filter(
+    //     (item: any) => item.artName && item.artName.toLowerCase().includes(filterText.toLowerCase()),
+    // );
 
     return (!loading ?
-        <>
+        <><SubHeaderComponent filterText={filterText} setFilterText={setFilterText} />
             <DataTable
                 columns={coloum}
-                data={filteredItems}
+                data={allArts}
                 pagination
                 fixedHeader
                 fixedHeaderScrollHeight='50vh'
                 highlightOnHover
                 customStyles={customStyles}
                 subHeader
-                subHeaderComponent={<SubHeaderComponent filterText={filterText} setFilterText={setFilterText} />}
+                progressPending={fetchNext}
+                paginationServer
+                paginationComponentOptions={{ noRowsPerPage: true }}
+                // subHeaderComponent={}
+                onChangePage={handlePageChange}
+                paginationTotalRows={numberOfRows}
             />
             <PopUpArt
                 open={Boolean(popUpInfo)}
@@ -204,15 +233,3 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
         </div>)
 }
 
-const SubHeaderComponent = ({ filterText, setFilterText, }: { filterText: string, setFilterText: any }) => {
-    const handleClear = () => {
-        if (filterText) {
-            setFilterText('');
-        }
-    };
-    console.log(setFilterText)
-    return (
-        <FilterComponent handleClear={handleClear} setFilterText={setFilterText} filterText={filterText} />
-    );
-
-}

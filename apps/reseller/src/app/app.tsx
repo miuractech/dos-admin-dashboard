@@ -39,7 +39,6 @@ export function App() {
   }, [])
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
-  console.log(userMultiFactor)
   if (loading) {
     return (
       <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >

@@ -1,11 +1,11 @@
-import { Button, CircularProgress, FormControlLabel, Switch, SwitchProps } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Button, CircularProgress, FormControlLabel } from '@mui/material'
+import { useEffect, useRef, useState } from 'react'
 import DataTable from "react-data-table-component"
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, doc, DocumentData, getDoc, limit, onSnapshot, orderBy, query, QueryDocumentSnapshot, QuerySnapshot, startAfter, where } from 'firebase/firestore';
 import { firestore } from '../../../../config/firebase.config'
 import PopUpAction from './popUpFonts';
+import { SubHeaderComponent } from '../../components/filterComponent';
+import { IOSSwitch } from '../../../global/button_IOS/IOS';
 
 type DataGripPorps = {
     changed: (row: any) => void
@@ -17,84 +17,119 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
     const [popUpInfo, setpopUpInfo] = useState<any>(null)
     const [font, setFont] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [filterText, setFilterText] = useState("");
+    const [lastVisibleRecords, setlastVisibleRecords] = useState<QueryDocumentSnapshot<DocumentData>[]>([])
+    const [numberOfRows, setNumberOfRows] = useState(0)
+    const [fetchNext, setFetchNext] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
 
     const fontsCollectionRef = collection(firestore, "Fonts")
+    const countRef = doc(firestore, "meta", "count")
+
+
+    const count = async () => {
+        try {
+            const countSnap = await getDoc(countRef)
+            if (countSnap.exists()) {
+                setNumberOfRows(countSnap.data()['Fonts'])
+            }
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+
     useEffect(() => {
-
-        const unsub = onSnapshot(fontsCollectionRef, (snapshot: any) => {
-            const arr: any[] = []
-            snapshot.docs.forEach((doc: any) => {
-                arr.push({ ...doc.data(), id: doc.id })
-            })
-            console.log(arr);
-
-            setFont(arr)
+        const first = query(fontsCollectionRef, orderBy("createdAt"), limit(10));
+        const unsub = onSnapshot(first, (snapshot: any) => {
+            const Doc = snapshot.docs.map((fonts: any) => ({ ...fonts.data(), id: fonts.id }))
+            setFont(Doc)
             setLoading(false)
-
+            const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+            setlastVisibleRecords([lastVisible])
+            count()
         })
+
+        return () => unsub()
+
+    }, [])
+
+    const useDidMountEffect = (func: any, deps: any) => {
+        const didMount = useRef(false);
+
+        useEffect(() => {
+            if (didMount.current) func();
+            else didMount.current = true;
+        }, deps);
+    }
+
+    useDidMountEffect(() => {
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        let unsub = () => { }
+        setFetchNext(true)
+        if (currentPage === 1) {
+
+            const first = query(fontsCollectionRef, orderBy("createdAt"), limit(10));
+            unsub = onSnapshot(first, (snapshot: QuerySnapshot<DocumentData>) => {
+                const iscollectionEmpty = snapshot.size === 0
+                if (!iscollectionEmpty) {
+                    const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+                    const Doc = snapshot.docs.map((fonts: any) => ({ ...fonts.data(), id: fonts.id }))
+                    setFont(Doc)
+                    setFetchNext(false)
+                    if (currentPage > lastVisibleRecords.length) {
+                        setlastVisibleRecords([...lastVisibleRecords, lastVisible])
+                    }
+                } else {
+                    console.log("collection is empty");
+
+                }
+
+            })
+        } else {
+            const next = query(fontsCollectionRef,
+                orderBy("createdAt"),
+                startAfter(lastVisibleRecords[currentPage - 2]),
+                limit(10));
+            unsub = onSnapshot(next, (snapshot: QuerySnapshot<DocumentData>) => {
+                const iscollectionEmpty = snapshot.size === 0
+                if (!iscollectionEmpty) {
+                    const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+                    const Doc = snapshot.docs.map((fonts) => ({ ...fonts.data(), id: fonts.id }))
+                    setFont(Doc)
+                    setFetchNext(false)
+                    count()
+                    if (currentPage > lastVisibleRecords.length) {
+                        setlastVisibleRecords([...lastVisibleRecords, lastVisible])
+                    }
+                } else {
+                    console.log("collection is empty");
+
+                }
+
+
+            })
+        }
+
 
         return () => {
             unsub()
         }
 
-    }, [])
+    }, [currentPage]);
 
-    const IOSSwitch = styled((props: SwitchProps) => (
-        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-    ))(({ theme }) => ({
-        width: 42,
-        height: 26,
-        padding: 0,
-        '& .MuiSwitch-switchBase': {
-            padding: 0,
-            margin: 2,
-            transitionDuration: '3000ms',
-            '&.Mui-checked': {
-                transform: 'translateX(16px)',
-                color: '#fff',
-                '& + .MuiSwitch-track': {
-                    backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : theme.palette.primary.light,
-                    opacity: 1,
-                    border: 0,
-                },
-                '&.Mui-disabled + .MuiSwitch-track': {
-                    opacity: 0.5,
-                },
-            },
-            '&.Mui-focusVisible .MuiSwitch-thumb': {
-                color: '#33cf4d',
-                border: '6px solid #fff',
-            },
-            '&.Mui-disabled .MuiSwitch-thumb': {
-                color:
-                    theme.palette.mode === 'light'
-                        ? theme.palette.grey[100]
-                        : theme.palette.grey[600],
-            },
-            '&.Mui-disabled + .MuiSwitch-track': {
-                opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
-            },
-        },
-        '& .MuiSwitch-thumb': {
-            boxSizing: 'border-box',
-            width: 22,
-            height: 22,
-        },
-        '& .MuiSwitch-track': {
-            borderRadius: 26 / 2,
-            backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
-            opacity: 1,
-            transition: theme.transitions.create(['background-color'], {
-                duration: 500,
-            }),
-        },
-    }));
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+    }
 
     const coloum = [
 
         {
             name: "",
-            cell: (row: any, id: any) =>
+            cell: (row: any) =>
                 <FormControlLabel
                     control={<IOSSwitch sx={{ m: 1 }} checked={row.enabled} onChange={() => changed(row)} />}
                     label=""
@@ -105,6 +140,11 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
         {
             name: "Font Name",
             selector: (a: any) => a.fontName,
+            sortable: true
+        },
+        {
+            name: "Preview",
+            selector: (a: any) => <div style={{ fontFamily: a.originalName }}>Abcdef</div>,
             sortable: true
         },
 
@@ -138,22 +178,43 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
     const customStyles = {
         rows: {
             style: {
-                minHeight: '72px', // override the row height
+                minHeight: '72px',
             },
         },
         headCells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for head cells
+                paddingLeft: '8px',
                 paddingRight: '8px',
             },
         },
         cells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for data cells
+                paddingLeft: '8px',
                 paddingRight: '8px',
             },
         },
     };
+
+
+    const strlength = filterText.length;
+    const strFrontCode = filterText.slice(0, strlength - 1);
+    const strEndCode = filterText.slice(strlength - 1, filterText.length);
+    const endcode = strFrontCode + String.fromCharCode(strEndCode.charCodeAt(0) + 1);
+    console.log(strFrontCode, strEndCode, endcode);
+
+    useDidMountEffect(() => {
+        const q = query(fontsCollectionRef, where("fontName", ">=", filterText), where("fontName", "<", endcode), limit(10));
+        const unsub = onSnapshot(q, (snapshot: any) => {
+            const Doc = snapshot.docs.map((fonts: any) => ({ ...fonts.data(), id: fonts.id }))
+            setFont(Doc)
+            setLoading(false)
+            const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+            setlastVisibleRecords([lastVisible])
+        })
+
+        return () => unsub()
+    }, [filterText])
+
 
 
     return (!loading ?
@@ -167,7 +228,13 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
                 fixedHeaderScrollHeight='50vh'
                 highlightOnHover
                 customStyles={customStyles}
-
+                progressPending={fetchNext}
+                paginationServer
+                paginationComponentOptions={{ noRowsPerPage: true }}
+                subHeader
+                subHeaderComponent={<SubHeaderComponent filterText={filterText} setFilterText={setFilterText} />}
+                onChangePage={handlePageChange}
+                paginationTotalRows={numberOfRows}
 
             />
             <PopUpAction

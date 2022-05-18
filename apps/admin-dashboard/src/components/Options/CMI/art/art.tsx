@@ -17,6 +17,8 @@ export const Art = () => {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+
     const changed = async (row: any) => {
         try {
             const updateRef = doc(firestore, "Arts", row.id);

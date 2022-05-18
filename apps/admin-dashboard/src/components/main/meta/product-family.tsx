@@ -236,92 +236,92 @@ const Form: React.FC<{
   productFamilyNameDefaultValue,
   onCompleteText,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<{ name: string }>({ resolver: yupResolver(validationSchema) });
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<{ name: string }>({ resolver: yupResolver(validationSchema) });
 
-  function submit(data: { name: string }) {
-    submitFormFunc(data.name);
-  }
+    function submit(data: { name: string }) {
+      submitFormFunc(data.name);
+    }
 
-  return (
-    <div className={styles['product-form']}>
-      <div className={styles['product-form-heading']}>
-        <div></div>
-        <h3>Product Family</h3>
-        <ButtonWithoutStyles clickAction={() => unmountFunc()}>
-          <CloseCircle />
-        </ButtonWithoutStyles>
-      </div>
-      <form onSubmit={handleSubmit(submit)}>
-        <div className={styles['product-form-body']}>
-          <label>Product Name:</label>
-          <div>
-            <ApplicationTextInput
-              defaultValue={productFamilyNameDefaultValue}
-              {...register('name')}
-            />
-            <InfoText
-              text={
-                errors.name?.message !== undefined ? errors.name.message : ''
-              }
-              fontFamily="Montserrat"
-              variant="error"
-            />
-            <InfoText
-              text={dbError !== null ? dbError.message : ''}
-              fontFamily="Montserrat"
-              variant="error"
-            />
-          </div>
+    return (
+      <div className={styles['product-form']}>
+        <div className={styles['product-form-heading']}>
+          <div></div>
+          <h3>Product Family</h3>
+          <ButtonWithoutStyles clickAction={() => unmountFunc()}>
+            <CloseCircle />
+          </ButtonWithoutStyles>
         </div>
-        <div
-          className={
-            loadingFlag
-              ? clsx(
+        <form onSubmit={handleSubmit(submit)}>
+          <div className={styles['product-form-body']}>
+            <label>Product Name:</label>
+            <div>
+              <ApplicationTextInput
+                defaultValue={productFamilyNameDefaultValue}
+                {...register('name')}
+              />
+              <InfoText
+                text={
+                  errors.name?.message !== undefined ? errors.name.message : ''
+                }
+                fontFamily="Montserrat"
+                variant="error"
+              />
+              <InfoText
+                text={dbError !== null ? dbError.message : ''}
+                fontFamily="Montserrat"
+                variant="error"
+              />
+            </div>
+          </div>
+          <div
+            className={
+              loadingFlag
+                ? clsx(
                   styles['form-button-container'],
                   styles['form-button-container-loading']
                 )
-              : styles['form-button-container']
-          }
-        >
-          {loadingFlag ? (
-            <ApplicationSpinner />
-          ) : (
-            <>
-              <div style={{ height: 50, width: 100 }}>
-                <ApplicationButton
-                  variant="cancel"
-                  clickAction={() => unmountFunc()}
-                  dimension={{ height: '100%', width: '100%' }}
-                >
-                  Cancel
-                </ApplicationButton>
-              </div>
-              <div style={{ height: 50, width: 100 }}>
-                <ApplicationButton
-                  variant="default-not-padding"
-                  clickAction={handleSubmit(submit)}
-                  dimension={{ height: '100%', width: '100%' }}
-                >
-                  Save
-                </ApplicationButton>
-              </div>
-            </>
-          )}
-        </div>
-      </form>
-      {completed && (
-        <InfoText
-          text={onCompleteText}
-          fontFamily="Montserrat"
-          variant="success"
-        />
-      )}
-    </div>
-  );
-};
+                : styles['form-button-container']
+            }
+          >
+            {loadingFlag ? (
+              <ApplicationSpinner />
+            ) : (
+              <>
+                <div style={{ height: 50, width: 100 }}>
+                  <ApplicationButton
+                    variant="cancel"
+                    clickAction={() => unmountFunc()}
+                    dimension={{ height: '100%', width: '100%' }}
+                  >
+                    Cancel
+                  </ApplicationButton>
+                </div>
+                <div style={{ height: 50, width: 100 }}>
+                  <ApplicationButton
+                    variant="default-not-padding"
+                    clickAction={handleSubmit(submit)}
+                    dimension={{ height: '100%', width: '100%' }}
+                  >
+                    Save
+                  </ApplicationButton>
+                </div>
+              </>
+            )}
+          </div>
+        </form>
+        {completed && (
+          <InfoText
+            text={onCompleteText}
+            fontFamily="Montserrat"
+            variant="success"
+          />
+        )}
+      </div>
+    );
+  };
 
 export default ProductFamily;
