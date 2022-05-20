@@ -38,6 +38,9 @@ const SideNavItem: React.FC<{
         break;
       case 'LOGOUT':
         navigate('/logout');
+        break;
+      case "LOCATION":
+        navigate("/location")
     }
   };
 

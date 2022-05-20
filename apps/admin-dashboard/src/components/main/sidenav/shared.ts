@@ -10,7 +10,8 @@ import {
   MetaIcon,
   OrdersIcon,
   ProductsIcon,
-  CMIIcon
+  CMIIcon,
+  Location
 } from '@admin/assets';
 import React from 'react';
 
@@ -63,11 +64,16 @@ export const SideNavItemList: Array<{
     },
     {
       id: Keys[6],
+      value: SideNavItemObject['LOCATION'].value,
+      icon: Location,
+    },
+    {
+      id: Keys[7],
       value: SideNavItemObject['COUPONS_AND_GIFTS'].value,
       icon: CouponsGiftsIcon,
     },
     {
-      id: Keys[7],
+      id: Keys[8],
       value: SideNavItemObject['LOGOUT'].value,
       icon: LogoutIcon,
     },

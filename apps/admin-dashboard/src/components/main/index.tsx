@@ -19,6 +19,7 @@ import { Meta } from '../Options/meta';
 import { Logout } from '../Options/logout';
 import { Fonts } from '../Options/CMI/fonts/fonts';
 import { Art } from '../Options/CMI/art/art';
+import { Location } from '../Options/Location/location';
 
 const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);
@@ -47,6 +48,7 @@ const Main: React.FC = () => {
             <Route path="/cmi/art" element={<Art />} />
           </Route>
           <Route path="/logout" element={<Logout />} />
+          <Route path="/location" element={<Location />} />
         </Routes>
       </div>
     </>

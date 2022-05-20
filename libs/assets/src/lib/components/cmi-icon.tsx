@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CloseCircle: React.FC<{ stroke: string }> = ({ stroke }) => {
+const CMI: React.FC<{ stroke: string }> = ({ stroke }) => {
     return (
         <svg
             width="24"
@@ -17,4 +17,4 @@ const CloseCircle: React.FC<{ stroke: string }> = ({ stroke }) => {
     );
 };
 
-export default CloseCircle;
+export default CMI;

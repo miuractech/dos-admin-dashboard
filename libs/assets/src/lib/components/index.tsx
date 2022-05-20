@@ -11,6 +11,7 @@ import CloseCircle from './close-circle';
 import UploadIcon from './upload';
 import ColorWheel from './color-wheel';
 import CMIIcon from './cmi-icon';
+import Location from './location-icon';
 
 export {
   DropoutStoreLogo,
@@ -25,5 +26,6 @@ export {
   CloseCircle,
   UploadIcon,
   ColorWheel,
-  CMIIcon
+  CMIIcon,
+  Location
 };

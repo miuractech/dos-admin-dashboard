@@ -3,11 +3,11 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { update } from '../../components/top-bar.slice'
 import { DataGrid } from './fontsTable'
-import "./style.css"
 import ApplicationButton from '../../../global/buttons'
 import { firestore } from '../../../../config/firebase.config'
 import PopUpAction from './popUpFonts'
 import { doc, updateDoc } from 'firebase/firestore'
+import "../../style.css"
 
 export const Fonts = () => {
 

@@ -7,6 +7,7 @@ import { Logout } from '../Options/logout';
 import { Merchants } from '../Options/merchents';
 import { Orders } from '../Options/orders';
 import { Products } from '../Options/products';
+import { Location } from '../Options/Location/location';
 
 // To Control the State of Selected SideNav Item
 export const selectedSideNavItem$ = new BehaviorSubject('META');
@@ -22,6 +23,7 @@ export const SideNavItemObject: {
   CUSTOMERS: { value: 'Customers', mainComponent: Customers },
   META: { value: 'Meta', mainComponent: Meta },
   CMI: { value: 'CMI', mainComponent: CMI },
+  LOCATION: { value: "Location", mainComponent: Location },
   COUPONS_AND_GIFTS: { value: 'Coupons and Gifts', mainComponent: Coupons },
   LOGOUT: { value: 'Logout', mainComponent: Logout },
 };
