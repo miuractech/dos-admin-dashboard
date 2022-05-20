@@ -1,4 +1,5 @@
 import { Box, Modal, Typography } from '@mui/material'
+import DOSInput from '../../../UI/dosinput/dosinput';
 import React from 'react'
 import ApplicationTextInput from '../../global/text-input';
 
@@ -31,6 +32,7 @@ export const LocationModal = ({ open, setOpen }: LocationModalPorps) => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
+                <DOSInput />
                 <Typography variant='h4' style={{ textAlign: "center", margin: "20px 0 50px" }}>Location</Typography>
                 <div className='lableInput'>
                     <Typography style={{ width: "100px" }}>Font Name</Typography>
