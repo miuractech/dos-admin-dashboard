@@ -18,6 +18,8 @@ import {
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 import produce from 'immer';
 import { batchCommitTypes } from '../../../../Midl/meta-products/hooks/product-type/helpers';
+import { Typography } from '@mui/material';
+import SimpleModal from '../../../global/simpleModal/modal';
 
 const ProductType: React.FC = () => {
   useSubject(showProductAddForm$);
@@ -43,6 +45,9 @@ const ProductType: React.FC = () => {
       {dndInit && (
         <div className={styles['dnd-container']}>
           <div className={styles['inner']}>
+            <Typography  >
+              Save the changes
+            </Typography>
             <div style={{ height: 35, width: 80 }}>
               <ApplicationButton
                 variant="disable"
@@ -71,9 +76,9 @@ const ProductType: React.FC = () => {
           </div>
         </div>
       )}
-      <ApplicationModal mounted={showProductAddForm$.value}>
-        <AddProductTypeForm></AddProductTypeForm>
-      </ApplicationModal>
+      <SimpleModal open={showProductAddForm$.value} onClose={() => showProductAddForm$.next(false)} style={{}}>
+        <AddProductTypeForm />
+      </SimpleModal>
       <ListItems />
     </div>
   );

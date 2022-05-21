@@ -2,11 +2,11 @@
 @use '../../../../utils/styles/mixins' as mixins;
 
 .add-form {
-  height: 80%;
-  width: 80%;
+  height: 100%;
+  width: 100%;
   background: variables.$gloval-white;
   font-family: Montserrat;
-  overflow: scroll;
+  // overflow: scroll;
 }
 
 .add-form-heading {
@@ -21,9 +21,13 @@
 }
 .add-form-body {
   display: flex;
+  min-width: 600px;
+  max-width: 900px;
+  max-height: 800px;
   flex-direction: column;
-  margin: 3rem 0 3rem 0;
-  padding: 0 15rem 0 15rem;
+  // margin: 3rem 0 3rem 0;
+  padding: 3rem 3rem 0 3rem;
+  overflow-y: auto;
   .field-container {
     display: grid;
     grid-template-columns: 30% 1fr;
@@ -36,6 +40,8 @@
 }
 .add-form-button {
   @include mixins.flex-space-between();
+  width: 250px;
+  margin: 2rem auto;
 }
 
 .inner-form-container {
@@ -100,5 +106,12 @@
   .topbar {
     margin: 1rem;
     @include mixins.flex-space-between();
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .add-form-body{
+    margin: 1rem;
+    padding: 0 ;
   }
 }

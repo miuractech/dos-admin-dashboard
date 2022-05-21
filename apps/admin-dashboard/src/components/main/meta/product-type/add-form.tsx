@@ -30,17 +30,28 @@ import addProductType, {
   TAddFormSchema,
 } from '../../../../Midl/meta-products/hooks/product-type/add-product.type';
 import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 import {
   ApplicationErrorHandler,
   useAsyncCall,
   useSubject,
 } from 'rxf-rewrite/dist';
 import ApplicationSpinner from '../../../global/spinner';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   setMetaProductTypeAddError,
   setAddedMetaProductType,
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
+import DOSInput from '../../../../UI/dosinput/dosinput';
+import { Menu, MenuItem } from '@mui/material';
+import useGetFamilies from '../../../../Midl/meta-products/hooks/family/get-families';
+import { orderBy } from 'firebase/firestore';
+import { RootState } from '../../../../store';
+import { BehaviorSubject } from 'rxjs';
+import { TMetaProductFamily, TMetaProductSubCategory } from '../../../../Midl/meta-products/types';
+import useGetCategories from '../../../../Midl/meta-products/hooks/category/get-categories';
+import { setMetaProductCategoriesByFamily } from '../../../../Midl/meta-products/store/meta-product.category.slice';
+import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-category/get-subcategories';
 
 const AddProductTypeForm: React.FC = () => {
   const { register, handleSubmit, setValue, watch } = useForm<TAddFormSchema>({
@@ -67,11 +78,12 @@ const AddProductTypeForm: React.FC = () => {
       <div className={styles['add-form-heading']}>
         <div></div>
         <h3>Product Type</h3>
-        <ButtonWithoutStyles
+        <div />
+        {/* <ButtonWithoutStyles
           clickAction={() => showProductAddForm$.next(false)}
         >
           <CloseCircle />
-        </ButtonWithoutStyles>
+        </ButtonWithoutStyles> */}
       </div>
       <form
         className={styles['add-form-body']}
@@ -81,7 +93,7 @@ const AddProductTypeForm: React.FC = () => {
       >
         <ProductNameField register={register} />
         <ProductDescriptionField register={register} />
-        <ProductMetaFields register={register} />
+        <ProductMetaFields register={register} watch={watch} />
         <ProductDisplayImage
           register={register}
           setValue={setValue}
@@ -146,7 +158,8 @@ export const ProductNameField: React.FC<{
     <div className={styles['field-container']}>
       <label>Type Name:</label>
       <div>
-        <ApplicationTextInput {...register('name')} />
+        {/* <ApplicationTextInput {...register('name')} /> */}
+        <DOSInput fullWidth forminput={{...register('name')}} />
       </div>
     </div>
   );
@@ -159,45 +172,102 @@ export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
     <div className={styles['field-container']}>
       <label>Description:</label>
       <div>
-        <textarea
+        {/* <textarea
           style={{ fontStyle: 'Montserrat' }}
           rows={10}
           cols={50}
           {...register('description')}
+        /> */}
+        <DOSInput 
+        fullWidth 
+        multiline
+        minRows={3}
+        style={{height:'auto'}}
+        InputProps={{style:{height:'auto',borderRadius:25}}}
+        forminput={{...register('description')}} 
         />
       </div>
     </div>
   );
 };
-
-const ProductMetaFields: React.FC<{ register: TRegister }> = ({ register }) => {
+const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
+  null
+);
+const ProductMetaFields: React.FC<{ register: TRegister, watch:any }> = ({ register, watch }) => {
+  const { getFamilies } = useGetFamilies(true);
+  const dispatch = useDispatch();
+  useSubject(selectedProductFamily$);
+  const { getSubCategories } = useGetSubCategories(true);
+  const families = useSelector((state: RootState) => state.metaProductFamily);
+  const { getCategories } = useGetCategories(true);
+  const {
+    metaProductCategories,
+    metaProductCategoriesByFamily,
+  } = useSelector((state: RootState) => state.metaProductCategory);
+  const { metaProductSubCategories } = useSelector(
+    (state: RootState) => state.metaProductSubCategory
+  );
+  const [localSubCategory, setLocalSubCategory] = React.useState<
+    Array<TMetaProductSubCategory>
+  >([]);
+  React.useEffect(() => {
+    families.metaProductFamilies.length === 0 &&
+      getFamilies([orderBy('index')]);
+  }, [families.metaProductFamilies.length, getFamilies]);
+  React.useEffect(() => {
+    metaProductCategories.length === 0 && getCategories([orderBy('index')]);
+    families.metaProductFamilies.length > 0 &&
+      selectedProductFamily$.next(families.metaProductFamilies[0]);
+  }, []);
+  React.useEffect(() => {
+    metaProductSubCategories.length === 0 &&
+      getSubCategories([orderBy('index')]);
+      families.metaProductFamilies.length > 0 &&
+      selectedProductFamily$.next(families.metaProductFamilies[0]);
+  }, []);
+  React.useEffect(() => {
+    const filtered = metaProductCategories.filter(
+      (a) => a.familyId === watch('familyId')
+    );
+    dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
+  }, [selectedProductFamily$.value, metaProductCategories,watch('familyId')]);
+  React.useEffect(() => {
+    const filtered = metaProductSubCategories.filter(
+      (s) => s.familyId === selectedProductFamily$.value?.id
+    );
+    setLocalSubCategory(_.orderBy(filtered, 'index'));
+  }, [watch('familyId'), watch('categoryId')]);
+  
   return (
     <>
       <div className={styles['field-container']}>
         <label>FamilyId:</label>
         <div>
-          <ApplicationSelectInput {...register('familyId')}>
-            <ApplicationOptionElement value="1">1</ApplicationOptionElement>
-            <ApplicationOptionElement value="2">2</ApplicationOptionElement>
-          </ApplicationSelectInput>
+          <DOSInput select fullWidth {...register('familyId')}>
+          {families.metaProductFamilies?.map(({id,name})=>
+            <MenuItem  value={id}>{name}</MenuItem>
+          )}
+          </DOSInput>
         </div>
       </div>
       <div className={styles['field-container']}>
         <label>CategoryId:</label>
         <div>
-          <ApplicationSelectInput {...register('categoryId')}>
-            <ApplicationOptionElement value="1">1</ApplicationOptionElement>
-            <ApplicationOptionElement value="2">2</ApplicationOptionElement>
-          </ApplicationSelectInput>
+        <DOSInput select fullWidth {...register('categoryId')}>
+          {metaProductCategoriesByFamily?.map(({id,name})=>
+            <MenuItem  value={id}>{name}</MenuItem>
+          )}
+          </DOSInput>
         </div>
       </div>
       <div className={styles['field-container']}>
         <label>SubCategoryId:</label>
         <div>
-          <ApplicationSelectInput {...register('subcategoryId')}>
-            <ApplicationOptionElement value="1">1</ApplicationOptionElement>
-            <ApplicationOptionElement value="2">2</ApplicationOptionElement>
-          </ApplicationSelectInput>
+        <DOSInput select fullWidth {...register('categoryId')}>
+          {(localSubCategory.length>0) && localSubCategory.map(({id,name})=>
+            <MenuItem  value={id}>{name}</MenuItem>
+          )}
+          </DOSInput>
         </div>
       </div>
     </>
