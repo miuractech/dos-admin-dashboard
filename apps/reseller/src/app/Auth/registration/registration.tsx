@@ -35,7 +35,7 @@ export function Registration(props: Registration1Props) {
   const [selected, setSelected] = useState("IN");
   const [dialCode, setDialCode] = useState("")
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema)
   })
 
   const onSubmit = (data: any) => {

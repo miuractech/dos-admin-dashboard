@@ -11,11 +11,12 @@ type forminputType = TextFieldProps & rhfType
 
 export function DOSInput(props: forminputType) {
   return (
-        <TextField 
-        {...props} 
-        InputProps={{style:{borderRadius:40, height:35,...props.InputProps?.style},...props.InputProps}} 
-        inputProps={{ style: { background: 'white',...props.inputProps?.style },...props.inputProps, ...props.forminput }}
-        />
+    <TextField
+      {...props}
+      // style={{ height: 35, ...props.style }}
+      InputProps={{ style: { borderRadius: 40, height: 30, ...props.InputProps?.style }, ...props.InputProps }}
+      inputProps={{ style: { background: 'white', padding: '0px 16px', ...props.inputProps?.style }, ...props.inputProps, ...props.forminput }}
+    />
   );
 }
 

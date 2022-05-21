@@ -18,16 +18,17 @@ export const Location = () => {
                 <div style={{ flexGrow: "20" }}>
                     <Typography variant='h5'>Location</Typography>
                 </div>
-                <div style={{ flexGrow: "1" }}>
+                <div style={{ flexGrow: "1", height: "50px", width: "180px" }}>
                     <ApplicationButton
                         variant="default"
                         clickAction={handleOpen}
+                        dimension={{ height: '100%', width: '100%' }}
                     >
                         <AddIcon /> <span>Add Location</span>
                     </ApplicationButton>
                 </div>
             </div>
-            <LocationTable />
+            <LocationTable setOpen={setOpen} />
         </div >
     )
 }

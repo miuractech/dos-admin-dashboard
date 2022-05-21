@@ -9,15 +9,17 @@ import App from './app/app';
 
 export const theme = createTheme({
   palette: {
-    // type: 'light',
     primary: {
       main: '#161c33',
     },
     secondary: {
       main: '#ff002e',
     },
+    success: {
+      main: '#34A853',
+    },
     error: {
-      main: '#bd5857',
+      main: '#FE2121',
     },
     text: {
       secondary: 'rgba(249,249,249,0.54)',
