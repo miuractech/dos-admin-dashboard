@@ -30,6 +30,9 @@ import { PRODUCT_FAMILY_DND_ID } from '../../../utils/settings';
 import produce from 'immer';
 import { batchCommitFamily } from '../../../Midl/meta-products/hooks/family/helpers-family';
 import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
+import SimpleModal from '../../global/simpleModal/modal';
+import DOSInput from '../../../UI/dosinput/dosinput';
+import { Typography } from '@mui/material';
 
 const showAddForm$ = new BehaviorSubject(false);
 
@@ -131,7 +134,8 @@ const ProductFamily: React.FC = () => {
           </div>
         )}
       </Droppable>
-      <ApplicationModal mounted={showAddForm$.value}>
+      {/* <SimpleModal mounted={showAddForm$.value}> */}
+      <SimpleModal open={showAddForm$.value} onClose={(() => showAddForm$.next(false))} >
         <Form
           dbError={dbError}
           onCompleteText={'Product Family Has been Successfully Created!'}
@@ -142,7 +146,7 @@ const ProductFamily: React.FC = () => {
           loadingFlag={loadingFlag}
           completed={completed}
         />
-      </ApplicationModal>
+      </SimpleModal>
     </div>
   );
 };
@@ -202,7 +206,7 @@ const List: React.FC<{
         </div>
       </div>
       <div className={styles['footer']}></div>
-      <ApplicationModal mounted={showEditForm}>
+      <SimpleModal open={showEditForm} onClose={() => setShowEditForm(false)}>
         <Form
           dbError={dbError}
           onCompleteText={'Changes Have Been Saved Successfully!'}
@@ -214,7 +218,7 @@ const List: React.FC<{
           productFamilyNameDefaultValue={family.name}
           loadingFlag={loadingFlag}
         />
-      </ApplicationModal>
+      </SimpleModal>
     </>
   );
 };
@@ -248,33 +252,19 @@ const Form: React.FC<{
 
     return (
       <div className={styles['product-form']}>
-        <div className={styles['product-form-heading']}>
-          <div></div>
-          <h3>Product Family</h3>
-          <ButtonWithoutStyles clickAction={() => unmountFunc()}>
-            <CloseCircle />
-          </ButtonWithoutStyles>
-        </div>
         <form onSubmit={handleSubmit(submit)}>
-          <div className={styles['product-form-body']}>
-            <label>Product Name:</label>
-            <div>
-              <ApplicationTextInput
-                defaultValue={productFamilyNameDefaultValue}
-                {...register('name')}
-              />
-              <InfoText
-                text={
-                  errors.name?.message !== undefined ? errors.name.message : ''
-                }
-                fontFamily="Montserrat"
-                variant="error"
-              />
-              <InfoText
-                text={dbError !== null ? dbError.message : ''}
-                fontFamily="Montserrat"
-                variant="error"
-              />
+          <div>
+            <div style={{ textAlign: "center" }}>
+              <Typography variant='h5' gutterBottom>Product Family</Typography>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", gap: "30px" }}>
+              <p>Product Name:</p>
+              <div>
+                <DOSInput
+                  defaultValue={productFamilyNameDefaultValue}
+                />
+              </div>
             </div>
           </div>
           <div
@@ -290,7 +280,7 @@ const Form: React.FC<{
             {loadingFlag ? (
               <ApplicationSpinner />
             ) : (
-              <>
+              <div style={{ display: "flex", gap: "30px" }}>
                 <div style={{ height: 50, width: 100 }}>
                   <ApplicationButton
                     variant="cancel"
@@ -309,18 +299,20 @@ const Form: React.FC<{
                     Save
                   </ApplicationButton>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </form>
-        {completed && (
-          <InfoText
-            text={onCompleteText}
-            fontFamily="Montserrat"
-            variant="success"
-          />
-        )}
-      </div>
+        {
+          completed && (
+            <InfoText
+              text={onCompleteText}
+              fontFamily="Montserrat"
+              variant="success"
+            />
+          )
+        }
+      </div >
     );
   };
 

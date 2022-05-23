@@ -56,13 +56,13 @@ import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-catego
 import { Clear, ColorLens } from '@mui/icons-material';
 
 const AddProductTypeForm: React.FC = () => {
-  const { register, handleSubmit, setValue, watch,formState:{errors} } = useForm<TAddFormSchema>({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
   });
   useSubject(showProductAddForm$);
   const dispatch = useDispatch();
   console.log(errors);
-  
+
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
     showProductAddForm$.value,
@@ -90,16 +90,13 @@ const AddProductTypeForm: React.FC = () => {
       </div>
       <form
         className={styles['add-form-body']}
-        onSubmit={handleSubmit((data) =>
-          {
-            console.log(data);
-            asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
-            
-          }
+        onSubmit={handleSubmit((data) => {
+          asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
+        }
         )}
       >
-        <ProductNameField register={register} />
-        <ProductDescriptionField register={register} />
+        <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
+        <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
         <ProductMetaFields register={register} watch={watch} />
         <ProductDisplayImage
           register={register}
@@ -108,7 +105,7 @@ const AddProductTypeForm: React.FC = () => {
         />
         <ProductSizeField initial={[]} setValue={setValue} />
         <ProductColorField initial={[]} setValue={setValue} />
-        <ProductBasePrice register={register} />
+        <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
 
         <div className={styles['add-form-button']}>
           {!loading ? (
@@ -147,35 +144,36 @@ const AddProductTypeForm: React.FC = () => {
 };
 
 const ProductBasePrice: React.FC<{
-  register: TRegister;
-}> = ({ register }) => {
+  register: TRegister, error: { message?: string }
+}> = ({ register, error }) => {
   return (
     <div className={styles['field-container']}>
       <label>Base Price:</label>
       <div>
-        <DOSInput fullWidth forminput={{ ...register('basePrice') }} />
-        {/* <ApplicationTextInput {...register('basePrice')} /> */}
+        <DOSInput fullWidth forminput={{ ...register('basePrice') }} error={Boolean(error)}
+          helperText={error.message} />
       </div>
     </div>
   );
 };
 
 export const ProductNameField: React.FC<{
-  register: TRegister;
-}> = ({ register }) => {
+  register: TRegister, error: { message?: string }
+}> = ({ register, error }) => {
   return (
     <div className={styles['field-container']}>
       <label>Type Name:</label>
       <div>
         {/* <ApplicationTextInput {...register('name')} /> */}
-        <DOSInput fullWidth forminput={{ ...register('name') }} />
+        <DOSInput fullWidth forminput={{ ...register('name') }} error={Boolean(error)}
+          helperText={error.message} />
       </div>
     </div>
   );
 };
 
-export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
-  register,
+export const ProductDescriptionField: React.FC<{ register: TRegister, error: { message?: string } }> = ({
+  register, error
 }) => {
   return (
     <div className={styles['field-container']}>
@@ -188,6 +186,8 @@ export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
           style={{ height: 'auto' }}
           InputProps={{ style: { height: 'auto', borderRadius: 25 } }}
           forminput={{ ...register('description') }}
+          error={Boolean(error)}
+          helperText={error.message}
         />
       </div>
     </div>
@@ -240,15 +240,14 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
     );
     setLocalSubCategory(_.orderBy(filtered, 'index'));
   }, [watch('familyId'), watch('categoryId')]);
-  console.log(families.metaProductFamilies,metaProductCategoriesByFamily,localSubCategory);
-  
+
 
   return (
     <>
       <div className={styles['field-container']}>
         <label>Family :</label>
         <div>
-          <DOSInput select fullWidth forminput={{...register('familyId')}}>
+          <DOSInput select fullWidth forminput={{ ...register('familyId') }}>
             {families.metaProductFamilies?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -258,7 +257,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
       <div className={styles['field-container']}>
         <label>Category :</label>
         <div>
-          <DOSInput select fullWidth forminput={{...register('categoryId')}}>
+          <DOSInput select fullWidth forminput={{ ...register('categoryId') }}>
             {metaProductCategoriesByFamily?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -268,7 +267,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
       <div className={styles['field-container']}>
         <label>SubCategory :</label>
         <div>
-          <DOSInput select fullWidth forminput={{...register('subcategoryId')}}>
+          <DOSInput select fullWidth forminput={{ ...register('subcategoryId') }}>
             {(localSubCategory.length > 0) && localSubCategory.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -315,10 +314,10 @@ const ProductDisplayImage: React.FC<{
             />
           </div>
         ) : (
-          <div style={{height:100,width:100}}>
+          <div style={{ height: 100, width: 100 }}>
             <input
               type="file"
-              style={{ display: 'none',  }}
+              style={{ display: 'none', }}
               {...register('displayImage')}
               ref={(e) => {
                 register('displayImage').ref(e);
@@ -372,7 +371,7 @@ export const ProductSizeField: React.FC<{
     <div className={styles['field-container']}>
       <label>Sizes:</label>
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap:8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {sizeLocal.map((s) => (
             <Chip
               key={s}
@@ -394,11 +393,11 @@ export const ProductSizeField: React.FC<{
       </div>
       <SimpleModal open={showForm} onClose={() => setShowForm(false)} >
         <div className={styles['inner-form-container']}>
-        <Typography align='center' variant='h5' sx={{marginBottom:4}} gutterBottom >
+          <Typography align='center' variant='h5' sx={{ marginBottom: 4 }} gutterBottom >
             Add new size
-        </Typography>
-          <div style={{textAlign:'center'}}>
-            <DOSInput placeholder='size name...' forminput={{...register('val')}}  />
+          </Typography>
+          <div style={{ textAlign: 'center' }}>
+            <DOSInput placeholder='size name...' forminput={{ ...register('val') }} />
           </div>
           <div className={styles['button-container']}>
             <ApplicationButton
@@ -471,7 +470,7 @@ export const ProductColorField: React.FC<{
     <div className={styles['field-container']}>
       <label>Colors:</label>
       <div>
-        <div style={{ display: 'flex', alignItems: 'center',gap:8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {colorLocal.map((c) => (
             <Chip
               key={c.colorName}
@@ -481,7 +480,7 @@ export const ProductColorField: React.FC<{
               onDelete={() => {
                 removeColorItem(c.colorName);
               }}
-              // fontColor={c.colorCode}
+            // fontColor={c.colorCode}
             />
           ))}
           <ApplicationButton
@@ -496,33 +495,34 @@ export const ProductColorField: React.FC<{
       </div>
       <SimpleModal open={showForm} onClose={() => setShowForm(false)}>
         <div className={styles['inner-form-container']}>
-        <Typography align='center' variant='h5' sx={{marginBottom:4}} gutterBottom >
+          <Typography align='center' variant='h5' sx={{ marginBottom: 4 }} gutterBottom >
             Add new Color
-        </Typography>
+          </Typography>
           <div className={styles['field']}>
             <label>Name:</label>
-            <DOSInput forminput={{...register('colorName')}} />
+            <DOSInput forminput={{ ...register('colorName') }} />
           </div>
           <div className={styles['field']}>
             <label>Code:</label>
-            <DOSInput 
-            forminput={{...register('colorCode')}} 
-            InputProps={{endAdornment:<IconButton
-              onClick={(e)=>setShowColorPicker(e.currentTarget)}
-              >
-                <ColorLens />
-                {/* <ColorWheel /> */}
-              </IconButton>,
-              style:{height:'100%'},
-              startAdornment:
-              <div
-              style={{height:20,width:20,borderRadius:'50%',background:watch('colorCode')}}
-              />
+            <DOSInput
+              forminput={{ ...register('colorCode') }}
+              InputProps={{
+                endAdornment: <IconButton
+                  onClick={(e) => setShowColorPicker(e.currentTarget)}
+                >
+                  <ColorLens />
+                  {/* <ColorWheel /> */}
+                </IconButton>,
+                style: { height: '100%' },
+                startAdornment:
+                  <div
+                    style={{ height: 20, width: 20, borderRadius: '50%', background: watch('colorCode') }}
+                  />
               }}
             />
-              
+
             <Popover
-            anchorEl={showColorPicker}
+              anchorEl={showColorPicker}
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'left',
@@ -530,15 +530,15 @@ export const ProductColorField: React.FC<{
               transformOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
-              }} open={Boolean(showColorPicker)} onClose={()=>setShowColorPicker(false)} >
-            <ChromePicker
-                  color={colorPicker}
-                  onChange={(res) => {
-                    setColorPicker(res.hex);
-                  }}
-                />
-          </Popover>
-                
+              }} open={Boolean(showColorPicker)} onClose={() => setShowColorPicker(false)} >
+              <ChromePicker
+                color={colorPicker}
+                onChange={(res) => {
+                  setColorPicker(res.hex);
+                }}
+              />
+            </Popover>
+
           </div>
           <div className={styles['button-container']}>
             <ApplicationButton
