@@ -10,7 +10,7 @@ interface IButton {
     | 'enable'
     | 'default'
     | 'default-not-padding';
-  clickAction: () => void;
+  clickAction: (e:any) => void;
   dimension?: {
     height: string;
     width: string;
@@ -39,7 +39,7 @@ const ApplicationButton: React.FC<IButton> = ({
   return (
     <button
       style={styleObject}
-      onClick={() => clickAction()}
+      onClick={(e) => clickAction(e)}
       className={buttonObject[variant]}
       disabled={disabled}
     >

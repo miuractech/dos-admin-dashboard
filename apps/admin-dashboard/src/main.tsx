@@ -67,6 +67,15 @@ export const theme = createTheme({
       fontFamily: 'Montserrat',
     },
   },
+  components:{
+    MuiTab:{
+      styleOverrides:{
+        textColorPrimary:{
+          color:'#666'
+        }
+      }
+    }
+  }
 });
 
 ReactDOM.render(

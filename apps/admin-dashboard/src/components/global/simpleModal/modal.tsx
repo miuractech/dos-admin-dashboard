@@ -24,9 +24,10 @@ export type simpleModalProps = {
   open:boolean, 
   onClose:any, 
   children:JSX.Element,
-  style?:any, 
+  style?:any,
+  disableCloseButton?:boolean 
 }
-export default function SimpleModal({open, onClose, children,style, ...rop}:simpleModalProps) {
+export default function SimpleModal({open, onClose, children,style,disableCloseButton, ...rop}:simpleModalProps) {
   const inlineStyle = style?{...modalStyle,...style}:modalStyle
   return (
 
@@ -38,11 +39,11 @@ export default function SimpleModal({open, onClose, children,style, ...rop}:simp
         {...rop}
       >
           <div style={inlineStyle} >
-              <div
+              {!disableCloseButton && <div
               style={{
                   position: 'absolute',
                   right:16
-              }}
+              }}  
               >
                   <IconButton
                   size="small"
@@ -54,7 +55,7 @@ export default function SimpleModal({open, onClose, children,style, ...rop}:simp
                   >
                       <Clear fontSize='inherit'/>
                   </IconButton>
-              </div>
+              </div>}
             {children}
           </div>
       </Modal>

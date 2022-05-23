@@ -1,7 +1,7 @@
 import { CloseCircle, ColorWheel, UploadIcon } from '@admin/assets';
 import { yupResolver } from '@hookform/resolvers/yup';
 import usePreviewImage from '../../../../hooks/preview-image';
-import React from 'react';
+import React, { useState } from 'react';
 import { ChromePicker } from 'react-color';
 import { useForm } from 'react-hook-form';
 import ApplicationButton, {
@@ -44,7 +44,7 @@ import {
   setAddedMetaProductType,
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 import DOSInput from '../../../../UI/dosinput/dosinput';
-import { Button, Chip, IconButton, Menu, MenuItem, Popover, Typography } from '@mui/material';
+import { Button, Chip, IconButton, Menu, MenuItem, Popover, Slide, Tab, Tabs, Typography } from '@mui/material';
 import useGetFamilies from '../../../../Midl/meta-products/hooks/family/get-families';
 import { orderBy } from 'firebase/firestore';
 import { RootState } from '../../../../store';
@@ -54,6 +54,7 @@ import useGetCategories from '../../../../Midl/meta-products/hooks/category/get-
 import { setMetaProductCategoriesByFamily } from '../../../../Midl/meta-products/store/meta-product.category.slice';
 import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-category/get-subcategories';
 import { Clear, ColorLens } from '@mui/icons-material';
+import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 
 const AddProductTypeForm: React.FC = () => {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TAddFormSchema>({
@@ -61,11 +62,14 @@ const AddProductTypeForm: React.FC = () => {
   });
   useSubject(showProductAddForm$);
   const dispatch = useDispatch();
-  console.log(errors);
-
+  const [tab, setTab] = useState(0)
+  const containerRef = React.useRef(null);
+  const [basicInfo, setbasicInfo] = useState({})
+  const [imagesInfo, setImagesInfo] = useState({})
+  const [inventoryInfo, setInventoryInfo] = useState({})
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
-    showProductAddForm$.value,
+    Boolean(showProductAddForm$.value),
     (res) => {
       if (res instanceof ApplicationErrorHandler)
         dispatch(setMetaProductTypeAddError(res.errorObject));
@@ -75,9 +79,10 @@ const AddProductTypeForm: React.FC = () => {
       }
     }
   );
-
+    console.log(basicInfo,imagesInfo,inventoryInfo);
+    
   return (
-    <div className={styles['add-form']}>
+    <div className={styles['add-form']} ref={containerRef}> 
       <div className={styles['add-form-heading']}>
         <div></div>
         <h3>Product Type</h3>
@@ -88,57 +93,123 @@ const AddProductTypeForm: React.FC = () => {
           <CloseCircle />
         </ButtonWithoutStyles> */}
       </div>
+      <Tabs 
+      value={tab} 
+      onChange={(e,v)=>setTab(v)} 
+      aria-label="product type tabs"
+      variant='fullWidth'
+      textColor='primary'
+      >
+        <Tab label="Basic Info" {...a11yProps(0)} />
+        <Tab label="Side Images" {...a11yProps(1)} />
+        <Tab label="Inventory" {...a11yProps(2)} />
+      </Tabs>
       <form
         className={styles['add-form-body']}
-        onSubmit={handleSubmit((data) => {
-          asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
-        }
-        )}
+        
+        // onSubmit={handleSubmit((data) => {
+        //   asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
+        // }
+        // )}
       >
-        <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
-        <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
-        <ProductMetaFields register={register} watch={watch} />
-        <ProductDisplayImage
-          register={register}
-          setValue={setValue}
-          watch={watch}
-        />
-        <ProductSizeField initial={[]} setValue={setValue} />
-        <ProductColorField initial={[]} setValue={setValue} />
-        <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
+        <Slide direction="right" in={tab === 0} mountOnEnter unmountOnExit container={containerRef.current} >
+        <div
+          
+          >
+            <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
+            <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
+            <ProductMetaFields register={register} watch={watch} />
+            <ProductDisplayImage
+              register={register}
+              setValue={setValue}
+              watch={watch}
+            />
+            <ProductSizeField initial={[]} setValue={setValue} />
+            <ProductColorField initial={[]} setValue={setValue} />
+            <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
+          </div>
+        </Slide>
+
+        <Slide direction="right" in={tab === 1} mountOnEnter unmountOnExit container={containerRef.current}>
+          <div
+          
+          >
+            side image
+          </div>
+        </Slide>
+
+        <Slide direction="right" in={tab === 2} mountOnEnter unmountOnExit container={containerRef.current}>
+        <div
+          >
+           inventoruy
+          </div>
+        </Slide>
 
         <div className={styles['add-form-button']}>
           {!loading ? (
             <>
-              <input
+              <Button
+                variant='outlined'
+                onClick={handleSubmit((data) =>{
+                  switch (tab) {
+                    case 0:
+                      showProductAddForm$.next('exit');
+                      break;
+                    case 1:
+                        console.log(data);
+                        setImagesInfo(data)
+                        setTab(t=>t-1)
+                        break;
+                    case 2:
+                      setTab(t=>t-1)
+                      break;
+                    default:
+                      setTab(0)
+                  }
+                })}
+                
+              >
+                {tab===0?'Cancel':'back'}
+                
+              </Button>
+              <Button
                 // variant="contained"
                 // color='secondary'
-                // onClick={() => {
-                //   handleSubmit((data) =>{
-                //     console.log(data);                    
-                //     asyncWrapper({
-                //       id: uuidv4(),
-                //       form: data,
-                //       createdBy: 'Somnath',
-                //     })}
-                //   );
-                // }}
-                type='submit'
-              />
-              <ApplicationButton
-                variant="cancel"
-                clickAction={() => {
-                  showProductAddForm$.next(false);
-                }}
+                onClick={handleSubmit((data) =>{
+                  alert('in')
+                  switch (tab) {
+                    case 0:
+                        setbasicInfo(data)
+                        setTab(1)
+                      break;
+                    case 1: 
+                      setImagesInfo(data)
+                      setTab(2)
+                        break;
+                    case 2:               
+                        asyncWrapper({
+                          id: uuidv4(),
+                          form: {...basicInfo,...imagesInfo,...data},
+                          createdBy: 'Somnath',
+                        })
+                      break;
+                    default:
+                      setTab(0)
+                  }
+                })}
+                
+                // type='submit'
+                variant='contained'
               >
-                Cancel
-              </ApplicationButton>
+                {tab<2?'Next':'submit'}
+              </Button>
             </>
           ) : (
             <ApplicationSpinner />
           )}
         </div>
       </form>
+      { showProductAddForm$.value ==='exit' && <AreYouSure text={'discard your changes?'} open={showProductAddForm$.value ==='exit'} onClose={() => showProductAddForm$.next(true)} discard={()=>showProductAddForm$.next(false)} />}
     </div>
   );
 };
@@ -150,7 +221,7 @@ const ProductBasePrice: React.FC<{
     <div className={styles['field-container']}>
       <label>Base Price:</label>
       <div>
-        <DOSInput fullWidth forminput={{ ...register('basePrice') }} error={Boolean(error)}
+        <DOSInput fullWidth forminput={{ ...register('basePrice') }} error={Boolean(error.message)}
           helperText={error.message} />
       </div>
     </div>
@@ -165,8 +236,12 @@ export const ProductNameField: React.FC<{
       <label>Type Name:</label>
       <div>
         {/* <ApplicationTextInput {...register('name')} /> */}
-        <DOSInput fullWidth forminput={{ ...register('name') }} error={Boolean(error)}
-          helperText={error.message} />
+        <DOSInput 
+        fullWidth 
+        forminput={{ ...register('name') }} 
+        error={Boolean(error.message)}
+        helperText={error.message} 
+        />
       </div>
     </div>
   );
@@ -183,10 +258,10 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
           fullWidth
           multiline
           minRows={3}
-          style={{ height: 'auto' }}
-          InputProps={{ style: { height: 'auto', borderRadius: 25 } }}
+          // style={{ height: 'auto' }}
+          InputProps={{ style: { height: 'auto', borderRadius: 16,padding:'12px 0px' }}}
           forminput={{ ...register('description') }}
-          error={Boolean(error)}
+          error={Boolean(error.message)}
           helperText={error.message}
         />
       </div>
@@ -382,7 +457,8 @@ export const ProductSizeField: React.FC<{
             />
           ))}
           <ApplicationButton
-            clickAction={() => {
+            clickAction={(e) => {
+              e.preventDefault()
               setShowForm(true);
             }}
             variant="default-not-padding"
@@ -485,7 +561,8 @@ export const ProductColorField: React.FC<{
           ))}
           <ApplicationButton
             variant="default-not-padding"
-            clickAction={() => {
+            clickAction={(e) => {
+              e.preventDefault()
               setShowForm(true);
             }}
           >
@@ -563,3 +640,11 @@ export const ProductColorField: React.FC<{
 };
 
 export default AddProductTypeForm;
+
+
+function a11yProps(index: number) {
+  return {
+    id: `tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}

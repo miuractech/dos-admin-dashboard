@@ -14,7 +14,7 @@ export type TRegister = UseFormRegister<any>;
 export type TSetValue = UseFormSetValue<any>;
 export type TWatch = UseFormWatch<any>;
 
-export const showProductAddForm$ = new BehaviorSubject(false);
+export const showProductAddForm$ = new BehaviorSubject<boolean | 'exit'>(false);
 
 const hexValidation = yup
   .string()
