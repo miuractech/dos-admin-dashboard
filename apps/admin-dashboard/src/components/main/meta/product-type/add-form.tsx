@@ -44,7 +44,7 @@ import {
   setAddedMetaProductType,
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 import DOSInput from '../../../../UI/dosinput/dosinput';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { Button, Chip, IconButton, Menu, MenuItem, Popover, Typography } from '@mui/material';
 import useGetFamilies from '../../../../Midl/meta-products/hooks/family/get-families';
 import { orderBy } from 'firebase/firestore';
 import { RootState } from '../../../../store';
@@ -53,15 +53,16 @@ import { TMetaProductFamily, TMetaProductSubCategory } from '../../../../Midl/me
 import useGetCategories from '../../../../Midl/meta-products/hooks/category/get-categories';
 import { setMetaProductCategoriesByFamily } from '../../../../Midl/meta-products/store/meta-product.category.slice';
 import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-category/get-subcategories';
-import { Clear } from '@mui/icons-material';
+import { Clear, ColorLens } from '@mui/icons-material';
 
 const AddProductTypeForm: React.FC = () => {
-  const { register, handleSubmit, setValue, watch } = useForm<TAddFormSchema>({
+  const { register, handleSubmit, setValue, watch,formState:{errors} } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
   });
   useSubject(showProductAddForm$);
   const dispatch = useDispatch();
-
+  console.log(errors);
+  
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
     showProductAddForm$.value,
@@ -90,7 +91,11 @@ const AddProductTypeForm: React.FC = () => {
       <form
         className={styles['add-form-body']}
         onSubmit={handleSubmit((data) =>
-          asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
+          {
+            console.log(data);
+            asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
+            
+          }
         )}
       >
         <ProductNameField register={register} />
@@ -108,20 +113,21 @@ const AddProductTypeForm: React.FC = () => {
         <div className={styles['add-form-button']}>
           {!loading ? (
             <>
-              <ApplicationButton
-                variant="default-not-padding"
-                clickAction={() => {
-                  handleSubmit((data) =>
-                    asyncWrapper({
-                      id: uuidv4(),
-                      form: data,
-                      createdBy: 'Somnath',
-                    })
-                  );
-                }}
-              >
-                Save
-              </ApplicationButton>
+              <input
+                // variant="contained"
+                // color='secondary'
+                // onClick={() => {
+                //   handleSubmit((data) =>{
+                //     console.log(data);                    
+                //     asyncWrapper({
+                //       id: uuidv4(),
+                //       form: data,
+                //       createdBy: 'Somnath',
+                //     })}
+                //   );
+                // }}
+                type='submit'
+              />
               <ApplicationButton
                 variant="cancel"
                 clickAction={() => {
@@ -234,13 +240,15 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
     );
     setLocalSubCategory(_.orderBy(filtered, 'index'));
   }, [watch('familyId'), watch('categoryId')]);
+  console.log(families.metaProductFamilies,metaProductCategoriesByFamily,localSubCategory);
+  
 
   return (
     <>
       <div className={styles['field-container']}>
-        <label>FamilyId:</label>
+        <label>Family :</label>
         <div>
-          <DOSInput select fullWidth {...register('familyId')}>
+          <DOSInput select fullWidth forminput={{...register('familyId')}}>
             {families.metaProductFamilies?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -248,9 +256,9 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
         </div>
       </div>
       <div className={styles['field-container']}>
-        <label>CategoryId:</label>
+        <label>Category :</label>
         <div>
-          <DOSInput select fullWidth {...register('categoryId')}>
+          <DOSInput select fullWidth forminput={{...register('categoryId')}}>
             {metaProductCategoriesByFamily?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -258,9 +266,9 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
         </div>
       </div>
       <div className={styles['field-container']}>
-        <label>SubCategoryId:</label>
+        <label>SubCategory :</label>
         <div>
-          <DOSInput select fullWidth {...register('categoryId')}>
+          <DOSInput select fullWidth forminput={{...register('subcategoryId')}}>
             {(localSubCategory.length > 0) && localSubCategory.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -307,10 +315,10 @@ const ProductDisplayImage: React.FC<{
             />
           </div>
         ) : (
-          <>
+          <div style={{height:100,width:100}}>
             <input
               type="file"
-              style={{ display: 'none' }}
+              style={{ display: 'none',  }}
               {...register('displayImage')}
               ref={(e) => {
                 register('displayImage').ref(e);
@@ -325,7 +333,7 @@ const ProductDisplayImage: React.FC<{
             >
               <UploadIcon />
             </UploadButton>
-          </>
+          </div>
         )}
       </div>
     </div>
@@ -338,7 +346,7 @@ export const ProductSizeField: React.FC<{
 }> = ({ setValue, initial }) => {
   const [sizeLocal, setSizeLocal] = React.useState<Array<string>>(initial);
   const [showForm, setShowForm] = React.useState(false);
-  const { register, watch } = useForm<{ val: string }>({
+  const { register, watch, reset } = useForm<{ val: string }>({
     resolver: yupResolver(sizeFormSchema),
   });
 
@@ -349,6 +357,8 @@ export const ProductSizeField: React.FC<{
   function submit() {
     if (!sizeLocal.includes(watch('val'))) {
       setSizeLocal((prev) => [...prev, watch('val')]);
+      setShowForm(false)
+      reset()
     }
   }
 
@@ -362,12 +372,14 @@ export const ProductSizeField: React.FC<{
     <div className={styles['field-container']}>
       <label>Sizes:</label>
       <div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap:8 }}>
           {sizeLocal.map((s) => (
-            <ApplicationCapsule
+            <Chip
               key={s}
-              val={s}
-              clickAction={(val) => removeSizeItem(val)}
+              label={s}
+              variant='outlined'
+              color='info'
+              onDelete={() => removeSizeItem(s)}
             />
           ))}
           <ApplicationButton
@@ -380,9 +392,14 @@ export const ProductSizeField: React.FC<{
           </ApplicationButton>
         </div>
       </div>
-      <ApplicationModal mounted={showForm}>
+      <SimpleModal open={showForm} onClose={() => setShowForm(false)} >
         <div className={styles['inner-form-container']}>
-          <ApplicationTextInput {...register('val')} />
+        <Typography align='center' variant='h5' sx={{marginBottom:4}} gutterBottom >
+            Add new size
+        </Typography>
+          <div style={{textAlign:'center'}}>
+            <DOSInput placeholder='size name...' forminput={{...register('val')}}  />
+          </div>
           <div className={styles['button-container']}>
             <ApplicationButton
               variant="cancel"
@@ -396,11 +413,11 @@ export const ProductSizeField: React.FC<{
                 submit();
               }}
             >
-              Savee
+              Save
             </ApplicationButton>
           </div>
         </div>
-      </ApplicationModal>
+      </SimpleModal>
     </div >
   );
 };
@@ -416,11 +433,12 @@ export const ProductColorField: React.FC<{
     register,
     watch,
     setValue: setValueInner,
+    reset
   } = useForm<{ colorName: string; colorCode: string }>({
     resolver: yupResolver(colorFormSchema),
   });
   const [colorPicker, setColorPicker] = React.useState('#ffffff');
-  const [showColorPicker, setShowColorPicker] = React.useState(false);
+  const [showColorPicker, setShowColorPicker] = React.useState<any>(false);
 
   function submit() {
     if (
@@ -430,6 +448,8 @@ export const ProductColorField: React.FC<{
         ...prev,
         { colorName: watch('colorName'), colorCode: watch('colorCode') },
       ]);
+      setShowForm(false)
+      reset()
     }
   }
 
@@ -451,15 +471,17 @@ export const ProductColorField: React.FC<{
     <div className={styles['field-container']}>
       <label>Colors:</label>
       <div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center',gap:8 }}>
           {colorLocal.map((c) => (
-            <ApplicationCapsule
+            <Chip
               key={c.colorName}
-              val={c.colorName}
-              clickAction={(val) => {
-                removeColorItem(val);
+              label={c.colorName}
+              variant='outlined'
+              color='info'
+              onDelete={() => {
+                removeColorItem(c.colorName);
               }}
-              fontColor={c.colorCode}
+              // fontColor={c.colorCode}
             />
           ))}
           <ApplicationButton
@@ -472,32 +494,51 @@ export const ProductColorField: React.FC<{
           </ApplicationButton>
         </div>
       </div>
-      <ApplicationModal mounted={showForm}>
+      <SimpleModal open={showForm} onClose={() => setShowForm(false)}>
         <div className={styles['inner-form-container']}>
+        <Typography align='center' variant='h5' sx={{marginBottom:4}} gutterBottom >
+            Add new Color
+        </Typography>
           <div className={styles['field']}>
             <label>Name:</label>
-            <ApplicationTextInput {...register('colorName')} />
+            <DOSInput forminput={{...register('colorName')}} />
           </div>
           <div className={styles['field']}>
             <label>Code:</label>
-            <ApplicationTextInput {...register('colorCode')} />
-            <ButtonWithoutStyles
-              clickAction={() => {
-                setShowColorPicker((prev) => !prev);
+            <DOSInput 
+            forminput={{...register('colorCode')}} 
+            InputProps={{endAdornment:<IconButton
+              onClick={(e)=>setShowColorPicker(e.currentTarget)}
+              >
+                <ColorLens />
+                {/* <ColorWheel /> */}
+              </IconButton>,
+              style:{height:'100%'},
+              startAdornment:
+              <div
+              style={{height:20,width:20,borderRadius:'50%',background:watch('colorCode')}}
+              />
               }}
-            >
-              <ColorWheel />
-            </ButtonWithoutStyles>
-            {showColorPicker && (
-              <div style={{ position: 'absolute', top: 50, right: 0 }}>
-                <ChromePicker
+            />
+              
+            <Popover
+            anchorEl={showColorPicker}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }} open={Boolean(showColorPicker)} onClose={()=>setShowColorPicker(false)} >
+            <ChromePicker
                   color={colorPicker}
                   onChange={(res) => {
                     setColorPicker(res.hex);
                   }}
                 />
-              </div>
-            )}
+          </Popover>
+                
           </div>
           <div className={styles['button-container']}>
             <ApplicationButton
@@ -516,7 +557,7 @@ export const ProductColorField: React.FC<{
             </ApplicationButton>
           </div>
         </div>
-      </ApplicationModal>
+      </SimpleModal>
     </div>
   );
 };

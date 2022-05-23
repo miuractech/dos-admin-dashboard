@@ -69,7 +69,7 @@ export const ButtonWithoutStyles: React.FC<{
 };
 
 export const UploadButton: React.FC<{
-  clickAction: () => void;
+  clickAction: (e:unknown) => void;
   disabled?: boolean;
   dimension?: {
     height: string;
@@ -80,7 +80,10 @@ export const UploadButton: React.FC<{
   return (
     <button
       style={styleObject}
-      onClick={() => props.clickAction()}
+      onClick={(e) => {
+        e.preventDefault()
+        props.clickAction(e)
+      }}
       className={styles['upload-button']}
       disabled={props.disabled}
     >

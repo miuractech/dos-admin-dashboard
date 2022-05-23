@@ -14,7 +14,7 @@ export function DOSInput(props: forminputType) {
     <TextField
       {...props}
       // style={{ height: 35, ...props.style }}
-      InputProps={{ style: { borderRadius: 40, height: 30, ...props.InputProps?.style }, ...props.InputProps }}
+      InputProps={{ ...props.InputProps,style: { borderRadius: 40, height: 30, ...props.InputProps?.style } }}
       inputProps={{ style: { background: 'white', padding: '0px 16px', ...props.inputProps?.style }, ...props.inputProps, ...props.forminput }}
     />
   );

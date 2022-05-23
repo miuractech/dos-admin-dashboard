@@ -20,8 +20,14 @@ const  modalStyle =  {
       borderRadius:8
   };
 
-export default function SimpleModal({open, onClose, children,style, ...rop}) {
-
+export type simpleModalProps = {
+  open:boolean, 
+  onClose:any, 
+  children:JSX.Element,
+  style?:any, 
+}
+export default function SimpleModal({open, onClose, children,style, ...rop}:simpleModalProps) {
+  const inlineStyle = style?{...modalStyle,...style}:modalStyle
   return (
 
       <Modal
@@ -31,7 +37,7 @@ export default function SimpleModal({open, onClose, children,style, ...rop}) {
         aria-describedby="simple-modal-description"
         {...rop}
       >
-          <div style={{...modalStyle,...style}} >
+          <div style={inlineStyle} >
               <div
               style={{
                   position: 'absolute',
@@ -46,7 +52,7 @@ export default function SimpleModal({open, onClose, children,style, ...rop}) {
                   }}
                   onClick={()=>onClose()}
                   >
-                      <Clear/>
+                      <Clear fontSize='inherit'/>
                   </IconButton>
               </div>
             {children}
