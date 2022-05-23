@@ -147,7 +147,8 @@ const ProductBasePrice: React.FC<{
     <div className={styles['field-container']}>
       <label>Base Price:</label>
       <div>
-        <ApplicationTextInput {...register('basePrice')} />
+        <DOSInput fullWidth forminput={{ ...register('basePrice') }} />
+        {/* <ApplicationTextInput {...register('basePrice')} /> */}
       </div>
     </div>
   );
@@ -174,12 +175,6 @@ export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
     <div className={styles['field-container']}>
       <label>Description:</label>
       <div>
-        {/* <textarea
-          style={{ fontStyle: 'Montserrat' }}
-          rows={10}
-          cols={50}
-          {...register('description')}
-        /> */}
         <DOSInput
           fullWidth
           multiline
@@ -297,7 +292,7 @@ const ProductDisplayImage: React.FC<{
                 backgroundColor: '#888',
                 color: 'white',
                 position: "absolute",
-                right: "0px",
+                right: "0px"
               }}
               onClick={() => setValue('displayImage', undefined)}
             >
@@ -385,7 +380,7 @@ export const ProductSizeField: React.FC<{
           </ApplicationButton>
         </div>
       </div>
-      <SimpleModal open={showForm} onClose={() => setShowForm(false)} style={{}}>
+      <ApplicationModal mounted={showForm}>
         <div className={styles['inner-form-container']}>
           <ApplicationTextInput {...register('val')} />
           <div className={styles['button-container']}>
@@ -401,11 +396,11 @@ export const ProductSizeField: React.FC<{
                 submit();
               }}
             >
-              Save
+              Savee
             </ApplicationButton>
           </div>
         </div>
-      </SimpleModal>
+      </ApplicationModal>
     </div >
   );
 };
@@ -477,7 +472,6 @@ export const ProductColorField: React.FC<{
           </ApplicationButton>
         </div>
       </div>
-      {/* <SimpleModal open={showForm} onClose={() => setShowForm(false)} style={{}}></SimpleModal> */}
       <ApplicationModal mounted={showForm}>
         <div className={styles['inner-form-container']}>
           <div className={styles['field']}>
