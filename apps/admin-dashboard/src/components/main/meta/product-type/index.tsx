@@ -3,14 +3,11 @@ import { RootState } from '../../../../store';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSubject } from 'rxf-rewrite/dist';
-
 import ApplicationButton from '../../../global/buttons';
-import ApplicationModal from '../../../global/modal';
 import metaStyles from '../styles/meta.module.scss';
 import AddProductTypeForm from './add-form';
 import ListItems from './item-list';
 import styles from '../styles/meta.module.scss';
-
 import { showProductAddForm$ } from './shared';
 import {
   setDndType,

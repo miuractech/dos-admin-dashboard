@@ -10,6 +10,7 @@ import ApplicationButton, {
 } from '../../../global/buttons';
 import ApplicationCapsule from '../../../global/capsule';
 import ApplicationModal from '../../../global/modal';
+import SimpleModal from '../../../global/simpleModal/modal';
 import {
   ApplicationOptionElement,
   ApplicationSelectInput,
@@ -43,7 +44,7 @@ import {
   setAddedMetaProductType,
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 import DOSInput from '../../../../UI/dosinput/dosinput';
-import { Menu, MenuItem } from '@mui/material';
+import { IconButton, Menu, MenuItem } from '@mui/material';
 import useGetFamilies from '../../../../Midl/meta-products/hooks/family/get-families';
 import { orderBy } from 'firebase/firestore';
 import { RootState } from '../../../../store';
@@ -52,6 +53,7 @@ import { TMetaProductFamily, TMetaProductSubCategory } from '../../../../Midl/me
 import useGetCategories from '../../../../Midl/meta-products/hooks/category/get-categories';
 import { setMetaProductCategoriesByFamily } from '../../../../Midl/meta-products/store/meta-product.category.slice';
 import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-category/get-subcategories';
+import { Clear } from '@mui/icons-material';
 
 const AddProductTypeForm: React.FC = () => {
   const { register, handleSubmit, setValue, watch } = useForm<TAddFormSchema>({
@@ -159,7 +161,7 @@ export const ProductNameField: React.FC<{
       <label>Type Name:</label>
       <div>
         {/* <ApplicationTextInput {...register('name')} /> */}
-        <DOSInput fullWidth forminput={{...register('name')}} />
+        <DOSInput fullWidth forminput={{ ...register('name') }} />
       </div>
     </div>
   );
@@ -178,13 +180,13 @@ export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
           cols={50}
           {...register('description')}
         /> */}
-        <DOSInput 
-        fullWidth 
-        multiline
-        minRows={3}
-        style={{height:'auto'}}
-        InputProps={{style:{height:'auto',borderRadius:25}}}
-        forminput={{...register('description')}} 
+        <DOSInput
+          fullWidth
+          multiline
+          minRows={3}
+          style={{ height: 'auto' }}
+          InputProps={{ style: { height: 'auto', borderRadius: 25 } }}
+          forminput={{ ...register('description') }}
         />
       </div>
     </div>
@@ -193,7 +195,7 @@ export const ProductDescriptionField: React.FC<{ register: TRegister }> = ({
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
 );
-const ProductMetaFields: React.FC<{ register: TRegister, watch:any }> = ({ register, watch }) => {
+const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ register, watch }) => {
   const { getFamilies } = useGetFamilies(true);
   const dispatch = useDispatch();
   useSubject(selectedProductFamily$);
@@ -222,7 +224,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch:any }> = ({ regis
   React.useEffect(() => {
     metaProductSubCategories.length === 0 &&
       getSubCategories([orderBy('index')]);
-      families.metaProductFamilies.length > 0 &&
+    families.metaProductFamilies.length > 0 &&
       selectedProductFamily$.next(families.metaProductFamilies[0]);
   }, []);
   React.useEffect(() => {
@@ -230,43 +232,43 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch:any }> = ({ regis
       (a) => a.familyId === watch('familyId')
     );
     dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
-  }, [selectedProductFamily$.value, metaProductCategories,watch('familyId')]);
+  }, [selectedProductFamily$.value, metaProductCategories, watch('familyId')]);
   React.useEffect(() => {
     const filtered = metaProductSubCategories.filter(
       (s) => s.familyId === selectedProductFamily$.value?.id
     );
     setLocalSubCategory(_.orderBy(filtered, 'index'));
   }, [watch('familyId'), watch('categoryId')]);
-  
+
   return (
     <>
       <div className={styles['field-container']}>
         <label>FamilyId:</label>
         <div>
           <DOSInput select fullWidth {...register('familyId')}>
-          {families.metaProductFamilies?.map(({id,name})=>
-            <MenuItem  value={id}>{name}</MenuItem>
-          )}
+            {families.metaProductFamilies?.map(({ id, name }) =>
+              <MenuItem value={id}>{name}</MenuItem>
+            )}
           </DOSInput>
         </div>
       </div>
       <div className={styles['field-container']}>
         <label>CategoryId:</label>
         <div>
-        <DOSInput select fullWidth {...register('categoryId')}>
-          {metaProductCategoriesByFamily?.map(({id,name})=>
-            <MenuItem  value={id}>{name}</MenuItem>
-          )}
+          <DOSInput select fullWidth {...register('categoryId')}>
+            {metaProductCategoriesByFamily?.map(({ id, name }) =>
+              <MenuItem value={id}>{name}</MenuItem>
+            )}
           </DOSInput>
         </div>
       </div>
       <div className={styles['field-container']}>
         <label>SubCategoryId:</label>
         <div>
-        <DOSInput select fullWidth {...register('categoryId')}>
-          {(localSubCategory.length>0) && localSubCategory.map(({id,name})=>
-            <MenuItem  value={id}>{name}</MenuItem>
-          )}
+          <DOSInput select fullWidth {...register('categoryId')}>
+            {(localSubCategory.length > 0) && localSubCategory.map(({ id, name }) =>
+              <MenuItem value={id}>{name}</MenuItem>
+            )}
           </DOSInput>
         </div>
       </div>
@@ -285,16 +287,30 @@ const ProductDisplayImage: React.FC<{
   return (
     <div className={styles['field-container']}>
       <label>Display Image:</label>
-      <div style={{ height: 100, width: 100 }}>
+      <div>
+
         {preview.length > 0 ? (
-          <img
-            src={preview}
-            onClick={() => setValue('displayImage', undefined)}
-            height="100%"
-            width="100%"
-            style={{ objectFit: 'cover' }}
-            alt=""
-          />
+          <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
+            <IconButton
+              size="small"
+              style={{
+                backgroundColor: '#888',
+                color: 'white',
+                position: "absolute",
+                right: "0px",
+              }}
+              onClick={() => setValue('displayImage', undefined)}
+            >
+              <Clear />
+            </IconButton>
+            < img
+              src={preview}
+              style={{
+                objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
+              }}
+              alt=""
+            />
+          </div>
         ) : (
           <>
             <input
@@ -369,7 +385,7 @@ export const ProductSizeField: React.FC<{
           </ApplicationButton>
         </div>
       </div>
-      <ApplicationModal mounted={showForm}>
+      <SimpleModal open={showForm} onClose={() => setShowForm(false)} style={{}}>
         <div className={styles['inner-form-container']}>
           <ApplicationTextInput {...register('val')} />
           <div className={styles['button-container']}>
@@ -389,8 +405,8 @@ export const ProductSizeField: React.FC<{
             </ApplicationButton>
           </div>
         </div>
-      </ApplicationModal>
-    </div>
+      </SimpleModal>
+    </div >
   );
 };
 
@@ -461,6 +477,7 @@ export const ProductColorField: React.FC<{
           </ApplicationButton>
         </div>
       </div>
+      {/* <SimpleModal open={showForm} onClose={() => setShowForm(false)} style={{}}></SimpleModal> */}
       <ApplicationModal mounted={showForm}>
         <div className={styles['inner-form-container']}>
           <div className={styles['field']}>
