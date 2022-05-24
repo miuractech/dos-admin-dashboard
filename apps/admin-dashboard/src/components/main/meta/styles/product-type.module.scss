@@ -42,6 +42,7 @@
   @include mixins.flex-space-between();
   width: 250px;
   margin: 2rem auto;
+  padding-bottom: 25px;
 }
 
 .inner-form-container {

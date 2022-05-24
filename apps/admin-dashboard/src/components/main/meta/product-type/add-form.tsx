@@ -55,18 +55,20 @@ import { setMetaProductCategoriesByFamily } from '../../../../Midl/meta-products
 import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-category/get-subcategories';
 import { Clear, ColorLens } from '@mui/icons-material';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
+import Grid from '@mui/material/Grid';
+import SideImages from './sideImages';
 
 const AddProductTypeForm: React.FC = () => {
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TAddFormSchema>({
+  const { register, handleSubmit, setValue, watch, formState: { errors }, setError } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
   });
   useSubject(showProductAddForm$);
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0)
   const containerRef = React.useRef(null);
-  const [basicInfo, setbasicInfo] = useState({})
-  const [imagesInfo, setImagesInfo] = useState({})
-  const [inventoryInfo, setInventoryInfo] = useState({})
+  const [basicInfo, setbasicInfo] = useState<any>({})
+  const [imagesInfo, setImagesInfo] = useState<any>({})
+  const [inventoryInfo, setInventoryInfo] = useState<any>({})
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
     Boolean(showProductAddForm$.value),
@@ -79,7 +81,9 @@ const AddProductTypeForm: React.FC = () => {
       }
     }
   );
-    console.log(basicInfo,imagesInfo,inventoryInfo);
+  console.log(basicInfo, imagesInfo, inventoryInfo, errors);
+  
+
     
   return (
     <div className={styles['add-form']} ref={containerRef}> 
@@ -118,23 +122,29 @@ const AddProductTypeForm: React.FC = () => {
           >
             <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
             <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
-            <ProductMetaFields register={register} watch={watch} />
+            <ProductMetaFields register={register} watch={watch} errors={errors} />
             <ProductDisplayImage
               register={register}
               setValue={setValue}
               watch={watch}
+              errors={errors}
+              showLable={true}
             />
-            <ProductSizeField initial={[]} setValue={setValue} />
+            <ProductSizeField initial={[]} setValue={setValue}  />
             <ProductColorField initial={[]} setValue={setValue} />
             <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
           </div>
         </Slide>
 
         <Slide direction="right" in={tab === 1} mountOnEnter unmountOnExit container={containerRef.current}>
-          <div
-          
-          >
-            side image
+          <div> 
+            <SideImages 
+            colours={basicInfo.color} 
+            register={register} 
+            setValue={setValue}
+            watch={watch}
+            errors={errors}
+            />
           </div>
         </Slide>
 
@@ -158,7 +168,8 @@ const AddProductTypeForm: React.FC = () => {
                     case 1:
                         console.log(data);
                         setImagesInfo(data)
-                        setTab(t=>t-1)
+                        setTab(0)
+                        setValue('categoryId',basicInfo?.categoryId)
                         break;
                     case 2:
                       setTab(t=>t-1)
@@ -178,13 +189,17 @@ const AddProductTypeForm: React.FC = () => {
                 onClick={handleSubmit((data) =>{
                   switch (tab) {
                     case 0:
-                        setbasicInfo(data)
-                        setTab(1)
+                      setbasicInfo(data)
+                      console.log(data);
+                      
+                      setTab(1)
                       break;
                     case 1: 
-                      setImagesInfo(data)
-                      setTab(2)
-                        break;
+                    console.log(data);
+                    
+                      // setImagesInfo(data)
+                      // setTab(2) 
+                      break;
                     case 2:               
                         asyncWrapper({
                           id: uuidv4(),
@@ -270,7 +285,7 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
 );
-const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ register, watch }) => {
+const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors:any }> = ({ register, watch,errors }) => {
   const { getFamilies } = useGetFamilies(true);
   const dispatch = useDispatch();
   useSubject(selectedProductFamily$);
@@ -315,13 +330,14 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
     setLocalSubCategory(_.orderBy(filtered, 'index'));
   }, [watch('familyId'), watch('categoryId')]);
 
-
+  console.log(watch('familyId'), watch('categoryId'), watch('subcategoryId'));
+  
   return (
     <>
       <div className={styles['field-container']}>
         <label>Family :</label>
         <div>
-          <DOSInput select fullWidth forminput={{ ...register('familyId') }}>
+          <DOSInput error={errors.familyId} helperText={errors.familyId?.message} select fullWidth forminput={{ ...register('familyId') }}>
             {families.metaProductFamilies?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -331,7 +347,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
       <div className={styles['field-container']}>
         <label>Category :</label>
         <div>
-          <DOSInput select fullWidth forminput={{ ...register('categoryId') }}>
+          <DOSInput error={errors.categoryId} helperText={errors.categoryId?.message} select fullWidth forminput={{ ...register('categoryId') }}>
             {metaProductCategoriesByFamily?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -341,7 +357,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any }> = ({ regi
       <div className={styles['field-container']}>
         <label>SubCategory :</label>
         <div>
-          <DOSInput select fullWidth forminput={{ ...register('subcategoryId') }}>
+          <DOSInput error={errors.subcategoryId} helperText={errors.subcategoryId?.message} select fullWidth forminput={{ ...register('subcategoryId') }}>
             {(localSubCategory.length > 0) && localSubCategory.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -356,15 +372,18 @@ const ProductDisplayImage: React.FC<{
   register: TRegister;
   setValue: TSetValue;
   watch: TWatch;
-}> = ({ register, setValue, watch }) => {
+  errors: any
+  showLable: boolean
+  side?:string
+}> = ({ register, setValue, watch, errors, showLable, side }) => {
   const { preview } = usePreviewImage(watch('displayImage'));
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
 
   return (
-    <div className={styles['field-container']}>
-      <label>Display Image:</label>
+    <div>
+       <div className={styles['field-container']}>
+      {showLable && <label>Display Image:</label>}
       <div>
-
         {preview.length > 0 ? (
           <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
             <IconButton
@@ -409,7 +428,12 @@ const ProductDisplayImage: React.FC<{
           </div>
         )}
       </div>
-    </div>
+      </div>
+      {errors.displayImage && <Typography fontSize={12} variant='subtitle1' color='error' >
+          {errors.displayImage?.message}
+        </Typography>}
+    {!showLable && <div style={{marginTop:"15px", textAlign:"center"}}>{ side}</div>}
+   </div>
   );
 };
 
@@ -419,7 +443,7 @@ export const ProductSizeField: React.FC<{
 }> = ({ setValue, initial }) => {
   const [sizeLocal, setSizeLocal] = React.useState<Array<string>>(initial);
   const [showForm, setShowForm] = React.useState(false);
-  const { register, watch, reset } = useForm<{ val: string }>({
+  const { register, watch, reset, formState:{errors}, handleSubmit } = useForm<{ val: string }>({
     resolver: yupResolver(sizeFormSchema),
   });
 
@@ -427,13 +451,6 @@ export const ProductSizeField: React.FC<{
     setValue('size', sizeLocal);
   }, [sizeLocal]);
 
-  function submit() {
-    if (!sizeLocal.includes(watch('val'))) {
-      setSizeLocal((prev) => [...prev, watch('val')]);
-      setShowForm(false)
-      reset()
-    }
-  }
 
   function removeSizeItem(val: string) {
     setSizeLocal((prev) => {
@@ -472,7 +489,7 @@ export const ProductSizeField: React.FC<{
             Add new size
           </Typography>
           <div style={{ textAlign: 'center' }}>
-            <DOSInput placeholder='size name...' forminput={{ ...register('val') }} />
+            <DOSInput error={Boolean(errors.val)} helperText={errors.val?.message} placeholder='size name...' forminput={{ ...register('val') }} />
           </div>
           <div className={styles['button-container']}>
             <ApplicationButton
@@ -483,9 +500,13 @@ export const ProductSizeField: React.FC<{
             </ApplicationButton>
             <ApplicationButton
               variant="default-not-padding"
-              clickAction={() => {
-                submit();
-              }}
+              clickAction={handleSubmit((data) => {
+                if (!sizeLocal.includes(data.val)) {
+                  setSizeLocal((prev) => [...prev, data.val]);
+                  setShowForm(false)
+                  reset()
+                }
+              })}
             >
               Save
             </ApplicationButton>
@@ -507,26 +528,14 @@ export const ProductColorField: React.FC<{
     register,
     watch,
     setValue: setValueInner,
-    reset
+    reset,
+    formState:{errors},
+    handleSubmit
   } = useForm<{ colorName: string; colorCode: string }>({
     resolver: yupResolver(colorFormSchema),
   });
   const [colorPicker, setColorPicker] = React.useState('#ffffff');
   const [showColorPicker, setShowColorPicker] = React.useState<any>(false);
-
-  function submit() {
-    if (
-      colorLocal.filter((c) => c.colorName === watch('colorName')).length === 0
-    ) {
-      setColorLocal((prev) => [
-        ...prev,
-        { colorName: watch('colorName'), colorCode: watch('colorCode') },
-      ]);
-      setShowForm(false)
-      reset()
-    }
-  }
-
   function removeColorItem(val: string) {
     setColorLocal((prev) => {
       return prev.filter((p) => p.colorName !== val);
@@ -576,7 +585,7 @@ export const ProductColorField: React.FC<{
           </Typography>
           <div className={styles['field']}>
             <label>Name:</label>
-            <DOSInput forminput={{ ...register('colorName') }} />
+            <DOSInput error={Boolean(errors.colorName)} helperText={errors.colorName?.message} forminput={{ ...register('colorName') }} />
           </div>
           <div className={styles['field']}>
             <label>Code:</label>
@@ -625,9 +634,18 @@ export const ProductColorField: React.FC<{
             </ApplicationButton>
             <ApplicationButton
               variant="default-not-padding"
-              clickAction={() => {
-                submit();
-              }}
+              clickAction={handleSubmit((data) => {
+                if (
+                  colorLocal.filter((c) => c.colorName === data.colorName).length === 0
+                ) {
+                  setColorLocal((prev) => [
+                    ...prev,
+                    { colorName: data.colorName, colorCode:data.colorCode },
+                  ]);
+                  setShowForm(false)
+                  reset()
+                }
+              })}
             >
               Save
             </ApplicationButton>
