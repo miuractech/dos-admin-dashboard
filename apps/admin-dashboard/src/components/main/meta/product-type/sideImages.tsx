@@ -1,11 +1,14 @@
 import { UploadIcon } from '@admin/assets';
 import { Clear } from '@mui/icons-material';
 import { Grid, IconButton, Typography } from '@mui/material';
-import usePreviewImage from 'apps/admin-dashboard/src/hooks/preview-image';
-import React from 'react'
+import usePreviewImage from '../../../../hooks/preview-image';
+import React, { useEffect, useState } from 'react'
 import { UploadButton } from '../../../global/buttons';
 import { TRegister, TSetValue, TWatch } from './shared'
 import styles from '../styles/product-type.module.scss';
+import SimpleModal from '../../../global/simpleModal/modal';
+import { DesignArea } from './DesignArea';
+import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 type Props = {
     register:TRegister;
     colours:{colorName:string,colorCode:string}[];
@@ -55,15 +58,42 @@ export const ProductDisplayImage: React.FC<{
     showLable: boolean
     side?:string
   }> = ({ register, setValue, watch, errors, showLable, side, registerName }) => {
-    const { preview } = usePreviewImage(watch(registerName));
+    const [imageFile, setImageFile] = useState<any>(null)
+    const [exit, setExit] = useState(false)
+    const [preview, setPreview] = useState<string | null>(null)
+    // const { preview } = usePreviewImage(watch(registerName));
     const imageFieldRef = React.useRef<HTMLInputElement | null>();
-  
+    useEffect(() => {
+      let url: string;
+      if(imageFile){
+        url = URL.createObjectURL(imageFile)
+        setPreview(url)
+      }else{
+        setPreview(null)
+      }
+      return () => {
+        URL.revokeObjectURL(url)
+        // setImageFile(null)
+        // setPreview(null)
+      }
+    }, [imageFile])
+    console.log(
+      'imageFile',imageFile,preview
+    );
+    
     return (
       <div>
          <div className={styles['field-container']}>
         {showLable && <label>Display Image:</label>}
         <div>
-          {preview.length > 0 ? (
+          <SimpleModal disableCloseButton open={Boolean(preview)} onClose={()=>setExit(true)} >
+            <div key={registerName}>
+              <DesignArea url={preview?preview:''} />
+            </div>
+          </SimpleModal>
+          <AreYouSure open={exit} onClose={()=>setExit(false)} discard={()=>{setExit(false);setPreview(null);setImageFile(null)}} text="discard the image?" />
+          {/* {
+          preview.length > 0 ? (
             <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
               <IconButton
                 size="small"
@@ -85,12 +115,18 @@ export const ProductDisplayImage: React.FC<{
                 alt=""
               />
             </div>
-          ) : (
+          ) : ( */}
             <div style={{ height: 100, width: 100 }}>
               <input
                 type="file"
                 style={{ display: 'none', }}
-                {...register(registerName)}
+                // {...register(registerName)}
+                onChange={(e)=>{
+                  console.log(e.target.files)
+                  if(e.target.files && e.target.files?.length>0) {
+                    setImageFile(e.target.files[0])
+                  }}
+                }
                 ref={(e) => {
                   register(registerName).ref(e);
                   imageFieldRef.current = e;
@@ -105,7 +141,7 @@ export const ProductDisplayImage: React.FC<{
                 <UploadIcon />
               </UploadButton>
             </div>
-          )}
+          {/* )} */}
         </div>
         </div>
         {errors.displayImage && <Typography fontSize={12} variant='subtitle1' color='error' >
