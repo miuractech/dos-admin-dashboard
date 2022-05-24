@@ -176,7 +176,6 @@ const AddProductTypeForm: React.FC = () => {
                 // variant="contained"
                 // color='secondary'
                 onClick={handleSubmit((data) =>{
-                  alert('in')
                   switch (tab) {
                     case 0:
                         setbasicInfo(data)
