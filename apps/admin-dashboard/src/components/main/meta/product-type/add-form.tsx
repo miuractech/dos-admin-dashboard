@@ -81,12 +81,12 @@ const AddProductTypeForm: React.FC = () => {
       }
     }
   );
-  console.log(basicInfo, imagesInfo, inventoryInfo, errors);
-  
+  // console.log(basicInfo, imagesInfo, inventoryInfo, errors);
 
-    
+
+
   return (
-    <div className={styles['add-form']} ref={containerRef}> 
+    <div className={styles['add-form']} ref={containerRef}>
       <div className={styles['add-form-heading']}>
         <div></div>
         <h3>Product Type</h3>
@@ -97,28 +97,28 @@ const AddProductTypeForm: React.FC = () => {
           <CloseCircle />
         </ButtonWithoutStyles> */}
       </div>
-      <Tabs 
-      value={tab} 
-      onChange={(e,v)=>setTab(v)} 
-      aria-label="product type tabs"
-      variant='fullWidth'
-      textColor='primary'
+      <Tabs
+        value={tab}
+        onChange={(e, v) => setTab(v)}
+        aria-label="product type tabs"
+        variant='fullWidth'
+        textColor='primary'
       >
-        <Tab label="Basic Info" {...a11yProps(0)} />
-        <Tab label="Side Images" {...a11yProps(1)} />
-        <Tab label="Inventory" {...a11yProps(2)} />
+        <Tab disabled={tab !== 0} label="Basic Info" {...a11yProps(0)} />
+        <Tab disabled={tab !== 1} label="Side Images" {...a11yProps(1)} />
+        <Tab disabled={tab !== 2} label="Inventory" {...a11yProps(2)} />
       </Tabs>
       <form
         className={styles['add-form-body']}
-        
-        // onSubmit={handleSubmit((data) => {
-        //   asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
-        // }
-        // )}
+
+      // onSubmit={handleSubmit((data) => {
+      //   asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
+      // }
+      // )}
       >
         <Slide direction="right" in={tab === 0} mountOnEnter unmountOnExit container={containerRef.current} >
-        <div
-          
+          <div
+
           >
             <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
             <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
@@ -130,28 +130,28 @@ const AddProductTypeForm: React.FC = () => {
               errors={errors}
               showLable={true}
             />
-            <ProductSizeField initial={[]} setValue={setValue}  />
+            <ProductSizeField initial={[]} setValue={setValue} />
             <ProductColorField initial={[]} setValue={setValue} />
             <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
           </div>
         </Slide>
 
         <Slide direction="right" in={tab === 1} mountOnEnter unmountOnExit container={containerRef.current}>
-          <div> 
-            <SideImages 
-            colours={basicInfo.color} 
-            register={register} 
-            setValue={setValue}
-            watch={watch}
-            errors={errors}
+          <div>
+            <SideImages
+              colours={basicInfo.color}
+              register={register}
+              setValue={setValue}
+              watch={watch}
+              errors={errors}
             />
           </div>
         </Slide>
 
         <Slide direction="right" in={tab === 2} mountOnEnter unmountOnExit container={containerRef.current}>
-        <div
+          <div
           >
-           inventoruy
+            inventoruy
           </div>
         </Slide>
 
@@ -160,62 +160,59 @@ const AddProductTypeForm: React.FC = () => {
             <>
               <Button
                 variant='outlined'
-                onClick={handleSubmit((data) =>{
+                onClick={handleSubmit((data) => {
                   switch (tab) {
                     case 0:
                       showProductAddForm$.next('exit');
                       break;
                     case 1:
-                        console.log(data);
-                        setImagesInfo(data)
-                        setTab(0)
-                        setValue('categoryId',basicInfo?.categoryId)
-                        break;
+                      console.log(data);
+                      setImagesInfo(data)
+                      setTab(0)
+                      setValue('categoryId', basicInfo?.categoryId)
+                      break;
                     case 2:
-                      setTab(t=>t-1)
+                      setTab(t => t - 1)
                       break;
                     default:
                       setTab(0)
                   }
                 })}
-                
+
               >
-                {tab===0?'Cancel':'back'}
-                
+                {tab === 0 ? 'Cancel' : 'back'}
+
               </Button>
               <Button
                 // variant="contained"
                 // color='secondary'
-                onClick={handleSubmit((data) =>{
+                onClick={handleSubmit((data) => {
                   switch (tab) {
                     case 0:
                       setbasicInfo(data)
-                      console.log(data);
-                      
                       setTab(1)
                       break;
-                    case 1: 
-                    console.log(data);
-                    
-                      // setImagesInfo(data)
-                      // setTab(2) 
+                    case 1:
+                      setImagesInfo({ ...imagesInfo, data })
+                      console.log(data);
+                      // setTab(2)
                       break;
-                    case 2:               
-                        asyncWrapper({
-                          id: uuidv4(),
-                          form: {...basicInfo,...imagesInfo,...data},
-                          createdBy: 'Somnath',
-                        })
+                    case 2:
+                      asyncWrapper({
+                        id: uuidv4(),
+                        form: { ...basicInfo, ...imagesInfo, ...data },
+                        createdBy: 'Somnath',
+                      })
                       break;
                     default:
                       setTab(0)
                   }
                 })}
-                
+
                 // type='submit'
                 variant='contained'
               >
-                {tab<2?'Next':'submit'}
+                {tab < 2 ? 'Next' : 'submit'}
               </Button>
             </>
           ) : (
@@ -223,7 +220,7 @@ const AddProductTypeForm: React.FC = () => {
           )}
         </div>
       </form>
-      { showProductAddForm$.value ==='exit' && <AreYouSure text={'discard your changes?'} open={showProductAddForm$.value ==='exit'} onClose={() => showProductAddForm$.next(true)} discard={()=>showProductAddForm$.next(false)} />}
+      {showProductAddForm$.value === 'exit' && <AreYouSure text={'discard your changes?'} open={showProductAddForm$.value === 'exit'} onClose={() => showProductAddForm$.next(true)} discard={() => showProductAddForm$.next(false)} />}
     </div>
   );
 };
@@ -250,11 +247,11 @@ export const ProductNameField: React.FC<{
       <label>Type Name:</label>
       <div>
         {/* <ApplicationTextInput {...register('name')} /> */}
-        <DOSInput 
-        fullWidth 
-        forminput={{ ...register('name') }} 
-        error={Boolean(error.message)}
-        helperText={error.message} 
+        <DOSInput
+          fullWidth
+          forminput={{ ...register('name') }}
+          error={Boolean(error.message)}
+          helperText={error.message}
         />
       </div>
     </div>
@@ -273,7 +270,7 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
           multiline
           minRows={3}
           // style={{ height: 'auto' }}
-          InputProps={{ style: { height: 'auto', borderRadius: 16,padding:'12px 0px' }}}
+          InputProps={{ style: { height: 'auto', borderRadius: 16, padding: '12px 0px' } }}
           forminput={{ ...register('description') }}
           error={Boolean(error.message)}
           helperText={error.message}
@@ -285,7 +282,7 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
 );
-const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors:any }> = ({ register, watch,errors }) => {
+const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any }> = ({ register, watch, errors }) => {
   const { getFamilies } = useGetFamilies(true);
   const dispatch = useDispatch();
   useSubject(selectedProductFamily$);
@@ -331,7 +328,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors:any 
   }, [watch('familyId'), watch('categoryId')]);
 
   console.log(watch('familyId'), watch('categoryId'), watch('subcategoryId'));
-  
+
   return (
     <>
       <div className={styles['field-container']}>
@@ -374,66 +371,66 @@ const ProductDisplayImage: React.FC<{
   watch: TWatch;
   errors: any
   showLable: boolean
-  side?:string
+  side?: string
 }> = ({ register, setValue, watch, errors, showLable, side }) => {
   const { preview } = usePreviewImage(watch('displayImage'));
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
 
   return (
     <div>
-       <div className={styles['field-container']}>
-      {showLable && <label>Display Image:</label>}
-      <div>
-        {preview.length > 0 ? (
-          <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
-            <IconButton
-              size="small"
-              style={{
-                backgroundColor: '#888',
-                color: 'white',
-                position: "absolute",
-                right: "0px"
-              }}
-              onClick={() => setValue('displayImage', undefined)}
-            >
-              <Clear />
-            </IconButton>
-            < img
-              src={preview}
-              style={{
-                objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
-              }}
-              alt=""
-            />
-          </div>
-        ) : (
-          <div style={{ height: 100, width: 100 }}>
-            <input
-              type="file"
-              style={{ display: 'none', }}
-              {...register('displayImage')}
-              ref={(e) => {
-                register('displayImage').ref(e);
-                imageFieldRef.current = e;
-              }}
-            />
-            <UploadButton
-              dimension={{ height: '100%', width: '100%' }}
-              clickAction={() => {
-                imageFieldRef.current?.click();
-              }}
-            >
-              <UploadIcon />
-            </UploadButton>
-          </div>
-        )}
-      </div>
+      <div className={styles['field-container']}>
+        {showLable && <label>Display Image:</label>}
+        <div>
+          {preview.length > 0 ? (
+            <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
+              <IconButton
+                size="small"
+                style={{
+                  backgroundColor: '#888',
+                  color: 'white',
+                  position: "absolute",
+                  right: "0px"
+                }}
+                onClick={() => setValue('displayImage', undefined)}
+              >
+                <Clear />
+              </IconButton>
+              < img
+                src={preview}
+                style={{
+                  objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
+                }}
+                alt=""
+              />
+            </div>
+          ) : (
+            <div style={{ height: 100, width: 100 }}>
+              <input
+                type="file"
+                style={{ display: 'none', }}
+                {...register('displayImage')}
+                ref={(e) => {
+                  register('displayImage').ref(e);
+                  imageFieldRef.current = e;
+                }}
+              />
+              <UploadButton
+                dimension={{ height: '100%', width: '100%' }}
+                clickAction={() => {
+                  imageFieldRef.current?.click();
+                }}
+              >
+                <UploadIcon />
+              </UploadButton>
+            </div>
+          )}
+        </div>
       </div>
       {errors.displayImage && <Typography fontSize={12} variant='subtitle1' color='error' >
-          {errors.displayImage?.message}
-        </Typography>}
-    {!showLable && <div style={{marginTop:"15px", textAlign:"center"}}>{ side}</div>}
-   </div>
+        {errors.displayImage?.message}
+      </Typography>}
+      {!showLable && <div style={{ marginTop: "15px", textAlign: "center" }}>{side}</div>}
+    </div>
   );
 };
 
@@ -443,7 +440,7 @@ export const ProductSizeField: React.FC<{
 }> = ({ setValue, initial }) => {
   const [sizeLocal, setSizeLocal] = React.useState<Array<string>>(initial);
   const [showForm, setShowForm] = React.useState(false);
-  const { register, watch, reset, formState:{errors}, handleSubmit } = useForm<{ val: string }>({
+  const { register, watch, reset, formState: { errors }, handleSubmit } = useForm<{ val: string }>({
     resolver: yupResolver(sizeFormSchema),
   });
 
@@ -529,7 +526,7 @@ export const ProductColorField: React.FC<{
     watch,
     setValue: setValueInner,
     reset,
-    formState:{errors},
+    formState: { errors },
     handleSubmit
   } = useForm<{ colorName: string; colorCode: string }>({
     resolver: yupResolver(colorFormSchema),
@@ -640,7 +637,7 @@ export const ProductColorField: React.FC<{
                 ) {
                   setColorLocal((prev) => [
                     ...prev,
-                    { colorName: data.colorName, colorCode:data.colorCode },
+                    { colorName: data.colorName, colorCode: data.colorCode },
                   ]);
                   setShowForm(false)
                   reset()
