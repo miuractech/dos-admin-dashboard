@@ -6,9 +6,9 @@ import { UploadButton } from '../../../global/buttons';
 import { TRegister, TSetValue, TWatch } from './shared'
 import styles from '../styles/product-type.module.scss';
 import SimpleModal from '../../../global/simpleModal/modal';
-import { DesignArea } from './DesignArea';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 import NewDesignArea from './newDesignArea';
+
 type Props = {
   register: TRegister;
   colours: { colorName: string, colorCode: string }[];
@@ -61,93 +61,89 @@ const ProductDisplayImage: React.FC<{
 }> = ({ register, setValue, watch, errors, showLable, side, registerName, color }) => {
   const [imageFile, setImageFile] = useState<any>(null)
   const [exit, setExit] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [imageInfo, setImageInfo] = useState({
-    sideImages: {
-
-    }
-  })
-  
-  // const { preview } = usePreviewImage(watch(registerName));
+  const [previewURL, setPreviewURL] = useState<string | null>(null)
+  // const { preview } = usePreviewImage();
+  const [previewScreen, setpreviewScreen] = useState<string>('')
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
   useEffect(() => {
     let url: string;
     if (imageFile) {
       url = URL.createObjectURL(imageFile)
-      setPreview(url)
+      setPreviewURL(url)
     } else {
-      setPreview(null)
+      setPreviewURL(null)
     }
     return () => {
       URL.revokeObjectURL(url)
     }
   }, [imageFile])
-  // setValue(`sideImages.${color}.${side}`,{x,y,w,h,r,type,img})
 
-  const save = (designData: any) => {
-    console.log(color);
-  }
 
   return (
     <div>
       <div className={styles['field-container']}>
         {showLable && <label>Display Image:</label>}
         <div>
-          <SimpleModal disableCloseButton open={Boolean(preview)} onClose={() => setExit(true)} >
+          <SimpleModal disableCloseButton open={Boolean(previewURL)} onClose={() => setExit(true)} >
             <div key={registerName} style={{ width: "31.2rem", margin: "auto" }}>
-              <NewDesignArea url={preview ? preview : ''} close={() => setExit(true)} save={save} setValue={setValue} color={color} side={side} />
+              <NewDesignArea setpreviewScreen={setpreviewScreen} setPreviewURL={setPreviewURL} imageFile={imageFile} url={previewURL ? previewURL : ''} close={() => setExit(true)} setValue={setValue} color={color} side={side} />
             </div>
           </SimpleModal>
-          <AreYouSure open={exit} onClose={() => setExit(false)} discard={() => { setExit(false); setPreview(null); setImageFile(null) }} text="discard the image?" />
-          {/* {
-          preview.length > 0 ? (
-            <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
-              <IconButton
-                size="small"
-                style={{
-                  backgroundColor: '#888',
-                  color: 'white',
-                  position: "absolute",
-                  right: "0px"
-                }}
-                onClick={() => setValue(registerName, undefined)}
-              >
-                <Clear />
-              </IconButton>
-              < img
-                src={preview}
-                style={{
-                  objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
-                }}
-                alt=""
-              />
-            </div>
-          ) : ( */}
-          <div style={{ height: 100, width: 100 }}>
-            <input
-              type="file"
-              style={{ display: 'none', }}
-              // {...register(registerName)}
-              onChange={(e) => {
-                if (e.target.files && e.target.files?.length > 0) {
-                  setImageFile(e.target.files[0])
-                }
-              }}
-              ref={(e) => {
-                register(registerName).ref(e);
-                imageFieldRef.current = e;
-              }}
-            />
-            <UploadButton
-              dimension={{ height: '100%', width: '100%' }}
-              clickAction={() => {
-                imageFieldRef.current?.click();
-              }}
-            >
-              <UploadIcon />
-            </UploadButton>
-          </div>
-          {/* )} */}
+          <AreYouSure open={exit} onClose={() => setExit(false)} discard={() => { setExit(false); setPreviewURL(null); setImageFile(null) }} text="discard the image?" />
+          {
+            previewScreen ? (
+              <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
+                <IconButton
+                  size="small"
+                  style={{
+                    backgroundColor: '#888',
+                    color: 'white',
+                    position: "absolute",
+                    right: "0px"
+                  }}
+                  onClick={() => {
+                    setValue(registerName, {})
+                    setpreviewScreen('')
+                  }}
+                >
+                  <Clear />
+                </IconButton>
+                < img
+                  src={previewScreen}
+                  style={{
+                    objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
+                  }}
+                  alt=""
+                  height="170px"
+                  width="170px"
+                />
+              </div>
+            ) : (
+              <div style={{ height: 100, width: 100 }}>
+                <input
+                  type="file"
+                  style={{ display: 'none', }}
+                  // {...register(registerName)}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files?.length > 0) {
+                      setImageFile(e.target.files[0])
+                    }
+                  }}
+                  ref={(e) => {
+                    register(registerName).ref(e);
+                    imageFieldRef.current = e;
+                  }}
+                />
+                <UploadButton
+                  dimension={{ height: '100%', width: '100%' }}
+                  clickAction={() => {
+                    imageFieldRef.current?.click();
+                  }}
+                >
+                  <UploadIcon />
+                </UploadButton>
+              </div>
+            )}
         </div>
       </div>
       {errors.displayImage && <Typography fontSize={12} variant='subtitle1' color='error' >

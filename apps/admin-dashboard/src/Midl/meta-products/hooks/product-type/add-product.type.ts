@@ -46,15 +46,15 @@ export default async function addProductType(param: {
             createdBy: createdBy,
             updatedBy: createdBy,
             status: 'published',
-            sku: id,
+            sku: id
           };
-          await countRepo.updateOne({product_type: count.product_type + 1}, "count")
+          await countRepo.updateOne({ product_type: count.product_type + 1 }, "count")
           return await productTypeRepo.createOne(writeable, id);
         }
       }
     });
     return res;
-  } catch (error:any) {
+  } catch (error: any) {
     console.log(error);
     return error.message
   }

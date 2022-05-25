@@ -61,15 +61,15 @@ import SideImages from './sideImages';
 const AddProductTypeForm: React.FC = () => {
   const { register, handleSubmit, setValue, watch, formState: { errors }, setError } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
-    defaultValues:{
-      basePrice:250,
-      subcategoryId:'2123r423r',
-      categoryId:'234',
-      familyId:'301c4d65-fb93-419c-a80e-1d155227a841 234 2123r423r',
-      color:[{colorCode:'#444444',colorName:'ref'}],
-      description:'we ferfg aerg aser gsaerg aeg a gha ha arhtae hga h',
-      name:'tyest',
-      size:['xs','md']
+    defaultValues: {
+      basePrice: 250,
+      subcategoryId: '2123r423r',
+      categoryId: '234',
+      familyId: '301c4d65-fb93-419c-a80e-1d155227a841 234 2123r423r',
+      color: [{ colorCode: '#444444', colorName: 'ref' }],
+      description: 'we ferfg aerg aser gsaerg aeg a gha ha arhtae hga h',
+      name: 'tyest',
+      size: ['xs', 'md']
 
     }
   });
@@ -204,11 +204,12 @@ const AddProductTypeForm: React.FC = () => {
                       setTab(1)
                       break;
                     case 1:
-                      setImagesInfo({ ...imagesInfo, data })
+                      setImagesInfo(data)
                       console.log(data);
-                      // setTab(2)
+                      setTab(2)
                       break;
                     case 2:
+                      console.log(imagesInfo);
                       asyncWrapper({
                         id: uuidv4(),
                         form: { ...basicInfo, ...imagesInfo, ...data },

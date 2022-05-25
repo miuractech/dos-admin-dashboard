@@ -55,9 +55,9 @@ const EditFormModal: React.FC<{
               className={
                 selectedEditOption$.value === item
                   ? clsx(
-                      metaStyles['header-text-container'],
-                      metaStyles['text-after']
-                    )
+                    metaStyles['header-text-container'],
+                    metaStyles['text-after']
+                  )
                   : metaStyles['header-text-container']
               }
               onClick={() => selectedEditOption$.next(item)}
