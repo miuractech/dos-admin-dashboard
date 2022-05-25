@@ -8,6 +8,7 @@ import styles from '../styles/product-type.module.scss';
 import SimpleModal from '../../../global/simpleModal/modal';
 import { DesignArea } from './DesignArea';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
+import NewDesignArea from './newDesignArea';
 type Props = {
   register: TRegister;
   colours: { colorName: string, colorCode: string }[];
@@ -55,7 +56,7 @@ const ProductDisplayImage: React.FC<{
   watch: TWatch;
   errors: any
   showLable: boolean
-  side?: string
+  side: string
   color: string
 }> = ({ register, setValue, watch, errors, showLable, side, registerName, color }) => {
   const [imageFile, setImageFile] = useState<any>(null)
@@ -66,6 +67,7 @@ const ProductDisplayImage: React.FC<{
 
     }
   })
+  
   // const { preview } = usePreviewImage(watch(registerName));
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
   useEffect(() => {
@@ -80,6 +82,7 @@ const ProductDisplayImage: React.FC<{
       URL.revokeObjectURL(url)
     }
   }, [imageFile])
+  // setValue(`sideImages.${color}.${side}`,{x,y,w,h,r,type,img})
 
   const save = (designData: any) => {
     console.log(color);
@@ -92,7 +95,7 @@ const ProductDisplayImage: React.FC<{
         <div>
           <SimpleModal disableCloseButton open={Boolean(preview)} onClose={() => setExit(true)} >
             <div key={registerName} style={{ width: "31.2rem", margin: "auto" }}>
-              <DesignArea url={preview ? preview : ''} close={() => setExit(true)} save={save} />
+              <NewDesignArea url={preview ? preview : ''} close={() => setExit(true)} save={save} setValue={setValue} color={color} side={side} />
             </div>
           </SimpleModal>
           <AreYouSure open={exit} onClose={() => setExit(false)} discard={() => { setExit(false); setPreview(null); setImageFile(null) }} text="discard the image?" />
