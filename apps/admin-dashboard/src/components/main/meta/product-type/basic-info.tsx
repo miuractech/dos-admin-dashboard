@@ -35,7 +35,7 @@ interface IFormShape {
 }
 
 const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
-  const { register, setValue, handleSubmit, formState: { errors } } = useForm<IFormShape>({
+  const { register, setValue, handleSubmit, formState: { errors }, unregister } = useForm<IFormShape>({
     resolver: yupResolver(schema),
   });
 
@@ -76,7 +76,7 @@ const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
           />
         </div>
         <ProductSizeField initial={item.size} setValue={setValue} />
-        <ProductColorField initial={item.color} setValue={setValue} />
+        <ProductColorField initial={item.color} setValue={setValue} unregister={unregister} />
       </form>
     </div>
   );

@@ -4,7 +4,7 @@ import Footer from '../footer/footer';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig/config';
 import { useState } from 'react';
 

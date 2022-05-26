@@ -71,7 +71,7 @@ export default function NewDesignArea({ setpreviewScreen, setPreviewURL, url, cl
                 })
                 setpreviewScreen(stageRef.current.toDataURL())
                 setPreviewURL(null)
-              }, 500);
+              }, 100);
             }}
             variant="default"
             dimension={{ height: '100%', width: '100%' }}

@@ -59,7 +59,7 @@ import Grid from '@mui/material/Grid';
 import SideImages from './sideImages';
 
 const AddProductTypeForm: React.FC = () => {
-  const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues } = useForm<TAddFormSchema>({
+  const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues, unregister } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
     defaultValues: {
       basePrice: 250,
@@ -80,7 +80,6 @@ const AddProductTypeForm: React.FC = () => {
   const [basicInfo, setbasicInfo] = useState<any>({})
   const [imagesInfo, setImagesInfo] = useState<any>({})
   const [inventoryInfo, setInventoryInfo] = useState<any>({})
-  const [discardChanges, setDiscardChanges] = useState(false)
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
     Boolean(showProductAddForm$.value),
@@ -94,36 +93,36 @@ const AddProductTypeForm: React.FC = () => {
     }
   );
   // console.log(basicInfo, imagesInfo, inventoryInfo, errors);
-    console.log('errors',errors,watch());
-    const navigateAwayFromImages = (data:any) => {
-       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                      //@ts-ignore
-                      // eslint-disable-next-line no-case-declarations
-                      const { sideImages } = data
-                      console.log('next data', sideImages);
-                      // eslint-disable-next-line no-case-declarations
-                      let errorExist = false 
-                     
-                      for(const color of Object.keys(sideImages)){
-                        const colorData = sideImages[color];
-                        let errorCount = 0
-                        for(const side of Object.keys(colorData)){
-                          const sideData = colorData[side]
-                          if(_.isEmpty(sideData)) {
-                            errorCount=errorCount+1
-                          }else{
-                            console.log(color,side)
-                          }
-                        }
-                        if(errorCount === 6){
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          //@ts-ignore
-                          setError(`sideImages.${color}`, { type: "required" }, { shouldFocus: false })
-                          errorExist = true
-                        }
-                      }
-                      return errorExist
+  console.log('errors', errors, watch());
+  const navigateAwayFromImages = (data: any) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    // eslint-disable-next-line no-case-declarations
+    const { sideImages } = data
+    console.log('next data', sideImages);
+    // eslint-disable-next-line no-case-declarations
+    let errorExist = false
+
+    for (const color of Object.keys(sideImages)) {
+      const colorData = sideImages[color];
+      let errorCount = 0
+      for (const side of Object.keys(colorData)) {
+        const sideData = colorData[side]
+        if (_.isEmpty(sideData)) {
+          errorCount = errorCount + 1
+        } else {
+          console.log(color, side)
+        }
+      }
+      if (errorCount === 6) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        setError(`sideImages.${color}`, { type: "required" }, { shouldFocus: false })
+        errorExist = true
+      }
     }
+    return errorExist
+  }
 
 
   return (
@@ -172,7 +171,7 @@ const AddProductTypeForm: React.FC = () => {
               showLable={true}
             />
             <ProductSizeField initial={getValues('size')} setValue={setValue} />
-            <ProductColorField initial={getValues('color')} setValue={setValue} />
+            <ProductColorField initial={getValues('color')} setValue={setValue} unregister={unregister} />
             <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
           </div>
         </Slide>
@@ -209,11 +208,11 @@ const AddProductTypeForm: React.FC = () => {
                       break;
                     case 1:
                       // eslint-disable-next-line no-case-declarations
-                      const imageError = navigateAwayFromImages(data)
-                      if(!imageError){
-                        setDiscardChanges(true)
-                      }
-                      // setTab(0)
+                      // const imageError = navigateAwayFromImages(data)
+                      // if (!imageError) {
+                      //   setDiscardChanges(true)
+                      // }
+                      setTab(0)
                       break;
                     case 2:
                       setTab(t => t - 1)
@@ -239,7 +238,7 @@ const AddProductTypeForm: React.FC = () => {
                     case 1:
                       // eslint-disable-next-line no-case-declarations
                       const imageError = navigateAwayFromImages(data)
-                      if(!imageError) setTab(2);
+                      if (!imageError) setTab(2);
                       break;
                     case 2:
                       asyncWrapper({
@@ -264,13 +263,13 @@ const AddProductTypeForm: React.FC = () => {
           )}
         </div>
       </form>
-      <AreYouSure open={discardChanges} discard={()=>{
+      {/* <AreYouSure open={discardChanges} discard={() => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        setValue('sideImages',null)
+        setValue('sideImages', null)
         setTab(0)
         setDiscardChanges(false)
-      }} onClose={()=>setDiscardChanges(false)} text={'discard the Images?'} />
+      }} onClose={() => setDiscardChanges(false)} text={'discard the Images?'} /> */}
       {showProductAddForm$.value === 'exit' && <AreYouSure text={'discard your changes?'} open={showProductAddForm$.value === 'exit'} onClose={() => showProductAddForm$.next(true)} discard={() => showProductAddForm$.next(false)} />}
     </div>
   );
@@ -333,7 +332,7 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
 );
-const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any, getValue:any }> = ({ register, watch, errors,getValue }) => {
+const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any, getValue: any }> = ({ register, watch, errors, getValue }) => {
   const { getFamilies } = useGetFamilies(true);
   const dispatch = useDispatch();
   useSubject(selectedProductFamily$);
@@ -369,7 +368,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any
   }, [selectedProductFamily$.value, metaProductCategories, watch('familyId')]);
   React.useEffect(() => {
     console.log(getValue('categoryId'));
-    if(watch('categoryId')){
+    if (watch('categoryId')) {
       const filtered = metaProductSubCategories.filter(
         (s) => s.categoryId === watch('categoryId')
       );
@@ -566,7 +565,8 @@ export const ProductSizeField: React.FC<{
 export const ProductColorField: React.FC<{
   setValue: TSetValue;
   initial: Array<{ colorName: string; colorCode: string }>;
-}> = ({ setValue, initial }) => {
+  unregister: any
+}> = ({ setValue, initial, unregister }) => {
   const [colorLocal, setColorLocal] =
     React.useState<Array<{ colorName: string; colorCode: string }>>(initial);
   const [showForm, setShowForm] = React.useState(false);
@@ -608,6 +608,7 @@ export const ProductColorField: React.FC<{
               variant='outlined'
               color='info'
               onDelete={() => {
+                unregister(`sideImages.${c.colorName}`)
                 removeColorItem(c.colorName);
               }}
             // fontColor={c.colorCode}
