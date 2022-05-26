@@ -59,15 +59,15 @@ import Grid from '@mui/material/Grid';
 import SideImages from './sideImages';
 
 const AddProductTypeForm: React.FC = () => {
-  const { register, handleSubmit, setValue, watch, formState: { errors }, setError } = useForm<TAddFormSchema>({
+  const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
     defaultValues: {
       basePrice: 250,
-      subcategoryId: '2123r423r',
-      categoryId: '234',
-      familyId: '301c4d65-fb93-419c-a80e-1d155227a841 234 2123r423r',
+      subcategoryId: 'cfa6ce6c-8616-4b00-aebf-de68d8c575fd',
+      categoryId: '12d69ae6-da63-4c0e-9757-536f64f10a76',
+      familyId: '6276ef56-e822-4cf5-9f39-b03a7db5dfcd',
       color: [{ colorCode: '#444444', colorName: 'ref' }],
-      description: 'we ferfg aerg aser gsaerg aeg a gha ha arhtae hga h',
+      description: 'we ferg a gha ha arhtae hga h',
       name: 'tyest',
       size: ['xs', 'md']
 
@@ -80,6 +80,7 @@ const AddProductTypeForm: React.FC = () => {
   const [basicInfo, setbasicInfo] = useState<any>({})
   const [imagesInfo, setImagesInfo] = useState<any>({})
   const [inventoryInfo, setInventoryInfo] = useState<any>({})
+  const [discardChanges, setDiscardChanges] = useState(false)
   const { loading, asyncWrapper } = useAsyncCall(
     addProductType,
     Boolean(showProductAddForm$.value),
@@ -93,7 +94,36 @@ const AddProductTypeForm: React.FC = () => {
     }
   );
   // console.log(basicInfo, imagesInfo, inventoryInfo, errors);
-
+    console.log('errors',errors,watch());
+    const navigateAwayFromImages = (data:any) => {
+       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                      //@ts-ignore
+                      // eslint-disable-next-line no-case-declarations
+                      const { sideImages } = data
+                      console.log('next data', sideImages);
+                      // eslint-disable-next-line no-case-declarations
+                      let errorExist = false 
+                     
+                      for(const color of Object.keys(sideImages)){
+                        const colorData = sideImages[color];
+                        let errorCount = 0
+                        for(const side of Object.keys(colorData)){
+                          const sideData = colorData[side]
+                          if(_.isEmpty(sideData)) {
+                            errorCount=errorCount+1
+                          }else{
+                            console.log(color,side)
+                          }
+                        }
+                        if(errorCount === 6){
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          //@ts-ignore
+                          setError(`sideImages.${color}`, { type: "required" }, { shouldFocus: false })
+                          errorExist = true
+                        }
+                      }
+                      return errorExist
+    }
 
 
   return (
@@ -133,7 +163,7 @@ const AddProductTypeForm: React.FC = () => {
           >
             <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
             <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
-            <ProductMetaFields register={register} watch={watch} errors={errors} />
+            <ProductMetaFields register={register} watch={watch} errors={errors} getValue={getValues} />
             <ProductDisplayImage
               register={register}
               setValue={setValue}
@@ -141,8 +171,8 @@ const AddProductTypeForm: React.FC = () => {
               errors={errors}
               showLable={true}
             />
-            <ProductSizeField initial={[]} setValue={setValue} />
-            <ProductColorField initial={[]} setValue={setValue} />
+            <ProductSizeField initial={getValues('size')} setValue={setValue} />
+            <ProductColorField initial={getValues('color')} setValue={setValue} />
             <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
           </div>
         </Slide>
@@ -155,6 +185,7 @@ const AddProductTypeForm: React.FC = () => {
               setValue={setValue}
               watch={watch}
               errors={errors}
+              getValues={getValues}
             />
           </div>
         </Slide>
@@ -177,10 +208,12 @@ const AddProductTypeForm: React.FC = () => {
                       showProductAddForm$.next('exit');
                       break;
                     case 1:
-                      console.log(data);
-                      setImagesInfo(data)
-                      setTab(0)
-                      setValue('categoryId', basicInfo?.categoryId)
+                      // eslint-disable-next-line no-case-declarations
+                      const imageError = navigateAwayFromImages(data)
+                      if(!imageError){
+                        setDiscardChanges(true)
+                      }
+                      // setTab(0)
                       break;
                     case 2:
                       setTab(t => t - 1)
@@ -204,12 +237,11 @@ const AddProductTypeForm: React.FC = () => {
                       setTab(1)
                       break;
                     case 1:
-                      setImagesInfo(data)
-                      console.log(data);
-                      setTab(2)
+                      // eslint-disable-next-line no-case-declarations
+                      const imageError = navigateAwayFromImages(data)
+                      if(!imageError) setTab(2);
                       break;
                     case 2:
-                      console.log(imagesInfo);
                       asyncWrapper({
                         id: uuidv4(),
                         form: { ...basicInfo, ...imagesInfo, ...data },
@@ -232,6 +264,13 @@ const AddProductTypeForm: React.FC = () => {
           )}
         </div>
       </form>
+      <AreYouSure open={discardChanges} discard={()=>{
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        setValue('sideImages',null)
+        setTab(0)
+        setDiscardChanges(false)
+      }} onClose={()=>setDiscardChanges(false)} text={'discard the Images?'} />
       {showProductAddForm$.value === 'exit' && <AreYouSure text={'discard your changes?'} open={showProductAddForm$.value === 'exit'} onClose={() => showProductAddForm$.next(true)} discard={() => showProductAddForm$.next(false)} />}
     </div>
   );
@@ -294,7 +333,7 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
 );
-const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any }> = ({ register, watch, errors }) => {
+const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any, getValue:any }> = ({ register, watch, errors,getValue }) => {
   const { getFamilies } = useGetFamilies(true);
   const dispatch = useDispatch();
   useSubject(selectedProductFamily$);
@@ -316,13 +355,9 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any
       getFamilies([orderBy('index')]);
   }, [families.metaProductFamilies.length, getFamilies]);
   React.useEffect(() => {
-    metaProductCategories.length === 0 && getCategories([orderBy('index')]);
-    families.metaProductFamilies.length > 0 &&
-      selectedProductFamily$.next(families.metaProductFamilies[0]);
-  }, []);
-  React.useEffect(() => {
     metaProductSubCategories.length === 0 &&
       getSubCategories([orderBy('index')]);
+    metaProductCategories.length === 0 && getCategories([orderBy('index')]);
     families.metaProductFamilies.length > 0 &&
       selectedProductFamily$.next(families.metaProductFamilies[0]);
   }, []);
@@ -333,20 +368,22 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any
     dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
   }, [selectedProductFamily$.value, metaProductCategories, watch('familyId')]);
   React.useEffect(() => {
-    const filtered = metaProductSubCategories.filter(
-      (s) => s.familyId === selectedProductFamily$.value?.id
-    );
-    setLocalSubCategory(_.orderBy(filtered, 'index'));
+    console.log(getValue('categoryId'));
+    if(watch('categoryId')){
+      const filtered = metaProductSubCategories.filter(
+        (s) => s.categoryId === watch('categoryId')
+      );
+      setLocalSubCategory(_.orderBy(filtered, 'index'));
+    }
   }, [watch('familyId'), watch('categoryId')]);
 
-  console.log(watch('familyId'), watch('categoryId'), watch('subcategoryId'));
 
   return (
     <>
       <div className={styles['field-container']}>
         <label>Family :</label>
         <div>
-          <DOSInput error={errors.familyId} helperText={errors.familyId?.message} select fullWidth forminput={{ ...register('familyId') }}>
+          <DOSInput defaultValue={getValue('familyId')} error={errors.familyId} helperText={errors.familyId?.message} select fullWidth forminput={{ ...register('familyId') }}>
             {families.metaProductFamilies?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -356,7 +393,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any
       <div className={styles['field-container']}>
         <label>Category :</label>
         <div>
-          <DOSInput error={errors.categoryId} helperText={errors.categoryId?.message} select fullWidth forminput={{ ...register('categoryId') }}>
+          <DOSInput defaultValue={getValue('categoryId')} error={errors.categoryId} helperText={errors.categoryId?.message} select fullWidth forminput={{ ...register('categoryId') }}>
             {metaProductCategoriesByFamily?.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}
@@ -366,7 +403,7 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any
       <div className={styles['field-container']}>
         <label>SubCategory :</label>
         <div>
-          <DOSInput error={errors.subcategoryId} helperText={errors.subcategoryId?.message} select fullWidth forminput={{ ...register('subcategoryId') }}>
+          <DOSInput defaultValue={getValue('subcategoryId')} error={errors.subcategoryId} helperText={errors.subcategoryId?.message} select fullWidth forminput={{ ...register('subcategoryId') }}>
             {(localSubCategory.length > 0) && localSubCategory.map(({ id, name }) =>
               <MenuItem value={id}>{name}</MenuItem>
             )}

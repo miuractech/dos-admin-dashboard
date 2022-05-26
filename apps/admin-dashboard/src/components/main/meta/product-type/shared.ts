@@ -54,7 +54,7 @@ export const sizeFormSchema = yup.object({
 
 export const addProductFormSchema = yup.object({
   name: yup.string().required().min(3).max(20),
-  description: yup.string().required().min(15).max(50),
+  description: yup.string().required().min(15).max(10000),
   familyId: yup.string().required(),
   categoryId: yup.string().required(),
   subcategoryId: yup.string().required(),

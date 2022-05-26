@@ -15,10 +15,11 @@ type Props = {
   setValue: TSetValue;
   watch: TWatch;
   errors: any;
+  getValues:any;
 }
 const sides = [{ side: "Front" }, { side: "Back" }, { side: "Left" }, { side: "Right" }, { side: "Top" }, { side: "Bottom" }]
 
-export default function SideImages({ register, colours, setValue, watch, errors }: Props) {
+export default function SideImages({ register, colours, setValue, watch, errors, getValues }: Props) {
   return (
     <div>
       {colours.map(({ colorCode, colorName }) => (
@@ -36,6 +37,7 @@ export default function SideImages({ register, colours, setValue, watch, errors 
                     showLable={false}
                     key={element.side}
                     side={element.side}
+                    getValues={getValues}
                     color={colorName}
                     registerName={`sideImages.${colorName}.${element.side}`}
                   />
@@ -43,6 +45,7 @@ export default function SideImages({ register, colours, setValue, watch, errors 
               )
             })}
           </Grid>
+          {errors?.sideImages && errors?.sideImages[colorName] && <Typography variant='subtitle1' color='error' > Atleast one Image required</Typography>}
         </div>
       ))}
     </div>
@@ -53,12 +56,13 @@ const ProductDisplayImage: React.FC<{
   register: TRegister;
   registerName: string;
   setValue: TSetValue;
+  getValues:any;
   watch: TWatch;
   errors: any
   showLable: boolean
   side: string
   color: string
-}> = ({ register, setValue, watch, errors, showLable, side, registerName, color }) => {
+}> = ({ register, setValue, watch, errors, showLable, side, registerName, color,getValues  }) => {
   const [imageFile, setImageFile] = useState<any>(null)
   const [exit, setExit] = useState(false)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
@@ -77,6 +81,10 @@ const ProductDisplayImage: React.FC<{
       URL.revokeObjectURL(url)
     }
   }, [imageFile])
+  useEffect(() => {
+    setpreviewScreen(getValues(`sideImages.${color}.${side}.previewScreen`));
+  }, [])
+  
 
 
   return (
