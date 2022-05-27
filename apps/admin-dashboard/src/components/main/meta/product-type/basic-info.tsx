@@ -75,8 +75,8 @@ const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
             alt=""
           />
         </div>
-        <ProductSizeField initial={item.size} setValue={setValue} />
-        <ProductColorField initial={item.color} setValue={setValue} unregister={unregister} />
+        {/* <ProductSizeField initial={item.size} setValue={setValue} /> */}
+        {/* <ProductColorField initial={item.color} setValue={setValue} unregister={unregister} /> */}
       </form>
     </div>
   );

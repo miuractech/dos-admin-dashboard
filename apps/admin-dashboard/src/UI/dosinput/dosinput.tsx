@@ -15,7 +15,7 @@ export function DOSInput(props: forminputType) {
       {...props}
       // style={{ height: 35, ...props.style }}
       InputProps={{ ...props.InputProps,style: { borderRadius: 40, height: 30, ...props.InputProps?.style } }}
-      inputProps={{ style: { background: 'white', padding: '0px 16px', ...props.inputProps?.style }, ...props.inputProps, ...props.forminput }}
+      inputProps={{...props.inputProps, style: { background: 'white', padding: '0px 16px', ...props.inputProps?.style },  ...props.forminput }}
     />
   );
 }

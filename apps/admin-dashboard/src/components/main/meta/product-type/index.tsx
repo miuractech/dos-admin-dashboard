@@ -74,7 +74,7 @@ const ProductType: React.FC = () => {
         </div>
       )}
       <SimpleModal open={Boolean(showProductAddForm$.value)} onClose={() => showProductAddForm$.next('exit')} style={{}}>
-        <AddProductTypeForm />
+        <AddProductTypeForm onClose={() => showProductAddForm$.next('exit')} />
       </SimpleModal>
       <ListItems />
     </div>

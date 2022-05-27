@@ -18,19 +18,20 @@ export interface TAddFormSchema {
 
 export default async function addProductType(param: {
   id: string;
-  form: TAddFormSchema;
+  form: any;
   createdBy: string;
 }) {
   try {
     const { id, form, createdBy } = param;
     const res = runTransaction(firestore, async () => {
       const uploaded = await uploadArrayOfFiles([form.displayImage]);
+      
       if (uploaded instanceof ApplicationErrorHandler) return uploaded;
       else {
         const count = await countRepo.getOne('count');
         if (count instanceof ApplicationErrorHandler) return count;
         else {
-          const writeable: TMetaProductType = {
+          const writeable:any = {
             id: id,
             index: count.product_type,
             name: form.name,
@@ -41,12 +42,13 @@ export default async function addProductType(param: {
             display_image: uploaded[0],
             size: form.size,
             color: form.color,
-            color_options: [],
+            color_options: form.sideImages,
             base_price: form.basePrice,
             createdBy: createdBy,
             updatedBy: createdBy,
             status: 'published',
-            sku: id
+            sku: form.sku,
+            // sideImages:
           };
           await countRepo.updateOne({ product_type: count.product_type + 1 }, "count")
           return await productTypeRepo.createOne(writeable, id);

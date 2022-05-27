@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Circle, Image, Layer, Rect, Stage, Transformer } from 'react-konva'
 import ApplicationButton from '../../../global/buttons'
 
-const fill = '#ffffff33'
-const stroke = { strokeWidth: 1, stroke: "black", dash: [10, 10] }
+const fill = '#00000033'
+const stroke = { strokeWidth: 2, stroke: "white", dash: [10, 5] }
 const objects = [
   { x: 100, y: 100, type: 'rect', fill, width: 300, height: 300, icons: CropSquare, ...stroke },
   { x: 250, y: 250, type: 'circle', fill, radius: 100, icons: CircleOutlined, ...stroke },
@@ -13,7 +13,7 @@ const objects = [
 
 export default function NewDesignArea({ setpreviewScreen, setPreviewURL, url, close, imageFile, setValue, color, side }: { setPreviewURL: any, imageFile: File, color: string, side: string, url: string, close: () => void, setValue: any, setpreviewScreen: any }) {
   const [selectedObject, setSelectedObject] = useState<any>(objects[0])
-  const [selected, setSelected] = useState(false)
+  const [selected, setSelected] = useState(true)
   const objRef = useRef()
   const transRef = useRef<any>()
   const stageRef = useRef<any>()

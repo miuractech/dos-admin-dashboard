@@ -44,9 +44,9 @@ import {
   setAddedMetaProductType,
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 import DOSInput from '../../../../UI/dosinput/dosinput';
-import { Button, Chip, IconButton, Menu, MenuItem, Popover, Slide, Tab, Tabs, Typography } from '@mui/material';
+import { Button, Chip, CircularProgress, IconButton, Menu, MenuItem, Popover, Slide, Tab, Tabs, Typography } from '@mui/material';
 import useGetFamilies from '../../../../Midl/meta-products/hooks/family/get-families';
-import { orderBy } from 'firebase/firestore';
+import { doc, getDoc, orderBy, setDoc } from 'firebase/firestore';
 import { RootState } from '../../../../store';
 import { BehaviorSubject } from 'rxjs';
 import { TMetaProductFamily, TMetaProductSubCategory } from '../../../../Midl/meta-products/types';
@@ -57,16 +57,19 @@ import { Clear, ColorLens } from '@mui/icons-material';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 import Grid from '@mui/material/Grid';
 import SideImages from './sideImages';
+import InventoryManagement from './inventoryManagement';
+import { firestore } from '../../../../config/firebase.config';
+import { uploadArrayOfFiles } from '../../../../Midl/meta-products/hooks/product-type/helpers';
 
-const AddProductTypeForm: React.FC = () => {
-  const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues, unregister } = useForm<TAddFormSchema>({
+const AddProductTypeForm = ({onClose}:{onClose:any}) => {
+  const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues, unregister, clearErrors } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
     defaultValues: {
       basePrice: 250,
-      subcategoryId: 'cfa6ce6c-8616-4b00-aebf-de68d8c575fd',
-      categoryId: '12d69ae6-da63-4c0e-9757-536f64f10a76',
-      familyId: '6276ef56-e822-4cf5-9f39-b03a7db5dfcd',
-      color: [{ colorCode: '#444444', colorName: 'ref' }],
+      subcategoryId: 'cfa6ce6c-8616-4b00-aebf-de68d8c575fd', //=>12+15+10+6+12+14+6+ = 150 140
+      categoryId: '12d69ae6-da63-4c0e-9757-536f64f10a76',//=>12+15+10+6+12+14+6+ = 220
+      familyId: '6276ef56-e822-4cf5-9f39-b03a7db5dfcd',//=>12+15+10+6+12+14+6+ = 183
+      color: [{ colorCode: '#444444', colorName: 'ref' }], // tyest-543-m-green
       description: 'we ferg a gha ha arhtae hga h',
       name: 'tyest',
       size: ['xs', 'md']
@@ -80,26 +83,82 @@ const AddProductTypeForm: React.FC = () => {
   const [basicInfo, setbasicInfo] = useState<any>({})
   const [imagesInfo, setImagesInfo] = useState<any>({})
   const [inventoryInfo, setInventoryInfo] = useState<any>({})
-  const { loading, asyncWrapper } = useAsyncCall(
+  const [loading, setLoading] = useState(false)
+  const { asyncWrapper } = useAsyncCall(
     addProductType,
     Boolean(showProductAddForm$.value),
     (res) => {
       if (res instanceof ApplicationErrorHandler)
         dispatch(setMetaProductTypeAddError(res.errorObject));
-      else {
+      else { 
         dispatch(setAddedMetaProductType(res));
         dispatch(setMetaProductTypeAddError(null));
+        onClose()
       }
     }
   );
   // console.log(basicInfo, imagesInfo, inventoryInfo, errors);
-  console.log('errors', errors, watch());
+
+  const inventoryValidation = async (data:any) => {
+    const { sku, sideImages } = data
+    
+    let skuError = false
+    const sides = Object.keys(sku).map((color:string)=>{
+      const colorData = sku[color]
+      const side = Object.keys(colorData).map(async (size:string)=>{
+        const skuId = colorData[size]
+        const query = doc(firestore, "inventory", skuId);
+        const docSnap = await getDoc(query);
+        if(docSnap.exists()){
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          setError(`sku.${color}.${size}`,{type:'validate', message:'sku already exist'})
+          skuError = true
+        }
+      })
+    })
+    // console.log(data);
+    if(!skuError){
+      setLoading(true)
+      const colorObj:any = {}
+      for(const color of Object.keys(sideImages)){
+        const sideData:any = {}
+        const colorValues = sideImages[color]
+        for(const side of Object.keys(colorValues)){
+          const sideValues = colorValues[side]
+          if(!_.isEmpty(sideValues)){
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            const url = await uploadArrayOfFiles([[sideValues.imageFile]]);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            const sideObj = {...sideValues,image:url[0]}
+            delete sideObj['imageFile']
+            delete sideObj['icons']
+            // console.log(sideObj);
+            sideData[side] = sideObj
+          }
+        }
+        colorObj[color] = sideData
+        // let sideData = {}
+      }
+      console.log({...data, sideImages:colorObj});
+      
+      asyncWrapper({
+        id: uuidv4(),
+        form: {...data, sideImages:colorObj},
+        createdBy: 'Somnath',
+      })
+      setLoading(false)
+    }
+    
+  }
+
   const navigateAwayFromImages = (data: any) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     // eslint-disable-next-line no-case-declarations
     const { sideImages } = data
-    console.log('next data', sideImages);
     // eslint-disable-next-line no-case-declarations
     let errorExist = false
 
@@ -110,8 +169,6 @@ const AddProductTypeForm: React.FC = () => {
         const sideData = colorData[side]
         if (_.isEmpty(sideData)) {
           errorCount = errorCount + 1
-        } else {
-          console.log(color, side)
         }
       }
       if (errorCount === 6) {
@@ -123,8 +180,7 @@ const AddProductTypeForm: React.FC = () => {
     }
     return errorExist
   }
-
-
+  
   return (
     <div className={styles['add-form']} ref={containerRef}>
       <div className={styles['add-form-heading']}>
@@ -146,7 +202,7 @@ const AddProductTypeForm: React.FC = () => {
       >
         <Tab disabled={tab !== 0} label="Basic Info" {...a11yProps(0)} />
         <Tab disabled={tab !== 1} label="Side Images" {...a11yProps(1)} />
-        <Tab disabled={tab !== 2} label="Inventory" {...a11yProps(2)} />
+        <Tab disabled={tab !== 2} label="Stock Keeping Unit" {...a11yProps(2)} />
       </Tabs>
       <form
         className={styles['add-form-body']}
@@ -170,8 +226,13 @@ const AddProductTypeForm: React.FC = () => {
               errors={errors}
               showLable={true}
             />
-            <ProductSizeField initial={getValues('size')} setValue={setValue} />
-            <ProductColorField initial={getValues('color')} setValue={setValue} unregister={unregister} />
+            <ProductSizeField 
+            initial={getValues('size')} 
+            setValue={setValue} 
+            />
+            <ProductColorField initial={getValues('color')} setValue={setValue} unregister={unregister} setError={setError}
+            errors={errors}
+            clearErrors={clearErrors}/>
             <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
           </div>
         </Slide>
@@ -192,7 +253,14 @@ const AddProductTypeForm: React.FC = () => {
         <Slide direction="right" in={tab === 2} mountOnEnter unmountOnExit container={containerRef.current}>
           <div
           >
-            inventoruy
+            <InventoryManagement
+            basicInfo={basicInfo}
+            register={register}
+            getValue={getValues}
+            // color={basicInfo.color}
+            // size = {basicInfo.size}
+            setValue={setValue}
+            />
           </div>
         </Slide>
 
@@ -234,6 +302,7 @@ const AddProductTypeForm: React.FC = () => {
                     case 0:
                       setbasicInfo(data)
                       setTab(1)
+                      
                       break;
                     case 1:
                       // eslint-disable-next-line no-case-declarations
@@ -241,11 +310,13 @@ const AddProductTypeForm: React.FC = () => {
                       if (!imageError) setTab(2);
                       break;
                     case 2:
-                      asyncWrapper({
-                        id: uuidv4(),
-                        form: { ...basicInfo, ...imagesInfo, ...data },
-                        createdBy: 'Somnath',
-                      })
+                      inventoryValidation(data)
+                      
+                      // asyncWrapper({
+                      //   id: uuidv4(),
+                      //   form: { ...basicInfo, ...imagesInfo, ...data },
+                      //   createdBy: 'Somnath',
+                      // })
                       break;
                     default:
                       setTab(0)
@@ -255,7 +326,7 @@ const AddProductTypeForm: React.FC = () => {
                 // type='submit'
                 variant='contained'
               >
-                {tab < 2 ? 'Next' : 'submit'}
+                {loading?<CircularProgress />:tab < 2 ? 'Next' : 'submit'}
               </Button>
             </>
           ) : (
@@ -367,7 +438,6 @@ const ProductMetaFields: React.FC<{ register: TRegister, watch: any, errors: any
     dispatch(setMetaProductCategoriesByFamily(_.orderBy(filtered, 'index')));
   }, [selectedProductFamily$.value, metaProductCategories, watch('familyId')]);
   React.useEffect(() => {
-    console.log(getValue('categoryId'));
     if (watch('categoryId')) {
       const filtered = metaProductSubCategories.filter(
         (s) => s.categoryId === watch('categoryId')
@@ -485,10 +555,10 @@ const ProductDisplayImage: React.FC<{
 export const ProductSizeField: React.FC<{
   setValue: TSetValue;
   initial: Array<string>;
-}> = ({ setValue, initial }) => {
+}> = ({ setValue, initial,}) => {
   const [sizeLocal, setSizeLocal] = React.useState<Array<string>>(initial);
   const [showForm, setShowForm] = React.useState(false);
-  const { register, watch, reset, formState: { errors }, handleSubmit } = useForm<{ val: string }>({
+  const { register, watch, reset, formState: { errors }, handleSubmit, setError } = useForm<{ val: string }>({
     resolver: yupResolver(sizeFormSchema),
   });
 
@@ -551,6 +621,9 @@ export const ProductSizeField: React.FC<{
                   setShowForm(false)
                   reset()
                 }
+                else{
+                  setError(`val`, { type: 'validate', message:'duplicate size name' }, { shouldFocus: false })
+                }
               })}
             >
               Save
@@ -566,7 +639,10 @@ export const ProductColorField: React.FC<{
   setValue: TSetValue;
   initial: Array<{ colorName: string; colorCode: string }>;
   unregister: any
-}> = ({ setValue, initial, unregister }) => {
+  setError:any
+            errors:any
+            clearErrors:any
+}> = ({ setValue, initial, unregister}) => {
   const [colorLocal, setColorLocal] =
     React.useState<Array<{ colorName: string; colorCode: string }>>(initial);
   const [showForm, setShowForm] = React.useState(false);
@@ -576,7 +652,8 @@ export const ProductColorField: React.FC<{
     setValue: setValueInner,
     reset,
     formState: { errors },
-    handleSubmit
+    handleSubmit,
+    setError
   } = useForm<{ colorName: string; colorCode: string }>({
     resolver: yupResolver(colorFormSchema),
   });
@@ -691,6 +768,8 @@ export const ProductColorField: React.FC<{
                   ]);
                   setShowForm(false)
                   reset()
+                }else{
+                  setError(`colorName`, { type: 'validate', message:'duplicate color name' }, { shouldFocus: true })
                 }
               })}
             >
@@ -711,4 +790,8 @@ function a11yProps(index: number) {
     id: `tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
+}
+
+function colorObj(colorObj: any) {
+  throw new Error('Function not implemented.');
 }

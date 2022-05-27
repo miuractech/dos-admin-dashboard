@@ -24,7 +24,8 @@ export default function SideImages({ register, colours, setValue, watch, errors,
     <div>
       {colours.map(({ colorCode, colorName }) => (
         <div>
-          <Typography variant='h6' align='center' gutterBottom>{colorName}</Typography>
+          <Typography variant='h6' align='center'>{colorName}</Typography>
+          <Typography variant='subtitle2' align='center' color={'gray'} gutterBottom>(only square images with minimum 500px X 500px dimensions are accepted)</Typography>
           <Grid container columnSpacing={2} justifyContent="center" marginBottom={10}>
             {sides.map((element, index) => {
               return (
