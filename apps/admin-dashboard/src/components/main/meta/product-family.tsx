@@ -251,20 +251,16 @@ const Form: React.FC<{
     }
 
     return (
-      <div className={styles['product-form']}>
+      <div >
         <form onSubmit={handleSubmit(submit)}>
-          <div>
-            <div style={{ textAlign: "center" }}>
-              <Typography variant='h5' gutterBottom>Product Family</Typography>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "center", gap: "30px" }}>
-              <p>Product Name:</p>
-              <div>
-                <DOSInput
-                  defaultValue={productFamilyNameDefaultValue}
-                />
-              </div>
+          <Typography variant='h5' gutterBottom textAlign="center">Product Family</Typography>
+          <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "30px" }}>
+            <p>Product Name:</p>
+            <div>
+              <DOSInput
+                defaultValue={productFamilyNameDefaultValue}
+                fullWidth
+              />
             </div>
           </div>
           <div
@@ -280,8 +276,8 @@ const Form: React.FC<{
             {loadingFlag ? (
               <ApplicationSpinner />
             ) : (
-              <div style={{ display: "flex", gap: "30px" }}>
-                <div style={{ height: 50, width: 100 }}>
+              <div style={{ display: "flex", justifyContent: "space-evenly", margin: "40px auto", width: "400px" }}>
+                <div style={{ height: 40, width: 100 }}>
                   <ApplicationButton
                     variant="cancel"
                     clickAction={() => unmountFunc()}
@@ -290,7 +286,7 @@ const Form: React.FC<{
                     Cancel
                   </ApplicationButton>
                 </div>
-                <div style={{ height: 50, width: 100 }}>
+                <div style={{ height: 40, width: 100 }}>
                   <ApplicationButton
                     variant="default-not-padding"
                     clickAction={handleSubmit(submit)}

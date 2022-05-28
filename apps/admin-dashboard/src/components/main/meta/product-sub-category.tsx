@@ -27,6 +27,9 @@ import styles from './styles/meta.module.scss';
 import { setMetaProductCategoriesByFamily } from '../../../Midl/meta-products/store/meta-product.category.slice';
 import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 import { ApplicationSelectInput } from '../../global/select-input';
+import SimpleModal from '../../global/simpleModal/modal';
+import { MenuItem, Typography } from '@mui/material';
+import DOSInput from '../../../UI/dosinput/dosinput';
 
 const selectedProductFamily$ = new BehaviorSubject<TMetaProductFamily | null>(
   null
@@ -125,7 +128,7 @@ const ProductSubCategory: React.FC = () => {
           <List key={s.id} subcategory={s} />
         ))}
       </div>
-      <ApplicationModal mounted={showAddForm$.value}>
+      <SimpleModal open={showAddForm$.value} onClose={() => showAddForm$.next(false)}>
         <Form
           dbError={addError}
           onCompleteText={'Product Sub-Category Has been Successfully Created!'}
@@ -145,7 +148,7 @@ const ProductSubCategory: React.FC = () => {
           loadingFlag={addLoadingFlag}
           completed={completed}
         />
-      </ApplicationModal>
+      </SimpleModal>
     </div>
   );
 };
@@ -205,7 +208,7 @@ const List: React.FC<{ subcategory: TMetaProductSubCategory }> = ({
         </div>
       </div>
       <div className={styles['footer']}></div>
-      <ApplicationModal mounted={showEditForm}>
+      <SimpleModal open={showEditForm} onClose={() => setShowEditForm(false)}>
         <Form
           dbError={dbError}
           onCompleteText={'Changes Have Been Saved Successfully!'}
@@ -225,7 +228,7 @@ const List: React.FC<{ subcategory: TMetaProductSubCategory }> = ({
           productSubCategoryNameDefaultValue={subcategory.name}
           loadingFlag={loadingFlag}
         />
-      </ApplicationModal>
+      </SimpleModal>
     </div>
   );
 };
@@ -271,21 +274,16 @@ const Form: React.FC<{
     }
 
     return (
-      <div className={styles['product-form']}>
-        <div className={styles['product-form-heading']}>
-          <div></div>
-          <h3>Product Sub-Category</h3>
-          <ButtonWithoutStyles clickAction={() => unmountFunc()}>
-            <CloseCircle />
-          </ButtonWithoutStyles>
-        </div>
+      <div style={{ width: "30rem", margin: "auto" }}>
+        <Typography variant='h5' gutterBottom textAlign="center">Product Sub-Category</Typography>
         <form onSubmit={handleSubmit(submit)}>
-          <div className={styles['product-form-body']}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "30px" }}>
             <label>Sub Category Name:</label>
             <div>
-              <ApplicationTextInput
+              <DOSInput
                 defaultValue={productSubCategoryNameDefaultValue}
-                {...register('name')}
+                forminput={{ ...register('name') }}
+                fullWidth
               />
               <InfoText
                 text={
@@ -300,13 +298,14 @@ const Form: React.FC<{
                 variant="error"
               />
             </div>
-
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "30px" }}>
             <label>Category: </label>
-            <ApplicationSelectInput {...register('categoryId')}>
+            <DOSInput forminput={{ ...register('categoryId') }} select fullWidth>
               {categories.metaProductCategoriesByFamily.map((c) => (
-                <option value={c.id}>{c.name}</option>
+                <MenuItem value={c.id}>{c.name}</MenuItem>
               ))}
-            </ApplicationSelectInput>
+            </DOSInput>
           </div>
           <div
             className={
@@ -318,32 +317,33 @@ const Form: React.FC<{
                 : styles['form-button-container']
             }
           >
-            {loadingFlag ? (
-              <ApplicationSpinner />
-            ) : (
-              <>
-                <div >
-                  <ApplicationButton
-                    variant="cancel"
-                    clickAction={() => unmountFunc()}
-                    dimension={{ height: '100%', width: '100%' }}
-                  >
-                    Cancel
-                  </ApplicationButton>
+            {
+              loadingFlag ? (
+                <ApplicationSpinner />
+              ) : (
+                <div style={{ display: "flex", justifyContent: "space-evenly", margin: "40px auto", width: "400px" }}>
+                  <div style={{ height: 40, width: 100 }}>
+                    <ApplicationButton
+                      variant="cancel"
+                      clickAction={() => unmountFunc()}
+                      dimension={{ height: '100%', width: '100%' }}
+                    >
+                      Cancel
+                    </ApplicationButton>
+                  </div>
+                  <div style={{ height: 40, width: 100 }}>
+                    <ApplicationButton
+                      variant="default-not-padding"
+                      clickAction={handleSubmit(submit)}
+                      dimension={{ height: '100%', width: '100%' }}
+                    >
+                      Save
+                    </ApplicationButton>
+                  </div>
                 </div>
-                <div style={{ height: 50, width: 100 }}>
-                  <ApplicationButton
-                    variant="default-not-padding"
-                    clickAction={handleSubmit(submit)}
-                    dimension={{ height: '100%', width: '100%' }}
-                  >
-                    Save
-                  </ApplicationButton>
-                </div>
-              </>
-            )}
-          </div>
-        </form>
+              )}
+          </div >
+        </form >
         {completed && (
           <InfoText
             text={onCompleteText}
@@ -351,7 +351,7 @@ const Form: React.FC<{
             variant="success"
           />
         )}
-      </div>
+      </div >
     );
   };
 

@@ -61,19 +61,12 @@ import InventoryManagement from './inventoryManagement';
 import { firestore } from '../../../../config/firebase.config';
 import { uploadArrayOfFiles } from '../../../../Midl/meta-products/hooks/product-type/helpers';
 
-const AddProductTypeForm = ({onClose}:{onClose:any}) => {
+const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues, unregister, clearErrors } = useForm<TAddFormSchema>({
     resolver: yupResolver(addProductFormSchema),
-    defaultValues: {
-      basePrice: 250,
-      subcategoryId: 'cfa6ce6c-8616-4b00-aebf-de68d8c575fd', //=>12+15+10+6+12+14+6+ = 150 140
-      categoryId: '12d69ae6-da63-4c0e-9757-536f64f10a76',//=>12+15+10+6+12+14+6+ = 220
-      familyId: '6276ef56-e822-4cf5-9f39-b03a7db5dfcd',//=>12+15+10+6+12+14+6+ = 183
-      color: [{ colorCode: '#444444', colorName: 'ref' }], // tyest-543-m-green
-      description: 'we ferg a gha ha arhtae hga h',
-      name: 'tyest',
-      size: ['xs', 'md']
-
+    defaultValues: item ? item : {
+      color: [], // tyest-543-m-green
+      size: []
     }
   });
   useSubject(showProductAddForm$);
@@ -90,7 +83,7 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
     (res) => {
       if (res instanceof ApplicationErrorHandler)
         dispatch(setMetaProductTypeAddError(res.errorObject));
-      else { 
+      else {
         dispatch(setAddedMetaProductType(res));
         dispatch(setMetaProductTypeAddError(null));
         onClose()
@@ -99,40 +92,40 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
   );
   // console.log(basicInfo, imagesInfo, inventoryInfo, errors);
 
-  const inventoryValidation = async (data:any) => {
+  const inventoryValidation = async (data: any) => {
     const { sku, sideImages } = data
-    
+
     let skuError = false
-    const sides = Object.keys(sku).map((color:string)=>{
+    const sides = Object.keys(sku).map((color: string) => {
       const colorData = sku[color]
-      const side = Object.keys(colorData).map(async (size:string)=>{
+      const side = Object.keys(colorData).map(async (size: string) => {
         const skuId = colorData[size]
         const query = doc(firestore, "inventory", skuId);
         const docSnap = await getDoc(query);
-        if(docSnap.exists()){
+        if (docSnap.exists()) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
-          setError(`sku.${color}.${size}`,{type:'validate', message:'sku already exist'})
+          setError(`sku.${color}.${size}`, { type: 'validate', message: 'sku already exist' })
           skuError = true
         }
       })
     })
     // console.log(data);
-    if(!skuError){
+    if (!skuError) {
       setLoading(true)
-      const colorObj:any = {}
-      for(const color of Object.keys(sideImages)){
-        const sideData:any = {}
+      const colorObj: any = {}
+      for (const color of Object.keys(sideImages)) {
+        const sideData: any = {}
         const colorValues = sideImages[color]
-        for(const side of Object.keys(colorValues)){
+        for (const side of Object.keys(colorValues)) {
           const sideValues = colorValues[side]
-          if(!_.isEmpty(sideValues)){
+          if (!_.isEmpty(sideValues)) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             const url = await uploadArrayOfFiles([[sideValues.imageFile]]);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            const sideObj = {...sideValues,image:url[0]}
+            const sideObj = { ...sideValues, image: url[0] }
             delete sideObj['imageFile']
             delete sideObj['icons']
             // console.log(sideObj);
@@ -142,16 +135,16 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
         colorObj[color] = sideData
         // let sideData = {}
       }
-      console.log({...data, sideImages:colorObj});
-      
+      console.log({ ...data, sideImages: colorObj });
+
       asyncWrapper({
         id: uuidv4(),
-        form: {...data, sideImages:colorObj},
+        form: { ...data, sideImages: colorObj },
         createdBy: 'Somnath',
       })
       setLoading(false)
     }
-    
+
   }
 
   const navigateAwayFromImages = (data: any) => {
@@ -180,7 +173,7 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
     }
     return errorExist
   }
-  
+
   return (
     <div className={styles['add-form']} ref={containerRef}>
       <div className={styles['add-form-heading']}>
@@ -226,13 +219,13 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
               errors={errors}
               showLable={true}
             />
-            <ProductSizeField 
-            initial={getValues('size')} 
-            setValue={setValue} 
+            <ProductSizeField
+              initial={getValues('size')}
+              setValue={setValue}
             />
             <ProductColorField initial={getValues('color')} setValue={setValue} unregister={unregister} setError={setError}
-            errors={errors}
-            clearErrors={clearErrors}/>
+              errors={errors}
+              clearErrors={clearErrors} />
             <ProductBasePrice register={register} error={errors?.basePrice ? errors?.basePrice : {}} />
           </div>
         </Slide>
@@ -254,12 +247,12 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
           <div
           >
             <InventoryManagement
-            basicInfo={basicInfo}
-            register={register}
-            getValue={getValues}
-            // color={basicInfo.color}
-            // size = {basicInfo.size}
-            setValue={setValue}
+              basicInfo={basicInfo}
+              register={register}
+              getValue={getValues}
+              // color={basicInfo.color}
+              // size = {basicInfo.size}
+              setValue={setValue}
             />
           </div>
         </Slide>
@@ -302,7 +295,7 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
                     case 0:
                       setbasicInfo(data)
                       setTab(1)
-                      
+
                       break;
                     case 1:
                       // eslint-disable-next-line no-case-declarations
@@ -311,7 +304,7 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
                       break;
                     case 2:
                       inventoryValidation(data)
-                      
+
                       // asyncWrapper({
                       //   id: uuidv4(),
                       //   form: { ...basicInfo, ...imagesInfo, ...data },
@@ -326,7 +319,7 @@ const AddProductTypeForm = ({onClose}:{onClose:any}) => {
                 // type='submit'
                 variant='contained'
               >
-                {loading?<CircularProgress />:tab < 2 ? 'Next' : 'submit'}
+                {loading ? <CircularProgress /> : tab < 2 ? 'Next' : 'submit'}
               </Button>
             </>
           ) : (
@@ -491,15 +484,19 @@ const ProductDisplayImage: React.FC<{
   showLable: boolean
   side?: string
 }> = ({ register, setValue, watch, errors, showLable, side }) => {
-  const { preview } = usePreviewImage(watch('displayImage'));
+
+
+
+  // const { preview } = usePreviewImage(watch('displayImage'));
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
 
+  const count = 1
   return (
     <div>
       <div className={styles['field-container']}>
         {showLable && <label>Display Image:</label>}
         <div>
-          {preview.length > 0 ? (
+          {count > 0 ? (
             <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
               <IconButton
                 size="small"
@@ -514,7 +511,7 @@ const ProductDisplayImage: React.FC<{
                 <Clear />
               </IconButton>
               < img
-                src={preview}
+                src={watch('displayImage')}
                 style={{
                   objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
                 }}
@@ -555,7 +552,7 @@ const ProductDisplayImage: React.FC<{
 export const ProductSizeField: React.FC<{
   setValue: TSetValue;
   initial: Array<string>;
-}> = ({ setValue, initial,}) => {
+}> = ({ setValue, initial, }) => {
   const [sizeLocal, setSizeLocal] = React.useState<Array<string>>(initial);
   const [showForm, setShowForm] = React.useState(false);
   const { register, watch, reset, formState: { errors }, handleSubmit, setError } = useForm<{ val: string }>({
@@ -621,8 +618,8 @@ export const ProductSizeField: React.FC<{
                   setShowForm(false)
                   reset()
                 }
-                else{
-                  setError(`val`, { type: 'validate', message:'duplicate size name' }, { shouldFocus: false })
+                else {
+                  setError(`val`, { type: 'validate', message: 'duplicate size name' }, { shouldFocus: false })
                 }
               })}
             >
@@ -639,10 +636,10 @@ export const ProductColorField: React.FC<{
   setValue: TSetValue;
   initial: Array<{ colorName: string; colorCode: string }>;
   unregister: any
-  setError:any
-            errors:any
-            clearErrors:any
-}> = ({ setValue, initial, unregister}) => {
+  setError: any
+  errors: any
+  clearErrors: any
+}> = ({ setValue, initial, unregister }) => {
   const [colorLocal, setColorLocal] =
     React.useState<Array<{ colorName: string; colorCode: string }>>(initial);
   const [showForm, setShowForm] = React.useState(false);
@@ -768,8 +765,8 @@ export const ProductColorField: React.FC<{
                   ]);
                   setShowForm(false)
                   reset()
-                }else{
-                  setError(`colorName`, { type: 'validate', message:'duplicate color name' }, { shouldFocus: true })
+                } else {
+                  setError(`colorName`, { type: 'validate', message: 'duplicate color name' }, { shouldFocus: true })
                 }
               })}
             >

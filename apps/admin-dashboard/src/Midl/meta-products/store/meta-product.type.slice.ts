@@ -33,7 +33,7 @@ const metaProductTypeSlice = createSlice({
   initialState: state,
   reducers: {
     setMetaProductTypes: (
-      state: TState,
+      state: any,
       action: PayloadAction<Array<TMetaProductType>>
     ) => {
       state.metaProductTypes = action.payload;

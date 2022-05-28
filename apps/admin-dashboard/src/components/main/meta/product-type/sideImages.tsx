@@ -15,7 +15,7 @@ type Props = {
   setValue: TSetValue;
   watch: TWatch;
   errors: any;
-  getValues:any;
+  getValues: any;
 }
 const sides = [{ side: "Front" }, { side: "Back" }, { side: "Left" }, { side: "Right" }, { side: "Top" }, { side: "Bottom" }]
 
@@ -26,7 +26,7 @@ export default function SideImages({ register, colours, setValue, watch, errors,
         <div>
           <Typography variant='h6' align='center'>{colorName}</Typography>
           <Typography variant='subtitle2' align='center' color={'gray'} gutterBottom>(only square images with minimum 500px X 500px dimensions are accepted)</Typography>
-          <Grid container columnSpacing={2} justifyContent="center" marginBottom={10}>
+          <Grid container columnSpacing={2} justifyContent="center" marginBottom={5}>
             {sides.map((element, index) => {
               return (
                 <Grid item m={4}>
@@ -57,19 +57,20 @@ const ProductDisplayImage: React.FC<{
   register: TRegister;
   registerName: string;
   setValue: TSetValue;
-  getValues:any;
+  getValues: any;
   watch: TWatch;
   errors: any
   showLable: boolean
   side: string
   color: string
-}> = ({ register, setValue, watch, errors, showLable, side, registerName, color,getValues  }) => {
+}> = ({ register, setValue, watch, errors, showLable, side, registerName, color, getValues }) => {
   const [imageFile, setImageFile] = useState<any>(null)
   const [exit, setExit] = useState(false)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
   // const { preview } = usePreviewImage();
   const [previewScreen, setpreviewScreen] = useState<string>('')
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
+  const [error, setError] = useState("")
   useEffect(() => {
     let url: string;
     if (imageFile) {
@@ -85,7 +86,18 @@ const ProductDisplayImage: React.FC<{
   useEffect(() => {
     setpreviewScreen(getValues(`sideImages.${color}.${side}.previewScreen`));
   }, [])
-  
+
+  useEffect(() => {
+
+    if (!error) return
+
+    setTimeout(() => {
+      setError("")
+    }, 5000)
+
+  }, [error])
+
+
 
 
   return (
@@ -132,10 +144,18 @@ const ProductDisplayImage: React.FC<{
                 <input
                   type="file"
                   style={{ display: 'none', }}
-                  // {...register(registerName)}
                   onChange={(e) => {
                     if (e.target.files && e.target.files?.length > 0) {
-                      setImageFile(e.target.files[0])
+                      const img = new Image()
+                      img.src = window.URL.createObjectURL(e.target.files[0])
+                      img.onload = () => {
+                        if (img.width === img.height) {
+                          if (img.width > 500 && img.height > 500) {
+                            if (e.target.files?.length !== 1) return
+                            setImageFile(e.target.files[0])
+                          } else setError("minimum of 500x500 pixel image requried")
+                        } else setError("please upload a square image")
+                      }
                     }
                   }}
                   ref={(e) => {
@@ -143,22 +163,25 @@ const ProductDisplayImage: React.FC<{
                     imageFieldRef.current = e;
                   }}
                 />
-                <UploadButton
+                < UploadButton
                   dimension={{ height: '100%', width: '100%' }}
                   clickAction={() => {
                     imageFieldRef.current?.click();
                   }}
+                  style={{ border: error ? '1px solid red' : '1px solid #222' }}
                 >
                   <UploadIcon />
-                </UploadButton>
+                </UploadButton >
               </div>
             )}
         </div>
       </div>
-      {errors.displayImage && <Typography fontSize={12} variant='subtitle1' color='error' >
-        {errors[registerName]?.message}
-      </Typography>}
+      {
+        error && <Typography style={{ maxWidth: "100px" }} fontSize={11} variant='subtitle1' color='error' textAlign="center">
+          {error}
+        </Typography>
+      }
       {!showLable && <div style={{ marginTop: "15px", textAlign: "center" }}>{side}</div>}
-    </div>
+    </div >
   );
 };

@@ -4,13 +4,13 @@ import styles from './buttons.module.scss';
 
 interface IButton {
   variant:
-    | 'edit'
-    | 'cancel'
-    | 'disable'
-    | 'enable'
-    | 'default'
-    | 'default-not-padding';
-  clickAction: (e:any) => void;
+  | 'edit'
+  | 'cancel'
+  | 'disable'
+  | 'enable'
+  | 'default'
+  | 'default-not-padding';
+  clickAction: (e: any) => void;
   dimension?: {
     height: string;
     width: string;
@@ -69,23 +69,25 @@ export const ButtonWithoutStyles: React.FC<{
 };
 
 export const UploadButton: React.FC<{
-  clickAction: (e:unknown) => void;
+  clickAction: (e: unknown) => void;
   disabled?: boolean;
   dimension?: {
     height: string;
     width: string;
   };
+  style?: React.CSSProperties
 }> = (props) => {
   const styleObject = props.dimension !== undefined ? props.dimension : {};
   return (
     <button
-      style={styleObject}
+      // style={styleObject}
       onClick={(e) => {
         e.preventDefault()
         props.clickAction(e)
       }}
       className={styles['upload-button']}
       disabled={props.disabled}
+      style={{ ...styleObject, ...props.style }}
     >
       {props.children}
     </button>

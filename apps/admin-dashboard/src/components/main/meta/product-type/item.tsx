@@ -11,6 +11,8 @@ import {
 } from '../../../../Midl/meta-products/store/meta-product.type.slice';
 import { productTypeRepo } from '../../../../Midl/meta-products/hooks/product-type/helpers';
 import { ApplicationErrorHandler } from 'rxf-rewrite/dist';
+import AddProductTypeForm from './add-form';
+import SimpleModal from '../../../global/simpleModal/modal';
 
 const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
   const [editedFormShow, setEditedFormShow] = React.useState(false);
@@ -27,6 +29,7 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
       dispatch(setMetaProductTypeEditError(null));
     }
   }
+  console.log(item);
 
   return (
     <React.Fragment>
@@ -80,9 +83,10 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
         </div>
       </div>
       <div className={styles['footer']}></div>
-      <ApplicationModal mounted={editedFormShow}>
-        <EditFormModal item={item} modalAction={setterEditedFormShow} />
-      </ApplicationModal>
+      <SimpleModal open={editedFormShow} onClose={() => setEditedFormShow(false)}>
+        <AddProductTypeForm item={{ ...item, sideImages: item.color_options, displayImage: item.display_image }} onClose={() => console.log('l')} />
+        {/* <EditFormModal item={item} modalAction={setterEditedFormShow} /> */}
+      </SimpleModal>
     </React.Fragment>
   );
 };

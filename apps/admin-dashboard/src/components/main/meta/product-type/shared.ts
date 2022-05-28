@@ -29,18 +29,12 @@ export const imageValidation = yup
   .mixed()
   .required()
   .test(
-    'fileSize',
-    'file size is too large',
-    (val: FileList | undefined) =>
-      val !== undefined && val.length > 0 && val[0].size <= 1024 * 1024
-  )
-  .test(
     'fileType',
     'must be a jpeg/png file',
     (val: FileList | undefined) =>
       val !== undefined &&
       val.length > 0 &&
-      ['image/jpeg', 'image/png', 'image/jpg','image/svg'].includes(val[0].type)
+      ['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(val[0].type)
   );
 
 export const colorFormSchema = yup.object({
@@ -49,7 +43,7 @@ export const colorFormSchema = yup.object({
 });
 
 export const sizeFormSchema = yup.object({
-  val: yup.string().typeError('size must be string').required('size is required').min(1,'size must be minimum if 1 character').max(10,'size cannot exceed 10 characters'),
+  val: yup.string().typeError('size must be string').required('size is required').min(1, 'size must be minimum if 1 character').max(10, 'size cannot exceed 10 characters'),
 });
 
 export const addProductFormSchema = yup.object({
