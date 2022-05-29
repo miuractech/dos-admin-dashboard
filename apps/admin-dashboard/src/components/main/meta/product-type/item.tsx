@@ -1,6 +1,6 @@
 import { TMetaProductType } from '../../../../Midl/meta-products/types';
 import styles from '../styles/product-type.module.scss';
-import React from 'react';
+import React, { useState } from 'react';
 import ApplicationButton from '../../../global/buttons';
 import ApplicationModal from '../../../global/modal';
 import EditFormModal from './edit-form-modal';
@@ -15,10 +15,11 @@ import AddProductTypeForm from './add-form';
 import SimpleModal from '../../../global/simpleModal/modal';
 
 const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
-  const [editedFormShow, setEditedFormShow] = React.useState(false);
-  function setterEditedFormShow(val: boolean) {
-    return setEditedFormShow(val);
-  }
+  // const [editedFormShow, setEditedFormShow] = React.useState(false);
+  const [modifiedItem, setModifiedItem] = useState<any>(null)
+  // function setterEditedFormShow(val: boolean) {
+  //   return setEditedFormShow(val);
+  // }
   const dispatch = useDispatch();
 
   function updateState(res: TMetaProductType | ApplicationErrorHandler) {
@@ -36,7 +37,7 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
       <div className={styles['item']}>
         <div className={styles['left']}>
           <img
-            src={item.display_image}
+            src={item.displayImage}
             alt="display_image_item"
             height={56}
             width={45}
@@ -47,7 +48,14 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
           <ApplicationButton
             variant="edit"
             clickAction={() => {
-              setEditedFormShow(true);
+              const itemCopy = {...item}
+              setModifiedItem(itemCopy)
+              console.log(itemCopy);
+              
+              //
+              
+
+              // setEditedFormShow(true);
             }}
           >
             Edit
@@ -83,8 +91,11 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
         </div>
       </div>
       <div className={styles['footer']}></div>
-      <SimpleModal open={editedFormShow} onClose={() => setEditedFormShow(false)}>
-        <AddProductTypeForm item={{ ...item, sideImages: item.color_options, displayImage: item.display_image }} onClose={() => console.log('l')} />
+      <SimpleModal open={Boolean(modifiedItem)} onClose={() => setModifiedItem(null)}>
+        <AddProductTypeForm item={
+          modifiedItem
+          // { ...item, sideImages: item.color_options, displayImage: item.display_image }
+          } onClose={() =>setModifiedItem(null)} />
         {/* <EditFormModal item={item} modalAction={setterEditedFormShow} /> */}
       </SimpleModal>
     </React.Fragment>

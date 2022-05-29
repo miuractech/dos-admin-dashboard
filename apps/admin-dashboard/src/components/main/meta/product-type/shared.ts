@@ -31,10 +31,19 @@ export const imageValidation = yup
   .test(
     'fileType',
     'must be a jpeg/png file',
-    (val: FileList | undefined) =>
-      val !== undefined &&
-      val.length > 0 &&
-      ['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(val[0].type)
+    (val: FileList | undefined |string) =>{
+      if(val !== undefined &&
+        val.length > 0){
+          if(typeof(val) === 'string'){
+            return true
+          }
+          else if(['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(val[0].type)) return true;
+          else return false;
+        }
+      else{
+        return false
+      }
+    }
   );
 
 export const colorFormSchema = yup.object({

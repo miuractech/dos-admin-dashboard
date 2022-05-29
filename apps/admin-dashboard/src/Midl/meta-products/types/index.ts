@@ -48,15 +48,15 @@ export interface TMetaProductType extends TFirestoreDefault {
   description: string; // min 20 max 100
   familyId: string; // family foreign key (uuid)
   categoryId: string; // category foreign key (uuid)
-  sub_category_id: string; // sub-category foreign key (uuid)
-  display_image: string; // firestore storage url
+  subcategoryId: string; // sub-category foreign key (uuid)
+  displayImage: string; // firestore storage url
   size: Array<string>; // min 3
   color: Array<{
     colorName: string;
     colorCode: string /* hex color code */;
   }>; // min 1
-  color_options: Array<{ colorName: string; colorCode: string; sides: TSides }>;
-  base_price: number;
+  sideImages: Array<{ colorName: string; colorCode: string; sides: TSides }>;
+  basePrice: number;
   status: metaProductStatus;
   createdBy: string;
   updatedBy: string;

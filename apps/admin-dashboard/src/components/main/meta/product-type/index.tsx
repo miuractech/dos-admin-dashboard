@@ -60,8 +60,8 @@ const ProductType: React.FC = () => {
               <ApplicationButton
                 variant="enable"
                 clickAction={() => {
-                  produce(types.metaProductTypes, (draft) =>
-                    batchCommitTypes(draft, 'Somnath')
+                  produce(types.metaProductTypes, (data) =>
+                    batchCommitTypes(data, 'Somnath')
                   );
                   dispatch(setDndType('default'));
                 }}
@@ -74,7 +74,7 @@ const ProductType: React.FC = () => {
         </div>
       )}
       <SimpleModal open={Boolean(showProductAddForm$.value)} onClose={() => showProductAddForm$.next('exit')} style={{}}>
-        <AddProductTypeForm onClose={() => showProductAddForm$.next('exit')} />
+        <AddProductTypeForm onClose={() => showProductAddForm$.next(false)} />
       </SimpleModal>
       
       <ListItems />

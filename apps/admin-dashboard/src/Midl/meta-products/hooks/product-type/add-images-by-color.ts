@@ -33,7 +33,7 @@ export default async function addImagesByColor(param: {
       ]);
       if (uploaded instanceof ApplicationErrorHandler) return uploaded;
       else {
-        const local = doc.color_options;
+        const local = doc.sideImages;
         local.push({
           colorName: form.colorName,
           colorCode: form.colorCode,
@@ -46,7 +46,7 @@ export default async function addImagesByColor(param: {
             back: uploaded[5],
           },
         });
-        return await productTypeRepo.updateOne({ color_options: local }, id);
+        return await productTypeRepo.updateOne({ sideImages: local }, id);
       }
     }
   });

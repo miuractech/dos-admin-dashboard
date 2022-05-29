@@ -64,11 +64,11 @@ const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
         <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
         <ReadOnlyField label="FamilyId" val={item.familyId} />
         <ReadOnlyField label="CategoryId" val={item.categoryId} />
-        <ReadOnlyField label="SubCategoryId" val={item.sub_category_id} />
+        <ReadOnlyField label="SubCategoryId" val={item.subcategoryId} />
         <div className={styles['field-container']}>
           <label>Display Image:</label>
           <img
-            src={item.display_image}
+            src={item.displayImage}
             height={100}
             width={100}
             style={{ objectFit: 'cover' }}

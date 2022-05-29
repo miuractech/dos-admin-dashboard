@@ -1,11 +1,11 @@
 import React from 'react';
 
-export default function usePreviewImage(file: FileList | undefined) {
+export default function usePreviewImage(inputFile: FileList | undefined |string) {
   const [preview, setPreview] = React.useState<string>('');
 
   React.useEffect(() => {
-    if (file !== undefined && file.length > 0) {
-      const first = file[0];
+    if (inputFile !== undefined && typeof(inputFile) !== 'string' && inputFile.length > 0) {
+      const first = inputFile[0];
       const fileReader = new FileReader();
       fileReader.onloadend = () => {
         setPreview(fileReader.result as string);
@@ -14,7 +14,7 @@ export default function usePreviewImage(file: FileList | undefined) {
     } else {
       setPreview('');
     }
-  }, [file]);
+  }, [inputFile]);
 
   return { preview };
 }
