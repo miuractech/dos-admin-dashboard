@@ -11,9 +11,10 @@ type Props = {
     setValue:TSetValue
     getValue:any
     register:TRegister
+    errors:any
 }
 
-export default function InventoryManagement({basicInfo,setValue,getValue, register}: Props) {
+export default function InventoryManagement({basicInfo,setValue,getValue, register,errors}: Props) {
     const {color, size, name,familyId, categoryId, subcategoryId} = basicInfo;
     
     
@@ -40,7 +41,15 @@ export default function InventoryManagement({basicInfo,setValue,getValue, regist
                             {colorName}/{s}
                         </Grid>
                         <Grid item xs={8}>
-                            <Sku register={register} colorName={colorName} size={s} setValue={setValue} key={`${colorName}-${s}`} sku={getValue(`sku.${colorName}.${s}`)?getValue(`sku.${colorName}.${s}`):`${name}-${stringSum(familyId)+stringSum(categoryId)+stringSum(subcategoryId)}-${colorName}-${s}`} />
+                            <Sku 
+                            register={register} 
+                            colorName={colorName} 
+                            size={s} 
+                            setValue={setValue} 
+                            errors={errors}
+                            key={`${colorName}-${s}`} 
+                            sku={getValue(`sku.${colorName}.${s}`)?getValue(`sku.${colorName}.${s}`):`${name}-${stringSum(familyId)+stringSum(categoryId)+stringSum(subcategoryId)}-${colorName}-${s}`} 
+                            />
                             {/* <div>
                                 {`${name}-${stringSum(familyId)+stringSum(categoryId)+stringSum(subcategoryId)}-${colorName}-${s}`} 
                             </div>

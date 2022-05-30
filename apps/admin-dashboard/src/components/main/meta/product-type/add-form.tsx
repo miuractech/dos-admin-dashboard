@@ -91,30 +91,32 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
       }
     }
   );
-  // console.log(basicInfo, imagesInfo, inventoryInfo, errors);
 
   const inventoryValidation = async (data: any) => {
     const { sku, sideImages } = data
-
+    const id =  uuidv4()
     let skuError = false
-    const sides = Object.keys(sku).map((color: string) => {
-      const colorData = sku[color]
-      const side = Object.keys(colorData).map(async (size: string) => {
-        const skuId = colorData[size]
-        const query = doc(firestore, "inventory", skuId);
-        const docSnap = await getDoc(query);
-        if (docSnap.exists()) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          setError(`sku.${color}.${size}`, { type: 'validate', message: 'sku already exist' })
-          skuError = true
+    if(!item){
+      for(const color of Object.keys(sku)){
+        const colorData = sku[color]
+        for (const size of Object.keys(colorData)){
+          const skuId = colorData[size]
+          const query = doc(firestore, "inventory", skuId);
+          const docSnap = await getDoc(query);
+          if (docSnap.exists()) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            setError(`sku.${color}.${size}`, { type: 'validate', message: 'sku already exist' })
+            skuError = true
+          }
         }
-      })
-    })
-    // console.log(data);
-
-    if (!skuError) {
+      }
+    }
+    if(skuError){
+      return;
+    }
       setLoading(true)
+      
       const colorObj: any = {}
       for (const color of Object.keys(sideImages)) {
         const sideData: any = {}
@@ -140,7 +142,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
       // console.log({ ...data, sideImages: colorObj });
       if (!item) {
         asyncWrapper({
-          id: uuidv4(),
+          id,
           form: { ...data, sideImages: colorObj },
           createdBy: 'Somnath',
           // counter:item?item.count:null,
@@ -158,8 +160,6 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         setLoading(false)
         onClose()
       }
-
-    }
 
   }
 
@@ -189,18 +189,13 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     }
     return errorExist
   }
-
+  
   return (
     <div className={styles['add-form']} ref={containerRef}>
       <div className={styles['add-form-heading']}>
         <div></div>
         <h3>Product Type</h3>
         <div />
-        {/* <ButtonWithoutStyles
-          clickAction={() => showProductAddForm$.next(false)}
-        >
-          <CloseCircle />
-        </ButtonWithoutStyles> */}
       </div>
       <Tabs
         value={tab}
@@ -215,11 +210,6 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
       </Tabs>
       <form
         className={styles['add-form-body']}
-
-      // onSubmit={handleSubmit((data) => {
-      //   asyncWrapper({ id: uuidv4(), form: data, createdBy: 'Somnath' })
-      // }
-      // )}
       >
         <Slide direction="right" in={tab === 0} mountOnEnter unmountOnExit container={containerRef.current} >
           <div
@@ -272,6 +262,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
               // color={basicInfo.color}
               // size = {basicInfo.size}
               setValue={setValue}
+              errors={errors}
             />
           </div>
         </Slide>
@@ -279,19 +270,16 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         <div className={styles['add-form-button']}>
           {!loading ? (
             <>
-              <Button
+             {tab===0? <Button
+                variant='outlined'
+                onClick={() => showProductAddForm$.next(false)}>
+                Cancel
+              </Button>
+              :<Button
                 variant='outlined'
                 onClick={handleSubmit((data) => {
                   switch (tab) {
-                    case 0:
-                      showProductAddForm$.next('exit');
-                      break;
                     case 1:
-                      // eslint-disable-next-line no-case-declarations
-                      // const imageError = navigateAwayFromImages(data)
-                      // if (!imageError) {
-                      //   setDiscardChanges(true)
-                      // }
                       setTab(0)
                       break;
                     case 2:
@@ -305,7 +293,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
               >
                 {tab === 0 ? 'Cancel' : 'back'}
 
-              </Button>
+              </Button>}
               <Button
                 // variant="contained"
                 // color='secondary'
@@ -520,9 +508,9 @@ const ProductDisplayImage: React.FC<{
   }, [watch('displayImage')])
 
   const getPreview = usePreviewImage(watch('displayImage'));
-  console.log(getValue('displayImage'))
+
   const preview = typeof (getValue('displayImage')) === 'string' ? watch('displayImage') : getPreview.preview
-  console.log(preview);
+
 
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
 
@@ -577,7 +565,7 @@ const ProductDisplayImage: React.FC<{
           )}
         </div>
       </div>
-      {errors.displayImage && <Typography gutterBottom width="50%" fontSize={12} variant='subtitle1' color='error' textAlign="right">
+      {errors.displayImage && <Typography gutterBottom width="55%" fontSize={12} variant='subtitle1' color='error' textAlign="right" margin="0 auto 10px">
         {errors.displayImage?.message}
       </Typography>}
       {!showLable && <div style={{ marginTop: "15px", textAlign: "center" }}>{side}</div>}

@@ -1,5 +1,5 @@
 import { firestore } from '../../../../config/firebase.config';
-import { runTransaction } from 'firebase/firestore';
+import { doc, runTransaction, setDoc } from 'firebase/firestore';
 import { countRepo, productTypeRepo, uploadArrayOfFiles } from './helpers';
 import { ApplicationErrorHandler } from 'rxf-rewrite/dist';
 import { TMetaProductType } from '../../types';
@@ -50,7 +50,17 @@ export default async function addProductType(param: {
             sku: form.sku,
             // sideImages:
           };
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const sides = Object.keys(form.sku).map((color: string) => {
+              const colorData = form.sku[color]
+              const side = Object.keys(colorData).map(async (size: string) => {
+                const skuId = colorData[size]
+                const query = doc(firestore, "inventory", skuId);
+                await setDoc(query,{sku:skuId,inventory:0,color,size,name:form.name,id});
+              })
+            })
           await countRepo.updateOne({ product_type: count.product_type + 1 }, "count")
+
           return await productTypeRepo.createOne(writeable, id);
         }
       }

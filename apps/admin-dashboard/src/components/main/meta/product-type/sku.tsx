@@ -7,25 +7,20 @@ import { TRegister } from './shared';
 type Props = {
     sku:string;
     setValue:any
-    colorName:string
-    size:string
-    key:string
-    register:TRegister
+    colorName:string;
+    size:string;
+    key:string;
+    register:TRegister;
+    errors:any;
 }
 
-export default function Sku({sku, setValue,colorName, size, key,register }: Props) {
-    const [edit, setEdit] = useState(false)
-    // const [value, setValues] = useState<string>('')
-    // useEffect(() => {
-    //     if(sku){
-    //         setValues(sku)
-    //     }
-    // }, [sku])
-    
+export default function Sku({sku, setValue,colorName, size, key,register,errors }: Props) {
   return (
     <div key={key} >
         <DOSInput 
         defaultValue={sku} 
+        error = {Boolean(errors && errors['sku'] && errors['sku'][colorName] && errors['sku'][colorName][size])}
+        helperText={errors && errors['sku'] && errors['sku'][colorName] && errors['sku'][colorName][size]?.message}
         fullWidth
         forminput={{...register(`sku.${colorName}.${size}`,{required:true,min:2})}} 
         /> 

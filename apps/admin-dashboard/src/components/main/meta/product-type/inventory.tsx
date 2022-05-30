@@ -1,4 +1,4 @@
-import { TMetaProductType } from 'apps/admin-dashboard/src/Midl/meta-products/types';
+import { TMetaProductType } from '../../../../Midl/meta-products/types';
 import React from 'react';
 
 const Inventory: React.FC<{ item: TMetaProductType }> = ({ item }) => {
