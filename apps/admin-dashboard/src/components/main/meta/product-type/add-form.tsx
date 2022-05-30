@@ -1,4 +1,4 @@
-import { CloseCircle, ColorWheel, UploadIcon } from '@admin/assets';
+import { UploadIcon } from '@admin/assets';
 import { yupResolver } from '@hookform/resolvers/yup';
 import usePreviewImage from '../../../../hooks/preview-image';
 import React, { useEffect, useState } from 'react';
@@ -56,7 +56,6 @@ import { setMetaProductCategoriesByFamily } from '../../../../Midl/meta-products
 import useGetSubCategories from '../../../../Midl/meta-products/hooks/sub-category/get-subcategories';
 import { Clear, ColorLens } from '@mui/icons-material';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
-import Grid from '@mui/material/Grid';
 import SideImages from './sideImages';
 import InventoryManagement from './inventoryManagement';
 import { firestore } from '../../../../config/firebase.config';
@@ -81,7 +80,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
   const { asyncWrapper, } = useAsyncCall(
     addProductType,
     Boolean(showProductAddForm$.value),
-    (res) => {     
+    (res) => {
       if (res instanceof ApplicationErrorHandler)
         dispatch(setMetaProductTypeAddError(res.errorObject));
       else {
@@ -113,7 +112,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
       })
     })
     // console.log(data);
-    
+
     if (!skuError) {
       setLoading(true)
       const colorObj: any = {}
@@ -125,7 +124,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
           if (!_.isEmpty(sideValues)) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            const url = sideValues.image?[sideValues.image]:await uploadArrayOfFiles([[sideValues.imageFile]])
+            const url = sideValues.image ? [sideValues.image] : await uploadArrayOfFiles([[sideValues.imageFile]])
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             const sideObj = { ...sideValues, image: url[0] }
@@ -139,7 +138,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         // let sideData = {}
       }
       // console.log({ ...data, sideImages: colorObj });
-      if(!item){
+      if (!item) {
         asyncWrapper({
           id: uuidv4(),
           form: { ...data, sideImages: colorObj },
@@ -147,19 +146,19 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
           // counter:item?item.count:null,
           // editMode:Boolean(item)
         })
-      }else{
-        const uploaded = typeof(data.displayImage)==='string'?[data.displayImage]: await uploadArrayOfFiles([data.displayImage]);
+      } else {
+        const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        await productTypeRepo.updateOne({ ...item,...data,displayImage:uploaded[0], sideImages: colorObj },item.id)
+        await productTypeRepo.updateOne({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }, item.id)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        dispatch(setEditedMetaProductType({  ...item,...data,displayImage:uploaded[0], sideImages: colorObj }));
+        dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }));
         dispatch(setMetaProductTypeAddError(null))
         setLoading(false)
         onClose()
       }
-      
+
     }
 
   }
@@ -313,6 +312,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
                 onClick={handleSubmit((data) => {
                   switch (tab) {
                     case 0:
+                      if (data.color.length === 0) return
                       setbasicInfo(data)
                       setTab(1)
 
@@ -503,27 +503,27 @@ const ProductDisplayImage: React.FC<{
   errors: any
   showLable: boolean
   side?: string
-  setError:any
-  getValue:any
-  clearErrors:any
-}> = ({ register, getValue, setValue, watch, errors, showLable, side, setError,clearErrors }) => {
+  setError: any
+  getValue: any
+  clearErrors: any
+}> = ({ register, getValue, setValue, watch, errors, showLable, side, setError, clearErrors }) => {
   useEffect(() => {
-    
-    if(watch('displayImage')!==undefined && watch('displayImage')?.length>0  && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)){
-      setError('displayImage',{type:'type',message:'must be a jpeg/png fileee'})
+
+    if (watch('displayImage') === "" && watch('displayImage')?.length > 0 && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)) {
+      setError('displayImage', { type: 'type', message: 'must be a jpeg/png fileee' })
       // setValue('displayImage',undefined)
-    }else{
+    } else {
       // clearErrors('displayImage')
     }
-  // 
-    
-  }, [ watch('displayImage')])
-  
+    // 
+
+  }, [watch('displayImage')])
+
   const getPreview = usePreviewImage(watch('displayImage'));
   console.log(getValue('displayImage'))
-  const preview = typeof(getValue('displayImage')) === 'string'?watch('displayImage'):getPreview.preview
+  const preview = typeof (getValue('displayImage')) === 'string' ? watch('displayImage') : getPreview.preview
   console.log(preview);
-  
+
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
 
   return (
@@ -557,7 +557,7 @@ const ProductDisplayImage: React.FC<{
             <div style={{ height: 100, width: 100 }}>
               <input
                 type="file"
-                accept="'image/jpeg','image/png','image/jpg'"
+                accept="image/jpeg,image/png,image/jpg"
                 style={{ display: 'none', }}
                 {...register('displayImage')}
                 ref={(e) => {

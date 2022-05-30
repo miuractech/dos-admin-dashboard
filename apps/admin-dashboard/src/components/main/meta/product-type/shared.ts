@@ -30,21 +30,34 @@ export const imageValidation = yup
   .required()
   .test(
     'fileType',
-    'must be a jpeg/png file',
-    (val: FileList | undefined |string) =>{
-      if(val !== undefined &&
-        val.length > 0){
-          if(typeof(val) === 'string'){
-            return true
-          }
-          else if(['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(val[0].type)) return true;
-          else return false;
+    'must be a jpeg/png file not more than 500 kb',
+    (val: FileList | undefined | string) => {
+
+      if (val !== undefined &&
+        val.length > 0) {
+        if (typeof (val) === 'string') {
+          return true
         }
-      else{
+        else if (['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(val[0].type) && val[0].size < 512000) {
+          console.log('val', val[0]);
+          return true;
+        }
+        else return false;
+      }
+      else {
         return false
       }
     }
-  );
+  )
+// .test(
+//   "fileSize",
+//   "maximum size allowed in 500kb",
+//   (val: FileList | string) => {
+//     if (val !== undefined && val[0].size < 512000) {
+//       return true
+//     }
+//   }
+// )
 
 export const colorFormSchema = yup.object({
   colorName: yup.string().required().min(3).max(20),
