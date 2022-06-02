@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import firebase from 'firebase/app'
 import { app, db } from '../../firebaseConfig/config';
 import { doc, getDoc } from "firebase/firestore";
+import CMI from "../../../../../libs/cmi/src/index"
 /* eslint-disable-next-line */
 export interface HomepageProps { }
 
@@ -31,6 +32,7 @@ export function Homepage(props: HomepageProps) {
       <Button
         onClick={logout}
         variant='contained' color='primary'>Log Out</Button>
+      <CMI />
     </div>
   );
 }

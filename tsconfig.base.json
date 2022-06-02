@@ -17,6 +17,7 @@
     "paths": {
       "@admin/assets": ["libs/assets/src/index.ts"],
       "@dos/global": ["libs/global/src/index.ts"],
+      "@dropout-store/cmi": ["libs/cmi/src/index.ts"],
       "@miurac/mfa-firebase": ["libs/mfa-firebase/src/index.ts"]
     }
   },

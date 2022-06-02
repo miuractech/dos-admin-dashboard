@@ -4,6 +4,7 @@
     "admin-dashboard": "apps/admin-dashboard",
     "admin-dashboard-e2e": "apps/admin-dashboard-e2e",
     "assets": "libs/assets",
+    "cmi": "libs/cmi",
     "global": "libs/global",
     "mfa-firebase": "libs/mfa-firebase",
     "reseller": "apps/reseller",
