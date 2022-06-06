@@ -49,7 +49,6 @@ export default function NewDesignArea({ setpreviewScreen, setPreviewURL, url, cl
             <Transformer ref={transRef} />
           }
         </Layer>
-
       </Stage>
       <div style={{ display: "flex", marginTop: "30px", justifyContent: "space-evenly", paddingLeft: "60px" }}>
         <div style={{ height: 40, width: 100 }}>
@@ -187,7 +186,7 @@ const GetKonvaObject = ({ selectedObject, setSelectedObject, objRef, selected, s
   }
 }
 
-const UrlImage = ({ props, src, clicked }: any) => {
+export const UrlImage = ({ props, src, clicked }: any) => {
   const [image, setImage] = useState<HTMLImageElement | null>(null)
   const { object, index } = props
   useEffect(() => {

@@ -10,7 +10,7 @@ import TopBar from './styleBar';
 import StyleBar from './styleBar';
 import { useDispatch } from 'react-redux';
 import { KonvaEventObject } from 'konva/lib/Node';
-const [x, y, width, height, cornerRadius] = [135, 75, 190, 350, 0];
+import { RootObject } from './selectProduct';
 
 type Props = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -20,13 +20,17 @@ type Props = {
 }
 
 export default function Center({ selectedId, setSelectedId }: Props) {
-    const product = useAppSelector(state => state.designer)
+    const selectedProduct: RootObject = useAppSelector(state => state.designer.product)
+    const products: RootObject[] = useAppSelector(state => state.designer.products)
     const objects = useAppSelector(state => state.objects)
     const dispatch = useDispatch()
     const shapeRef = React.useRef(objects?.currentObjects.map(() => React.createRef()));
     const trRef = React.useRef();
+    const [colors, setColors] = useState<string[]>([])
+    const [image, setImage] = useState("")
+    const [x, y, width, height, cornerRadius] = [135, 75, 190, 350, 0];
 
-    // console.log('objects',objects?.currentObjects);
+    // console.log('objects', objects?.currentObjects);
 
     const deselect = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
         // deselect when clicked on empty area
@@ -35,6 +39,19 @@ export default function Center({ selectedId, setSelectedId }: Props) {
             setSelectedId(null);
         }
     }
+
+    useEffect(() => {
+        if (selectedProduct) {
+            setColors(Object.keys(selectedProduct.color));
+            setImage(selectedProduct.displayImage)
+        }
+    }, [selectedProduct])
+
+    console.log(selectedProduct);
+
+
+    // console.log(selectedProduct.color);
+
 
     return (
         <div>
@@ -53,7 +70,7 @@ export default function Center({ selectedId, setSelectedId }: Props) {
                             left: 'calc(50% - 225px)',
                         }}
                     >
-                        <img src={product?.bgImage} style={{ width: 450 }} alt="" />
+                        <img src={image} style={{ width: 450 }} alt="" />
                     </div>
                     <div
                         className='relative'

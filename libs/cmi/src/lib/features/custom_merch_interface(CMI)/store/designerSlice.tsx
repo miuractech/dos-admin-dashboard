@@ -1,22 +1,23 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from './store';
 import { fetchCount } from './api';
-import { productSideType, productType, productVariantType } from '../components/selectProduct';
+import { RootObject } from '../components/selectProduct';
+// import { productSideType, productType, productVariantType } from '../components/selectProduct';
 
 export interface DesignerState {
-  bgImage: string | null;
-  product:productType | null;
-  productVariant:productVariantType | null;
-  productSide:productSideType | null;
-  status: 'idle' | 'loading' | 'failed';
+  products: RootObject[] | null;
+  product: RootObject | null
+
 }
 
 const initialState: DesignerState = {
-    bgImage: null,
-    product: null,
-    status: 'idle',
-    productVariant:null,
-    productSide:null
+  // bgImage: null,
+  // product: null,
+  // status: 'idle',
+  // productVariant: null,
+  // productSide: null
+  products: null,
+  product: null
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -38,35 +39,41 @@ export const DesignerSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setBgImage: (state,action) => {
-      state.bgImage = action.payload;
+    setBgImage: (state, action) => {
+      // state.bgImage = action.payload;
     },
-    setProduct: (state,action) => {
-        state.product = action.payload;
-        state.productVariant = action.payload.variants[0]
-        state.productSide = action.payload.variants[0].sides[0]
-        state.bgImage = action.payload.variants[0].sides[0].img
-      },
-//     decrement: (state) => {
-//       state.value -= 1;
-//     },
-//     incrementByAmount: (state, action: PayloadAction<number>) => {
-//       state.value += action.payload;
-//     },
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(incrementAsync.pending, (state) => {
-//         state.status = 'loading';
-//       })
-//       .addCase(incrementAsync.fulfilled, (state, action) => {
-//         state.status = 'idle';
-//         state.value += action.payload;
-//       });
+    setProducts: (state, action) => {
+      state.products = action.payload;
+      // state.productVariant = action.payload.variants[0]
+      // state.productSide = action.payload.variants[0].sides[0]
+      // state.bgImage = action.payload.variants[0].sides[0].img
+    },
+    setProduct: (state, action) => {
+      state.product = action.payload;
+      // state.productVariant = action.payload.variants[0]
+      // state.productSide = action.payload.variants[0].sides[0]
+      // state.bgImage = action.payload.variants[0].sides[0].img
+    },
+    //     decrement: (state) => {
+    //       state.value -= 1;
+    //     },
+    //     incrementByAmount: (state, action: PayloadAction<number>) => {
+    //       state.value += action.payload;
+    //     },
+    //   },
+    //   extraReducers: (builder) => {
+    //     builder
+    //       .addCase(incrementAsync.pending, (state) => {
+    //         state.status = 'loading';
+    //       })
+    //       .addCase(incrementAsync.fulfilled, (state, action) => {
+    //         state.status = 'idle';
+    //         state.value += action.payload;
+    //       });
   },
 });
 
-export const { setBgImage, setProduct } = DesignerSlice.actions;
+export const { setBgImage, setProduct, setProducts } = DesignerSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

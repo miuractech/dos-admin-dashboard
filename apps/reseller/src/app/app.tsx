@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
 import { Route, Routes, Navigate } from 'react-router-dom';
-import Homepage from './homepage/homepage';
+import { StoreFront } from './homepage/storeFrontInitial';
 import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
@@ -76,7 +76,7 @@ export function App() {
   else if (User?.emailVerified && userMultiFactor.length > 0) {
     return (
       <Routes>
-        <Route path="/home" element={<Homepage />} />
+        <Route path="/home" element={<StoreFront />} />
         <Route path='*' element={<Navigate to='/home' replace />} />
       </Routes>
     );

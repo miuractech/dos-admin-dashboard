@@ -81,8 +81,10 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     addProductType,
     Boolean(showProductAddForm$.value),
     (res) => {
-      if (res instanceof ApplicationErrorHandler)
+      if (res instanceof ApplicationErrorHandler) {
+        console.log("res", res)
         dispatch(setMetaProductTypeAddError(res.errorObject));
+      }
       else {
         dispatch(setAddedMetaProductType(res));
         dispatch(setMetaProductTypeAddError(null));
@@ -94,12 +96,12 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
 
   const inventoryValidation = async (data: any) => {
     const { sku, sideImages } = data
-    const id =  uuidv4()
+    const id = uuidv4()
     let skuError = false
-    if(!item){
-      for(const color of Object.keys(sku)){
+    if (!item) {
+      for (const color of Object.keys(sku)) {
         const colorData = sku[color]
-        for (const size of Object.keys(colorData)){
+        for (const size of Object.keys(colorData)) {
           const skuId = colorData[size]
           const query = doc(firestore, "inventory", skuId);
           const docSnap = await getDoc(query);
@@ -112,54 +114,54 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         }
       }
     }
-    if(skuError){
+    if (skuError) {
       return;
     }
-      setLoading(true)
-      
-      const colorObj: any = {}
-      for (const color of Object.keys(sideImages)) {
-        const sideData: any = {}
-        const colorValues = sideImages[color]
-        for (const side of Object.keys(colorValues)) {
-          const sideValues = colorValues[side]
-          if (!_.isEmpty(sideValues)) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            const url = sideValues.image ? [sideValues.image] : await uploadArrayOfFiles([[sideValues.imageFile]])
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            const sideObj = { ...sideValues, image: url[0] }
-            delete sideObj['imageFile']
-            delete sideObj['icons']
-            // console.log(sideObj);
-            sideData[side] = sideObj
-          }
+    setLoading(true)
+
+    const colorObj: any = {}
+    for (const color of Object.keys(sideImages)) {
+      const sideData: any = {}
+      const colorValues = sideImages[color]
+      for (const side of Object.keys(colorValues)) {
+        const sideValues = colorValues[side]
+        if (!_.isEmpty(sideValues)) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          const url = sideValues.image ? [sideValues.image] : await uploadArrayOfFiles([[sideValues.imageFile]])
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          const sideObj = { ...sideValues, image: url[0] }
+          delete sideObj['imageFile']
+          delete sideObj['icons']
+          // console.log(sideObj);
+          sideData[side] = sideObj
         }
-        colorObj[color] = sideData
-        // let sideData = {}
       }
-      // console.log({ ...data, sideImages: colorObj });
-      if (!item) {
-        asyncWrapper({
-          id,
-          form: { ...data, sideImages: colorObj },
-          createdBy: 'Somnath',
-          // counter:item?item.count:null,
-          // editMode:Boolean(item)
-        })
-      } else {
-        const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        await productTypeRepo.updateOne({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }, item.id)
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }));
-        dispatch(setMetaProductTypeAddError(null))
-        setLoading(false)
-        onClose()
-      }
+      colorObj[color] = sideData
+      // let sideData = {}
+    }
+    // console.log({ ...data, sideImages: colorObj });
+    if (!item) {
+      asyncWrapper({
+        id,
+        form: { ...data, sideImages: colorObj },
+        createdBy: 'Somnath',
+        // counter:item?item.count:null,
+        // editMode:Boolean(item)
+      })
+    } else {
+      const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      await productTypeRepo.updateOne({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }, item.id)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }));
+      dispatch(setMetaProductTypeAddError(null))
+      setLoading(false)
+      onClose()
+    }
 
   }
 
@@ -189,7 +191,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     }
     return errorExist
   }
-  
+
   return (
     <div className={styles['add-form']} ref={containerRef}>
       <div className={styles['add-form-heading']}>
@@ -270,30 +272,30 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         <div className={styles['add-form-button']}>
           {!loading ? (
             <>
-             {tab===0? <Button
+              {tab === 0 ? <Button
                 variant='outlined'
                 onClick={() => showProductAddForm$.next(false)}>
                 Cancel
               </Button>
-              :<Button
-                variant='outlined'
-                onClick={handleSubmit((data) => {
-                  switch (tab) {
-                    case 1:
-                      setTab(0)
-                      break;
-                    case 2:
-                      setTab(t => t - 1)
-                      break;
-                    default:
-                      setTab(0)
-                  }
-                })}
+                : <Button
+                  variant='outlined'
+                  onClick={handleSubmit((data) => {
+                    switch (tab) {
+                      case 1:
+                        setTab(0)
+                        break;
+                      case 2:
+                        setTab(t => t - 1)
+                        break;
+                      default:
+                        setTab(0)
+                    }
+                  })}
 
-              >
-                {tab === 0 ? 'Cancel' : 'back'}
+                >
+                  {tab === 0 ? 'Cancel' : 'back'}
 
-              </Button>}
+                </Button>}
               <Button
                 // variant="contained"
                 // color='secondary'
@@ -546,7 +548,7 @@ const ProductDisplayImage: React.FC<{
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/jpg"
-                style={{ display: 'none', }}
+                style={{ display: 'none' }}
                 {...register('displayImage')}
                 ref={(e) => {
                   register('displayImage').ref(e);

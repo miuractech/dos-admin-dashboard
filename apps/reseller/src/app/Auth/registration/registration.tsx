@@ -3,7 +3,6 @@ import InputField from "../../../UI/input-field/input-field"
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ReactFlagsSelect from "react-flags-select";
-import { Prequisits } from "./prequisits"
 import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux'
 import { submit } from '../../../redux-tool/auth';

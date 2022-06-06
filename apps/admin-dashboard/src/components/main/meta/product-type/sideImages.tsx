@@ -7,7 +7,8 @@ import { TRegister, TSetValue, TWatch } from './shared'
 import styles from '../styles/product-type.module.scss';
 import SimpleModal from '../../../global/simpleModal/modal';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
-import NewDesignArea from './newDesignArea';
+import NewDesignArea, { UrlImage } from './newDesignArea';
+import { Circle, Layer, Rect, Stage, Transformer } from 'react-konva'
 
 type Props = {
   register: TRegister;
@@ -97,7 +98,15 @@ const ProductDisplayImage: React.FC<{
 
   }, [error])
 
-
+  const bgImageProps = {
+    object: {
+      x: 0,
+      y: 0,
+      id: "bgImage",
+      width: 170,
+      height: 170
+    }
+  }
 
 
   return (
@@ -129,7 +138,7 @@ const ProductDisplayImage: React.FC<{
                 >
                   <Clear />
                 </IconButton>
-                < img
+                {/* < img
                   src={previewScreen}
                   style={{
                     objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
@@ -137,7 +146,12 @@ const ProductDisplayImage: React.FC<{
                   alt=""
                   height="170px"
                   width="170px"
-                />
+                /> */}
+                <Stage Stage width={170} height={170}>
+                  <Layer>
+                    <UrlImage src={previewURL} props={bgImageProps} id="img" />
+                  </Layer>
+                </Stage>
               </div>
             ) : (
               <div style={{ height: 100, width: 100 }}>
