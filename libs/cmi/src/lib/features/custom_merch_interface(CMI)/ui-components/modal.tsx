@@ -34,12 +34,12 @@ export const SimpleModal = ({ open, onClose, children, style, ...rop }: modalPro
                         }}
                         onClick={() => onClose()}
                     >
-                        <Clear />
+                        <Clear style={{ zIndex: "1" }} />
                     </IconButton>
                 </div>
-                <div className="margin1">
+                {/* <div className="margin1">
                     <Divider />
-                </div>
+                </div> */}
                 {children}
 
             </div>

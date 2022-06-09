@@ -9,9 +9,11 @@ import { Box } from '@mui/system';
 import { useDispatch } from 'react-redux';
 import usePreviewImage from '../hooks/preview-image';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { UploadModal } from '../../../../../libs/upload-modal/src/index';
+// import { UploadModal } from '@dropout-store/upload-modal/src/index';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { SimpleModal } from 'libs/cmi/src/lib/features/custom_merch_interface(CMI)/ui-components/modal';
+import { app } from '../../firebaseConfig/config';
+import { ImageCropInput } from '@dropout-store/image-crop-input';
 /* eslint-disable-next-line */
 export interface StoreFrontProps { }
 
@@ -19,15 +21,18 @@ export function StoreFront(props: StoreFrontProps) {
   const dispatch = useDispatch()
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [imageFile, setImageFile] = useState<FileList | string | undefined>("")
+  const [imageurl, setImageurl] = useState<string>("")
   const [bannerFile, setBannerFile] = useState<File | string | undefined>("")
   const [editModal, setEditModal] = useState(false)
   const [error, setError] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+  const [imageDimensions, setimageDimensions] = useState({
+    height: 0,
+    width: 0
+  })
 
 
-  const logoPreview = usePreviewImage(imageFile)
-
-  console.log(bannerFile);
+  // const logoPreview = usePreviewImage(imageFile)
 
 
 
@@ -46,11 +51,10 @@ export function StoreFront(props: StoreFrontProps) {
     display: 'none',
   });
 
+
   return (
     <div id="bg">
-      <SimpleModal open={editModal} onClose={() => setEditModal(false)}>
-        <UploadModal />
-      </SimpleModal>
+      {editModal && <ImageCropInput app={app} setEditModal={setEditModal} errorMessage={errorMessage} />}
       <div className='header'>
         <PersonOutlineOutlined fontSize='large' />
         <Typography variant='h6'>{user?.email}</Typography>
@@ -73,26 +77,27 @@ export function StoreFront(props: StoreFrontProps) {
       <div style={{ maxWidth: "60%", margin: "auto" }}>
         <div className='card'>
           <Typography>Upload store profile image :</Typography>
-          {logoPreview.preview !== "" ? (
+          {imageurl !== "" ? (
             <div style={{ position: "relative", width: "140px", margin: "auto" }}>
-              <img className='logoImage' src={logoPreview.preview} alt="logo" />
-              <IconButton onClick={() => setEditModal(true)} style={{ position: "absolute", bottom: "15px", right: "0px", backgroundColor: "grey" }}>
+              <img className='logoImage' src={imageurl} alt="logo" />
+              <IconButton onClick={() => { setEditModal(true) }} style={{ position: "absolute", bottom: "15px", right: "0px", backgroundColor: "grey" }}>
                 <Edit color='primary' />
               </IconButton>
             </div>
           ) : (
-            <div>
-              <div id='circle'>
-                <label htmlFor="icon-button-file">
-                  <Input accept="image/*" id="icon-button-file" type="file" onChange={(e) => e.target.files && setImageFile(e.target.files)} />
-                  <IconButton style={{ height: "100px", width: "100px" }} color="primary" aria-label="upload picture" component="span">
-                    <CloudUploadOutlined fontSize='large' />
-                  </IconButton>
-                </label>
-              </div>
-              <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <Button variant='contained'>Save</Button>
-              </div>
+            <div id='circle'>
+              <label htmlFor="icon-button-file">
+                <IconButton style={{ height: "100px", width: "100px" }} color="primary" aria-label="upload picture" component="span" onClick={() => {
+                  setErrorMessage("upload image 120*120")
+                  setimageDimensions({
+                    height: 120,
+                    width: 120
+                  })
+                  setEditModal(true)
+                }}>
+                  <CloudUploadOutlined fontSize='large' />
+                </IconButton>
+              </label>
             </div>
           )}
           <Typography >Name of the Storefront :</Typography>
@@ -104,7 +109,7 @@ export function StoreFront(props: StoreFrontProps) {
             <div {...getRootProps({ className: 'dropzone' })} style={{ padding: "40px 30px 0px" }}>
               <input {...getInputProps()} />
               <div style={{ textAlign: "center" }}><CloudUploadOutlined fontSize='large' /></div>
-              <Typography variant='caption' display="block" color={'GrayText'} align='center'>or drop files to upload</Typography>
+              {/* <Typography variant='caption' display="block" color={'GrayText'} align='center'>or drop files to upload</Typography> */}
               <Typography variant='caption' display="block" color={'GrayText'} align='center'>1440 px (width) x 400px (height)</Typography>
             </div>
           </section>
@@ -128,7 +133,7 @@ export function StoreFront(props: StoreFrontProps) {
 
         </div>
       </div >
-    </div>
+    </div >
   );
 }
 

@@ -1,0 +1,43 @@
+{
+  "root": "libs/image-crop-input",
+  "sourceRoot": "libs/image-crop-input/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/image-crop-input",
+        "tsConfig": "libs/image-crop-input/tsconfig.lib.json",
+        "project": "libs/image-crop-input/package.json",
+        "entryFile": "libs/image-crop-input/src/index.ts",
+        "external": ["react/jsx-runtime"],
+        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "compiler": "babel",
+        "assets": [
+          {
+            "glob": "libs/image-crop-input/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/image-crop-input/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/image-crop-input"],
+      "options": {
+        "jestConfig": "libs/image-crop-input/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
