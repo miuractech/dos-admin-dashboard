@@ -1,3 +1,4 @@
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { UploadModal } from '@dropout-store/upload-modal';
 import './image-crop-input.css'
 import Cropper from 'react-easy-crop'

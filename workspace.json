@@ -11,6 +11,7 @@
     "reseller": "apps/reseller",
     "reseller-e2e": "apps/reseller-e2e",
     "simple-modal": "libs/simple-modal",
-    "upload-modal": "libs/upload-modal"
+    "upload-modal": "libs/upload-modal",
+    "uploadmodal": "libs/uploadmodal"
   }
 }
