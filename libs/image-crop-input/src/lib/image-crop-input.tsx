@@ -1,27 +1,30 @@
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { UploadModal } from '@dropout-store/upload-modal';
+import { UploadModal } from './uploadmodal';
 import './image-crop-input.css'
 import Cropper from 'react-easy-crop'
 import { useCallback, useEffect, useState } from 'react';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import SimpleModal from '@dropout-store/simple-modal';
+import SimpleModal from "./simple-modal"
 import { Button } from '@mui/material';
 import getCroppedImg from './cropImage';
 import { blobToFile } from './blobconvert';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { useStorage } from '@dropout-store/upload-modal';
+import useStorage from "./hooks/storage"
 import { getAuth } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';
+import { Preview } from '@mui/icons-material';
 /* eslint-disable-next-line */
 export interface ImageCropInputProps {
   app: any,
-  setEditModal: any,
-  errorMessage: any,
+  setEditModal: any
+  setImageurl: any
+  aspect: number
 }
 
 export function ImageCropInput({ app,
   setEditModal,
-  errorMessage,
+  setImageurl,
+  aspect
 }: ImageCropInputProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -36,36 +39,36 @@ export function ImageCropInput({ app,
     setCroppedAreaPixels(croppedAreaPixels)
   }, [])
 
+  const dataURLtoBlob = (dataURL: string | null | undefined) => {
+    if (!dataURL) return
+    fetch(dataURL)
+      .then(res => res.blob())
+      .then(blob => {
+        const myBlob = blobToFile(blob, "")
+        const file = new File([myBlob], 'image.jpeg', {
+          type: myBlob.type,
+        });
+        const path = `uploads/${user?.uid}/modifiedImages`
+        const fileName = file.name + uuidv4()
+
+        upload({
+          file,
+          path,
+          onsuccess: (url: string) => {
+            setImageurl(url)
+            setEditModal(false)
+          },
+          fileName,
+          onFail: (error: any) => console.log(error),
+          setProgress
+        })
+      })
+      .catch(err => console.log(err))
+  }
+
   useEffect(() => {
 
-    const dataURLtoBlob = (dataURL: string | null | undefined) => {
-      if (!dataURL) return
-      fetch(dataURL)
-        .then(res => res.blob())
-        .then(blob => {
-          const myBlob = blobToFile(blob, "")
-          const file = new File([myBlob], 'image.jpeg', {
-            type: myBlob.type,
-          });
-          // setModifiedImageFile(myFile);
-          // console.log(myFile);
-          const path = `uploads/${user?.uid}/modifiedImages`
-          const fileName = file.name + uuidv4()
-
-          upload({
-            file,
-            path,
-            onsuccess: (url: string) => console.log(url),
-            fileName,
-            onFail: (error: any) => console.log(error),
-            setProgress
-          })
-        })
-        .catch(err => console.log(err))
-    }
-
-    return dataURLtoBlob(croppedImage)
-
+    dataURLtoBlob(croppedImage)
 
   }, [croppedImage])
 
@@ -74,13 +77,8 @@ export function ImageCropInput({ app,
   const showCroppedImage = useCallback(async () => {
     try {
 
-
       const croppedImage = await getCroppedImg(url, croppedAreaPixels)
       setCroppedImage(croppedImage)
-
-
-
-
 
     } catch (e) {
       console.error(e)
@@ -97,7 +95,7 @@ export function ImageCropInput({ app,
                 image={url}
                 crop={crop}
                 zoom={zoom}
-                aspect={12 / 3}
+                aspect={aspect}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
@@ -128,7 +126,6 @@ export function ImageCropInput({ app,
             app={app}
             setEditModal={setEditModal}
             setImageurl={setUrl}
-            errorMessage={errorMessage}
           />
         </SimpleModal>
       )

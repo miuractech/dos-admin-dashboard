@@ -1,21 +1,19 @@
 import { useMfaFirebase } from '@miurac/mfa-firebase';
 import { Facebook, Instagram, LinkedIn, Twitter, YouTube } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import './footer.css';
 
 /* eslint-disable-next-line */
 export interface FooterProps { }
 
 export function Footer(props: FooterProps) {
-  
-  
   return (
-    <div>
+    <div style={{ backgroundColor: "#161C33", padding: "5% 10% 5px" }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <div className="footer-text">
-            <img style={{ width: '100%', maxWidth: 300 }} src="../../assets/images/logo.svg" alt="logo" />
-            <h3 className='h3Color'>Address</h3> 
+            <img style={{ width: '100%', maxWidth: 350 }} src="../../assets/images/logo.svg" alt="logo" />
+            <h3 className='h3Color'>Address</h3>
             <p style={{ color: "white" }}>Q427, Sukanta Nagar, Salt Lake, Sector 4,<br /> Kolkata - 700098, India</p>
             <br />
             <h3 className='h3Color'>Follow us</h3>
@@ -94,7 +92,8 @@ export function Footer(props: FooterProps) {
           </Grid>
         </Grid>
       </Grid>
-      <p style={{ marginTop: "30px", color: "white", textAlign: "center" }}>Copyright © Dropoutstore 2021.</p>
+      {/* <p style={{ marginTop: "30px", color: "white", textAlign: "center" }}>Copyright © Dropoutstore 2021.</p> */}
+      <Typography variant='body2' textAlign="center" color="white" marginTop="3%">Copyright © Dropoutstore 2021.</Typography>
     </div>
   );
 }
