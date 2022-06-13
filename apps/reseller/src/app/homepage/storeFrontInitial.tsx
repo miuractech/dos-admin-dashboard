@@ -15,7 +15,8 @@ import upload from "../../assets/images/upload.svg"
 import SimpleModal from '@dropout-store/simple-modal';
 import { useForm } from 'react-hook-form';
 import InputField from '../../UI/input-field/input-field';
-import { GRID, Style1, Style2, Style3, Style4, Style5, Style6, Style7 } from './grid';
+import { grids } from './grid';
+import { v4 as uuidv4 } from 'uuid';
 /* eslint-disable-next-line */
 export interface StoreFrontProps { }
 
@@ -29,8 +30,7 @@ export function StoreFront(props: StoreFrontProps) {
   const [aspect, setAspect] = useState(1 / 1)
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const selectedAreaRef = useRef("")
-  const gridRef = useRef<any>()
-  const [selectedGrid, setSelectedGrid] = useState<any>("")
+  const [selectedGrid, setSelectedGrid] = useState<any>(null)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -54,23 +54,21 @@ export function StoreFront(props: StoreFrontProps) {
   }, [imageurl])
 
   const onSubmit = (data: any) => {
-    console.log({
-      ...data,
-      profileImg: profileUrl,
-      bannerImg: bannerUrl
-    });
+    // console.log({
+    //   ...data,
+    //   profileImg: profileUrl,
+    //   bannerImg: bannerUrl
+    // });
+    setSelectedGrid(null)
   }
 
-  // const Gridstyle = (event: any) => {
-  //   // setSelectedGrid(event.currentTarget.id);
-  //   switch (event.currentTarget.id) {
-  //     case "style1":
-  //       return setSelectedGrid(<Style1 Gridstyle={Gridstyle} />)
-  //       break;
-  //     default: null
-  //     // code block
-  //   }
-  // }
+  const style = (e: any) => {
+    const id = e.currentTarget.id
+    setSelectedGrid(grids[id].innerGrid);
+    console.log(grids[id].innerGrid);
+
+
+  }
 
 
   return (
@@ -158,22 +156,23 @@ export function StoreFront(props: StoreFrontProps) {
             <div className='card'>
               <Typography>Select the widget style :</Typography>
               {selectedGrid ? (
-                <div style={{ width: "70%", height: "100%", margin: "auto" }}>
-                  {GRID[selectedGrid]}
+                <div>
+                  <Grid container justifyContent="center" className='selectGrid'>
+                    {selectedGrid.map((grid: any) => <Grid key={uuidv4()} bgcolor={grid.bg} className="selectedInside" item container xs={grid.xs} gap={1.3} >
+                      {!grid.upload && <div className='img'><img src={upload} alt="upload" /></div>}
+                      {grid.childGrid && grid.childGrid.map((child: any) => <Grid className="selectedInside" key={uuidv4()} item xs={child.xs} ><div className='img'><img src={upload} alt="upload" /></div></Grid>)}
+                    </Grid>)}
+                  </Grid>
                 </div>
               ) : (
-                <Grid container gap={2.5} justifyContent="center" className='parent'>
-                  {/* <Style1 Gridstyle={Gridstyle} />
-                  <Style2 Gridstyle={Gridstyle} />
-                  <Style3 Gridstyle={Gridstyle} />
-                  <Style4 Gridstyle={Gridstyle} />
-                  <Style5 Gridstyle={Gridstyle} />
-                  <Style6 Gridstyle={Gridstyle} />
-                  <Style7 Gridstyle={Gridstyle} /> */}
-                  {GRID.map((grid, index) => <div key={index} onClick={() => setSelectedGrid(index)}>{grid}</div>)}
+                <Grid container gap={3} justifyContent="center">
+                  {grids.map((grid: any) => <Grid key={uuidv4()} id={grid.id} item container className="child" xs={grid.xs} onClick={style}>
+                    {grid.innerGrid.map((grid: any) => <Grid key={uuidv4()} className="inside" xs={grid.xs} bgcolor={grid.bg} item container gap={1.3}>
+                      {grid.childGrid && grid.childGrid.map((child: any) => <Grid key={uuidv4()} className="inside" item xs={child.xs}></Grid>)}
+                    </Grid>)}
+                  </Grid>)}
                 </Grid>
               )}
-
               <button>save</button>
             </div>
           </div >

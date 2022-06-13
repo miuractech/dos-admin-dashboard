@@ -109,3 +109,31 @@
     background: #E9F7FF;
     border-radius: 5px;
 }
+
+.selectedInside{
+    background: #E9F7FF;
+    border-radius: 5px;
+    cursor: pointer
+}
+
+.selectedInside:hover{
+    border: 1px solid #000000;
+}
+
+.img{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.selectGrid{
+    height: 500px;
+    min-width: 350px;
+    gap: 10px;
+    justify-content: center;
+    border: 2px solid #C5C5C5;
+    border-radius: 5px;
+    padding: 10px;
+}
