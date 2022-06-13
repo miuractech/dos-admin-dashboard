@@ -8,7 +8,6 @@ export const grids = [{
         xs: 5.8,
         bg: "white",
         upload: true,
-        cursor: "auto",
         childGrid: [
             {
                 xs: 11.8
@@ -26,7 +25,6 @@ export const grids = [{
         xs: 5.8,
         bg: "white",
         upload: true,
-        cursor: "auto",
         childGrid: [
             {
                 xs: 11.8
