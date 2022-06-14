@@ -11,6 +11,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { setUser } from '../features/auth/authSlice';
 import { CircularProgress } from '@mui/material';
 import Logout from '../features/auth/logout';
+import Test from './test';
 
 
 export function App() {
@@ -28,7 +29,7 @@ export function App() {
     <div>
       <Routes>
         <Route path='/auth' element={<Auth/>} />
-        <Route path='/image-upload' element={<MiuracImage app={app} authComponent={<Auth/>} />} />
+        <Route path='/image-upload' element={<Test />} />
         <Route path='/logout' element={<Logout />} />
         <Route path='*' element={<>not found</>} />
       </Routes>

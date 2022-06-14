@@ -47,21 +47,21 @@ export function UploadModal({ app, setEditModal, setImageurl }: UploadModalProps
   }, [previewUploads.preview])
 
 
-  useEffect(() => {
-    const img = new Image()
-    acceptedFiles.map((file) => {
-      img.src = window.URL.createObjectURL(file)
-      img.onload = () => {
-        if (img.width < 300 && img.height < 300) {
-          setError("minimum of 300px*300px image requried")
-        } else {
-          setgetPreview(file)
-        }
-      }
+  // useEffect(() => {
+  //   const img = new Image()
+  //   acceptedFiles.map((file) => {
+  //     img.src = window.URL.createObjectURL(file)
+  //     img.onload = () => {
+  //       if (img.width < 300 && img.height < 300) {
+  //         setError("minimum of 300px*300px image requried")
+  //       } else {
+  //         setgetPreview(file)
+  //       }
+  //     }
 
-    })
+  //   })
 
-  }, [acceptedFiles])
+  // }, [acceptedFiles])
 
   const { upload } = useStorage({ app })
 

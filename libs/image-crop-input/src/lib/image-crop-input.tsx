@@ -39,7 +39,7 @@ export function ImageCropInput({ app,
     setCroppedAreaPixels(croppedAreaPixels)
   }, [])
 
-  const dataURLtoBlob = (dataURL: string | null | undefined) => {
+  const dataURLtoFile = (dataURL: string | null | undefined) => {
     if (!dataURL) return
     fetch(dataURL)
       .then(res => res.blob())
@@ -68,7 +68,7 @@ export function ImageCropInput({ app,
 
   useEffect(() => {
 
-    dataURLtoBlob(croppedImage)
+    dataURLtoFile(croppedImage)
 
   }, [croppedImage])
 

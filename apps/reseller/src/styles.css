@@ -17,6 +17,10 @@
   .absolute{
     position: absolute;
   }
+  .modal-close{
+    right:8px;
+    top:8px;
+  }
   .relative{
     position: relative;
   }
@@ -179,10 +183,7 @@
     max-height:70%;
   }
   
-  .modal-close{
-    right:8px;
-    top:8px;
-  }
+  
   
   .hover-shadow:hover{
     box-shadow: 1px 1px 4px #00000044 ;
