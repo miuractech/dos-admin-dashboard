@@ -1,52 +1,40 @@
 import './app.css';
-import NxWelcome from './nx-welcome';
 
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Routes } from 'react-router-dom';
+import { MiuracImage } from '@miurac/image-upload';
+import { app, auth } from '../configs/firebaseConfig';
+import Auth from '../features/auth/auth';
+import { useEffect } from 'react';
+import { RootState } from '../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { onAuthStateChanged } from 'firebase/auth';
+import { setUser } from '../features/auth/authSlice';
+import { CircularProgress } from '@mui/material';
+import Logout from '../features/auth/logout';
+
 
 export function App() {
-  return (
-    <>
-      <NxWelcome title="user-app" />
-      <div />
+  const dispatch = useDispatch()
+  const {loading} = useSelector((state: RootState) => state.User)
+  useEffect(() => {
+    const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
+      dispatch(setUser(cred))
+    })
+    return () => Unsubscribe()
 
-      {/* START: routes */}
-      {/* These routes and navigation have been generated for you */}
-      {/* Feel free to move and update them to fit your needs */}
-      <br />
-      <hr />
-      <br />
-      <div role="navigation">
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/page-2">Page 2</Link>
-          </li>
-        </ul>
-      </div>
-      <Route
-        path="/"
-        exact
-        render={() => (
-          <div>
-            This is the generated root route.{' '}
-            <Link to="/page-2">Click here for page 2.</Link>
-          </div>
-        )}
-      />
-      <Route
-        path="/page-2"
-        exact
-        render={() => (
-          <div>
-            <Link to="/">Click here to go back to root page.</Link>
-          </div>
-        )}
-      />
-      {/* END: routes */}
-    </>
+  }, [])
+  if(loading) return <CircularProgress />
+  return (
+    <div>
+      <Routes>
+        <Route path='/auth' element={<Auth/>} />
+        <Route path='/image-upload' element={<MiuracImage app={app} authComponent={<Auth/>} />} />
+        <Route path='/logout' element={<Logout />} />
+        <Route path='*' element={<>not found</>} />
+      </Routes>
+    </div>
   );
 }
 
 export default App;
+

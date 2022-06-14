@@ -22,6 +22,7 @@
       "@dropout-store/simple-modal": ["libs/simple-modal/src/index.ts"],
       "@dropout-store/upload-modal": ["libs/upload-modal/src/index.ts"],
       "@dropout-store/uploadmodal": ["libs/uploadmodal/src/index.ts"],
+      "@miurac/image-upload": ["libs/miurac-image/src/index.ts"],
       "@miurac/mfa-firebase": ["libs/mfa-firebase/src/index.ts"]
     }
   },

@@ -8,6 +8,7 @@
     "global": "libs/global",
     "image-crop-input": "libs/image-crop-input",
     "mfa-firebase": "libs/mfa-firebase",
+    "miurac-image": "libs/miurac-image",
     "reseller": "apps/reseller",
     "reseller-e2e": "apps/reseller-e2e",
     "simple-modal": "libs/simple-modal",
