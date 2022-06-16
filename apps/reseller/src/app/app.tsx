@@ -18,6 +18,8 @@ import { PasswordReset } from './Auth/loginpage/passwordReset';
 import { db } from '../firebaseConfig/config';
 import { doc, getDoc } from "firebase/firestore";
 import VerifyPhone from './Auth/verify-phone/verify-phone';
+import StorefrontCreator from './homepage/storefrontCreator';
+import Header from './components/header';
 
 export function App() {
   const dispatch = useDispatch()
@@ -75,10 +77,14 @@ export function App() {
   }
   else if (User?.emailVerified && userMultiFactor.length > 0) {
     return (
-      <Routes>
-        <Route path="/home" element={<StoreFront />} />
-        <Route path='*' element={<Navigate to='/home' replace />} />
-      </Routes>
+      <>
+        <Header />
+        <Routes>
+          <Route path="/home" element={<StorefrontCreator />} />
+          <Route path="/homeold" element={<StoreFront />} />
+          <Route path='*' element={<Navigate to='/home' replace />} />
+        </Routes>
+      </>
     );
   }
   else {

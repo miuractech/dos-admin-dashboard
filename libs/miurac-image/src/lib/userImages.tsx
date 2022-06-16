@@ -1,5 +1,4 @@
-import { ArrowBackIosNew, ArrowForwardIos, Forward } from '@mui/icons-material'
-import { Button, CircularProgress, IconButton, ImageList, ImageListItem } from '@mui/material'
+import { Button, CircularProgress, ImageList, ImageListItem, Typography } from '@mui/material'
 import { FirebaseApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { collection, getDocs, getFirestore, limit, orderBy, query, startAfter } from 'firebase/firestore'
@@ -15,7 +14,7 @@ type Props = {
   editMode: boolean
 }
 
-
+const queryLimit = 12
 export default function UserImages({ app, getUrl, setUrl, editMode }: Props) {
 
   const { loadMore } = usePagination(app)
@@ -23,7 +22,7 @@ export default function UserImages({ app, getUrl, setUrl, editMode }: Props) {
   const [lastVisibleRecord, setLastVisibleRecord] = useState<any>(null)
   const [imagesList, setImagesList] = useState<any>([])
   const [dosExists, setDosExists] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const endRef = useRef<HTMLDivElement>(null)
   const db = getFirestore(app)
   const user = getAuth(app).currentUser
@@ -34,16 +33,21 @@ export default function UserImages({ app, getUrl, setUrl, editMode }: Props) {
   }, [])
 
   const getRecentlyUploaded = async () => {
-    const q = query(collection(db, `uploads/${user?.uid}/images`), orderBy("createdAt", 'desc'), limit(12));
+    const q = query(collection(db, `uploads/${user?.uid}/images`), orderBy("createdAt", 'desc'), limit(queryLimit));
     const querySnapshot = await getDocs(q);
+    if(querySnapshot.docs.length === queryLimit){
+      setDosExists(true)
+    }
     setImagesList(querySnapshot.docs.map((data) => ({ ...data.data(), id: data.id })))
     const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1]
     setLastVisibleRecord(lastVisible)
+    setLoading(false)
   }
 
-
+  if(loading) return <CircularProgress />
   return (
     <div>
+      {imagesList.length > 0?
       <ImageList sx={{ width: "100%", height: 400 }} cols={6} rowHeight={150}>
         {imagesList.map((item: any) => (
           <ImageListItem
@@ -68,14 +72,19 @@ export default function UserImages({ app, getUrl, setUrl, editMode }: Props) {
           </ImageListItem>
         ))}
       </ImageList>
+      :
+      <Typography align='center' variant='h6' color='GrayText' >
+        upload your first picture...
+      </Typography>
+      }
       <div ref={endRef} />
       <div style={{ display: "flex", gap: "50px", justifyContent: "center" }}>
-        <Button
+        {dosExists && <Button
           variant='outlined'
           onClick={() => loadMore({
-            lastVisibleRecord, setLastVisibleRecord, setDosExists, setImagesList
+            lastVisibleRecord, setLastVisibleRecord, setDosExists, setImagesList,queryLimit, setLoading
           })}
-          disabled={dosExists}>Load More</Button>
+          >Load More</Button>}
       </div>
     </div >
   )

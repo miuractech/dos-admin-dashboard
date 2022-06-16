@@ -20,28 +20,16 @@ export interface StoreFrontProps { }
 
 export function StoreFront(props: StoreFrontProps) {
   const dispatch = useDispatch()
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  
   const [profileUrl, setProfileUrl] = useState<string | null>(null)
   const [bannerUrl, setBannerUrl] = useState<string | null>(null)
-  const [selectedGrid, setSelectedGrid] = useState<RootObject[] | null | undefined>(null)
+  const [selectedGrid, setSelectedGrid] = useState<RootObject | null >(null)
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const [aspectRatio, setAspectRatio] = useState<{
     aspectX: number
     aspectY: number
   } | null>(null)
   const [selectedInnerGrid, setSelectedInnerGrid] = useState<null | InnerGrid>(null)
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  }
-
-  const open = Boolean(anchorEl);
-
-  const user = auth.currentUser
 
 
   const onSubmit = (data: any) => {
@@ -72,26 +60,9 @@ export function StoreFront(props: StoreFrontProps) {
     <>
       <div id="bg">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='header'>
-            <PersonOutlineOutlined fontSize='large' />
-            <Typography variant='h6'>{user?.email}</Typography>
-            <IconButton onClick={handleClick}>
-              <MoreVert />
-            </IconButton>
-            <Popover
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left"
-              }}
-            >
-              <Box sx={{ p: 2 }} onClick={() => dispatch(logoutUser())} style={{ cursor: "pointer" }}>Logout</Box>
-            </Popover>
-          </div>
-          <Typography gutterBottom padding={5} variant='h4' align='center'>Customize Storefront</Typography>
-          <div style={{ maxWidth: "700px", margin: "auto" }}>
+          
+        <Typography gutterBottom padding={5} variant='h4' align='center'>Customize Storefront</Typography>
+          <div style={{ maxWidth: "800px", margin: "auto" }}>
             <div className='card'>
               <Typography>Upload store profile image :</Typography>
               {profileUrl ? (
@@ -132,22 +103,22 @@ export function StoreFront(props: StoreFrontProps) {
               <Typography gutterBottom>Select the widget style :</Typography>
               {selectedGrid ? (
                 <div>
-                  {selectedGrid.map((grid: any) => <div style={{
+                  <div style={{
                     height: "80vh",
                     width: "97%",
                     border: "1px solid  #C5C5C5",
-                    borderRadius: grid.borderRadius,
-                    display: grid.display,
-                    gridTemplate: grid.gridTemplate,
-                    padding: grid.padding,
-                    gap: grid.gap,
-                    cursor: grid.cursor,
-                  }} id={grid.id}>
-                    {grid.innerGrid.map((grid: any) => <div onClick={(event) => {
+                    borderRadius: selectedGrid.borderRadius,
+                    display: selectedGrid.display,
+                    gridTemplate: selectedGrid.gridTemplate,
+                    padding: selectedGrid.padding,
+                    gap: selectedGrid.gap,
+                    cursor: selectedGrid.cursor,
+                  }} id={selectedGrid.gridId}>
+                    {selectedGrid.innerGrid.map((grid: any) => <div onClick={(event) => {
                       const gridId = Number(event.currentTarget.id)
                       setSelectedInnerGrid(grid)
                       if (!selectedGrid) return
-                      setAspectRatio(selectedGrid[0].innerGrid[gridId].aspectRatio)
+                      setAspectRatio(selectedGrid.innerGrid[gridId].aspectRatio)
                     }} id={grid.id} className='innerGrid' style={{
                       backgroundColor: grid.backgroundColor,
                       gridRow: grid.gridRow,
@@ -176,28 +147,18 @@ export function StoreFront(props: StoreFrontProps) {
 
                       }} buttonComponent={<IconButton ><img src={upload} alt="upload" /></IconButton>} />
                     </div>)}
-                  </div>)}
+                  </div>
                 </div>
               ) : (
                 <div style={style2}>
-                  {grids.map((grid: any) => <div id={grid.id} onClick={(e) => setSelectedGrid([grids[Number(e.currentTarget.id)]])} className="styleDiv" style={
-                    {
-                      height: grid.height,
-                      width: grid.width,
-                      borderRadius: grid.borderRadius,
-                      display: grid.display,
-                      gridTemplate: grid.gridTemplate,
-                      padding: grid.padding,
-                      gap: grid.gap,
-                      cursor: grid.cursor,
-                    }
+                  {grids.map((grid: any) => 
+                  <div id={grid.id} 
+                  // onClick={(e) => setSelectedGrid([grids[Number(e.currentTarget.id)]])} 
+                  onClick={(e) => setSelectedGrid(grid)} 
+                  className="styleDiv" style={
+                    grid
                   }>
-                    {grid.innerGrid.map((grid: any) => <div style={{
-                      backgroundColor: grid.backgroundColor,
-                      gridRow: grid.gridRow,
-                      gridColumn: grid.gridColumn,
-                      borderRadius: grid.borderRadius
-                    }}></div>)}
+                    {grid.innerGrid.map((innerGrid: any) => <div style={innerGrid}></div>)}
                   </div>)}
                 </div >
               )}
@@ -211,6 +172,24 @@ export function StoreFront(props: StoreFrontProps) {
   );
 }
 
+const BannerImage = () => {
+  return (
+    <div className='divcenter'>
+      <Button id='banner' fullWidth style={{ height: "175px", display: "block" }}>
+        <img src={upload} alt="upload" />
+        <Typography display="block" variant='caption'>upload banner image here!</Typography>
+      </Button>
+    </div>
+  )
+}
+
+const BannerEditIcon = () => {
+  return (
+    <IconButton id='profile' style={{ position: "absolute", right: "10px", top: "10px", backgroundColor: "white" }}>
+      <Edit color='primary' style={{ color: "3f8cff" }} />
+    </IconButton>
+  )
+}
 
 const ProfileImage = () => {
   return (
@@ -232,21 +211,5 @@ const ProfileEditIcon = () => {
   )
 }
 
-const BannerImage = () => {
-  return (
-    <div className='divcenter'>
-      <Button id='banner' fullWidth style={{ height: "175px", display: "block" }}>
-        <img src={upload} alt="upload" />
-        <Typography display="block" variant='caption'>upload banner image here!</Typography>
-      </Button>
-    </div>
-  )
-}
 
-const BannerEditIcon = () => {
-  return (
-    <IconButton id='profile' style={{ position: "absolute", right: "10px", top: "10px", backgroundColor: "white" }}>
-      <Edit color='primary' style={{ color: "3f8cff" }} />
-    </IconButton>
-  )
-}
+
