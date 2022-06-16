@@ -1,36 +1,35 @@
-import { Button, Typography, TextField, Grid, IconButton, Popover } from '@mui/material';
+import { Button, Typography, Grid, IconButton, Popover } from '@mui/material';
 import './homepage.css';
 import { auth, logoutUser } from '../../redux-tool/auth';
-import { PersonOutlineOutlined, CloudUploadOutlined, MoreVert, Edit } from '@mui/icons-material';
-import { useDropzone } from 'react-dropzone';
-import styled from '@emotion/styled';
+import { PersonOutlineOutlined, MoreVert, Edit } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/system';
 import { useDispatch } from 'react-redux';
 import usePreviewImage from '../hooks/preview-image';
 import { app } from '../../firebaseConfig/config';
-import { ImageCropInput } from '@dropout-store/image-crop-input';
 import Footer from '../Auth/footer/footer';
 import upload from "../../assets/images/upload.svg"
-import SimpleModal from '@dropout-store/simple-modal';
 import { useForm } from 'react-hook-form';
 import InputField from '../../UI/input-field/input-field';
-import { grids } from './grid';
+import { grids, InnerGrid, RootObject, style2 } from './grid';
 import { v4 as uuidv4 } from 'uuid';
+import { MiuracImage } from '@miurac/image-upload';
+import Login from '../Auth/loginpage/login';
 /* eslint-disable-next-line */
 export interface StoreFrontProps { }
 
 export function StoreFront(props: StoreFrontProps) {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [imageurl, setImageurl] = useState("")
-  const [profileUrl, setProfileUrl] = useState("")
-  const [bannerUrl, setBannerUrl] = useState("")
-  const [editModal, setEditModal] = useState(false)
-  const [aspect, setAspect] = useState(1 / 1)
+  const [profileUrl, setProfileUrl] = useState<string | null>(null)
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null)
+  const [selectedGrid, setSelectedGrid] = useState<RootObject[] | null | undefined>(null)
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const selectedAreaRef = useRef("")
-  const [selectedGrid, setSelectedGrid] = useState<any>(null)
+  const [aspectRatio, setAspectRatio] = useState<{
+    aspectX: number
+    aspectY: number
+  } | null>(null)
+  const [selectedInnerGrid, setSelectedInnerGrid] = useState<null | InnerGrid>(null)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -45,39 +44,34 @@ export function StoreFront(props: StoreFrontProps) {
   const user = auth.currentUser
 
 
-  useEffect(() => {
-    if (selectedAreaRef.current === "profile") {
-      setProfileUrl(imageurl)
-    } else if (selectedAreaRef.current === "banner") {
-      setBannerUrl(imageurl)
-    }
-  }, [imageurl])
-
   const onSubmit = (data: any) => {
-    // console.log({
-    //   ...data,
-    //   profileImg: profileUrl,
-    //   bannerImg: bannerUrl
-    // });
-    setSelectedGrid(null)
+    console.log({
+      ...data,
+      profileImg: profileUrl,
+      bannerImg: bannerUrl,
+      selectedGrid: selectedGrid
+    });
   }
 
-  const style = (e: any) => {
-    const id = e.currentTarget.id
-    setSelectedGrid(grids[id].innerGrid);
-    console.log(grids[id].innerGrid);
+  // const gridImageUrl = (url: string) => {
+  //   console.log(selectedInnerGrid);
+  //   console.log(url);
+  //   if (!selectedGrid) return
+  //   if (!selectedInnerGrid) return
+  //   const imgUrl = {
+  //     img: url
+  //   }
+  // }
 
+  // const innerGridFunc =
 
-  }
+  console.log(selectedGrid);
 
 
   return (
     <>
       <div id="bg">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <SimpleModal open={editModal} onClose={() => setEditModal(false)}>
-            <ImageCropInput app={app} setEditModal={setEditModal} aspect={aspect} setImageurl={setImageurl} />
-          </SimpleModal>
           <div className='header'>
             <PersonOutlineOutlined fontSize='large' />
             <Typography variant='h6'>{user?.email}</Typography>
@@ -97,88 +91,162 @@ export function StoreFront(props: StoreFrontProps) {
             </Popover>
           </div>
           <Typography gutterBottom padding={5} variant='h4' align='center'>Customize Storefront</Typography>
-          <div style={{ maxWidth: "60%", margin: "auto" }}>
+          <div style={{ maxWidth: "700px", margin: "auto" }}>
             <div className='card'>
               <Typography>Upload store profile image :</Typography>
-              {profileUrl !== "" ? (
+              {profileUrl ? (
                 <div style={{ position: "relative", width: "140px", margin: "auto" }}>
-                  <img className='logoImage' src={profileUrl} {...register("profileImg")} alt="logo" />
-                  <IconButton id='profile' onClick={() => {
-                    setEditModal(true)
-                    setAspect(1 / 1)
-                    selectedAreaRef.current = "profile"
-                  }} style={{ position: "absolute", bottom: "15px", right: "0px", backgroundColor: "white" }}>
-                    <Edit color='primary' style={{ color: "3f8cff" }} />
-                  </IconButton>
+                  {profileUrl && <img className='logoImage' src={profileUrl} alt="logo" />}
+                  <MiuracImage app={app} authComponent={<Login />} updateFirestore={false} editConfig={{
+                    aspectX: 1,
+                    aspectY: 1,
+                  }} setUrlFunc={(url) => setProfileUrl(url)} buttonComponent={<ProfileEditIcon />} />
                 </div>
               ) : (
-                <div id='circle'>
-                  <label htmlFor="icon-button-file">
-                    <IconButton style={{ height: "100px", width: "100px" }} color="primary" aria-label="upload picture" component="span" onClick={() => {
-                      setEditModal(true)
-                      setAspect(1 / 1)
-                      selectedAreaRef.current = "profile"
-                    }}>
-                      <img src={upload} alt="upload" />
-                    </IconButton>
-                  </label>
-                </div>
+                <MiuracImage app={app} authComponent={<Login />} updateFirestore={false} editConfig={{
+                  aspectX: 1,
+                  aspectY: 1,
+                }} setUrlFunc={(url) => setProfileUrl(url)} buttonComponent={<ProfileImage />} />
               )}
               <Typography gutterBottom>Name of the Storefront :</Typography>
               <InputField InputProps={{ style: { height: 40 } }} fullWidth color='primary' placeholder="Store name" forminput={{ ...register("storename") }} />
             </div >
             <div className='card'>
               <Typography>Upload banner image:</Typography>
-              {bannerUrl !== "" ? (
+              {bannerUrl ? (
                 <div style={{ position: "relative" }}>
-                  <IconButton id='profile' onClick={() => {
-                    setEditModal(true)
-                    setAspect(1 / 1)
-                    selectedAreaRef.current = "profile"
-                  }} style={{ position: "absolute", right: "10px", top: "10px", backgroundColor: "white" }}>
-                    <Edit color='primary' style={{ color: "3f8cff" }} />
-                  </IconButton>
-                  <img src={bannerUrl} alt="banner" width="100%" style={{ borderRadius: "5px" }} {...register("bannerImg")} />
+                  <MiuracImage app={app} authComponent={<Login />} updateFirestore={false} editConfig={{
+                    aspectX: 3,
+                    aspectY: 1,
+                  }} setUrlFunc={(url) => setBannerUrl(url)} buttonComponent={<BannerEditIcon />} />
+                  <img src={bannerUrl} alt="banner" width="100%" style={{ borderRadius: "5px" }} />
                 </div>
               ) : (
-                <div className='divcenter'>
-                  <Button id='banner' fullWidth style={{ height: "175px", display: "block" }} onClick={() => {
-                    setEditModal(true)
-                    setAspect(3.5 / 1)
-                    selectedAreaRef.current = "banner"
-                  }}>
-                    <img src={upload} alt="upload" />
-                    <Typography display="block" variant='caption'>upload banner image here!</Typography>
-                  </Button>
-                </div>
+                <MiuracImage app={app} authComponent={<Login />} updateFirestore={false} editConfig={{
+                  aspectX: 3,
+                  aspectY: 1,
+                }} setUrlFunc={(url) => setBannerUrl(url)} buttonComponent={<BannerImage />} />
               )}
             </div>
             <div className='card'>
-              <Typography>Select the widget style :</Typography>
+              <Typography gutterBottom>Select the widget style :</Typography>
               {selectedGrid ? (
                 <div>
-                  <Grid container justifyContent="center" className='selectGrid'>
-                    {selectedGrid.map((grid: any) => <Grid key={uuidv4()} bgcolor={grid.bg} className="selectedInside" item container xs={grid.xs} gap={1.3} >
-                      {!grid.upload && <div className='img'><img src={upload} alt="upload" /></div>}
-                      {grid.childGrid && grid.childGrid.map((child: any) => <Grid className="selectedInside" key={uuidv4()} item xs={child.xs} ><div className='img'><img src={upload} alt="upload" /></div></Grid>)}
-                    </Grid>)}
-                  </Grid>
+                  {selectedGrid.map((grid: any) => <div style={{
+                    height: "80vh",
+                    width: "97%",
+                    border: "1px solid  #C5C5C5",
+                    borderRadius: grid.borderRadius,
+                    display: grid.display,
+                    gridTemplate: grid.gridTemplate,
+                    padding: grid.padding,
+                    gap: grid.gap,
+                    cursor: grid.cursor,
+                  }} id={grid.id}>
+                    {grid.innerGrid.map((grid: any) => <div onClick={(event) => {
+                      const gridId = Number(event.currentTarget.id)
+                      setSelectedInnerGrid(grid)
+                      if (!selectedGrid) return
+                      setAspectRatio(selectedGrid[0].innerGrid[gridId].aspectRatio)
+                    }} id={grid.id} className='innerGrid' style={{
+                      backgroundColor: grid.backgroundColor,
+                      gridRow: grid.gridRow,
+                      gridColumn: grid.gridColumn,
+                      borderRadius: grid.borderRadius,
+                      display: "grid",
+                      justifyContent: "center",
+                      alignContent: "center"
+                    }}>
+                      <MiuracImage app={app} authComponent={<Login />} updateFirestore={false} editConfig={aspectRatio} setUrlFunc={(url) => {
+
+
+
+
+                        if (!selectedGrid) return
+                        if (!selectedInnerGrid) return
+                        const id = selectedInnerGrid.id
+                        const imgUrl = {
+                          img: url
+                        }
+
+                        const newGrid = { ...selectedInnerGrid, img: url }
+                        console.log(selectedGrid);
+
+                        // setSelectedGrid(prev => prev)
+
+                      }} buttonComponent={<IconButton ><img src={upload} alt="upload" /></IconButton>} />
+                    </div>)}
+                  </div>)}
                 </div>
               ) : (
-                <Grid container gap={3} justifyContent="center">
-                  {grids.map((grid: any) => <Grid key={uuidv4()} id={grid.id} item container className="child" xs={grid.xs} onClick={style}>
-                    {grid.innerGrid.map((grid: any) => <Grid key={uuidv4()} className="inside" xs={grid.xs} bgcolor={grid.bg} item container gap={1.3}>
-                      {grid.childGrid && grid.childGrid.map((child: any) => <Grid key={uuidv4()} className="inside" item xs={child.xs}></Grid>)}
-                    </Grid>)}
-                  </Grid>)}
-                </Grid>
+                <div style={style2}>
+                  {grids.map((grid: any) => <div id={grid.id} onClick={(e) => setSelectedGrid([grids[Number(e.currentTarget.id)]])} className="styleDiv" style={
+                    {
+                      height: grid.height,
+                      width: grid.width,
+                      borderRadius: grid.borderRadius,
+                      display: grid.display,
+                      gridTemplate: grid.gridTemplate,
+                      padding: grid.padding,
+                      gap: grid.gap,
+                      cursor: grid.cursor,
+                    }
+                  }>
+                    {grid.innerGrid.map((grid: any) => <div style={{
+                      backgroundColor: grid.backgroundColor,
+                      gridRow: grid.gridRow,
+                      gridColumn: grid.gridColumn,
+                      borderRadius: grid.borderRadius
+                    }}></div>)}
+                  </div>)}
+                </div >
               )}
-              <button>save</button>
             </div>
+            <button>save</button>
           </div >
         </form >
       </div >
       <Footer />
     </>
   );
+}
+
+
+const ProfileImage = () => {
+  return (
+    <div id='circle'>
+      <label htmlFor="icon-button-file">
+        <IconButton style={{ height: "100px", width: "100px" }} color="primary" aria-label="upload picture" component="span">
+          <img src={upload} alt="upload" />
+        </IconButton>
+      </label>
+    </div >
+  )
+}
+
+const ProfileEditIcon = () => {
+  return (
+    <IconButton id='profile' style={{ position: "absolute", bottom: "15px", right: "0px", backgroundColor: "white" }}>
+      <Edit color='primary' style={{ color: "3f8cff" }} />
+    </IconButton>
+  )
+}
+
+const BannerImage = () => {
+  return (
+    <div className='divcenter'>
+      <Button id='banner' fullWidth style={{ height: "175px", display: "block" }}>
+        <img src={upload} alt="upload" />
+        <Typography display="block" variant='caption'>upload banner image here!</Typography>
+      </Button>
+    </div>
+  )
+}
+
+const BannerEditIcon = () => {
+  return (
+    <IconButton id='profile' style={{ position: "absolute", right: "10px", top: "10px", backgroundColor: "white" }}>
+      <Edit color='primary' style={{ color: "3f8cff" }} />
+    </IconButton>
+  )
 }

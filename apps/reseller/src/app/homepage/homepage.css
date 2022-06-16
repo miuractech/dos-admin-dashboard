@@ -27,23 +27,6 @@
       cursor: pointer;
   }
 
-  .gridStyle{
-        max-width: 430px;
-        /* height: 240px; */
-        background: #FFFFFF;
-        /* border: 1px solid #C5C5C5; */
-        border-radius: 5px;
-        padding: 15px;
-  }
-
-  .gridStyle2{
-        background: #E9F7FF;
-        width:100%;
-        height:100%;
-        border-radius: 5px;
-  }
-
-
 .header{
     box-shadow: 0px 9px 9px rgba(229, 229, 229, 0.3);
     height: 75px;
@@ -61,11 +44,11 @@
     margin-bottom: 50px;
 }
 
-.center{
+/* .center{
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 
 .divcenter{
     display: flex;
@@ -84,56 +67,14 @@
     border: 10px solid rgba(187, 181, 181, 0.3);
 }
 
-
-.parent{
-    /* padding: 3%; */
-    background: #FFFFFF;
-    border-radius: 5px;
+.styleDiv{
+border: 1px solid #C5C5C5;
 }
 
-.child{
-    height: 263px;
-    min-width: 350px;
-    border: 1px solid #C5C5C5;
-    border-radius: 5px;
-    padding: 10px;
-    gap: 10px;
-    cursor: pointer;
-    justify-content: stretch;
-}
-.child:hover{
-    border: 3px solid #C5C5C5;;
+.styleDiv:hover{
+border: 3px solid #C5C5C5;
 }
 
-.inside{
-    background: #E9F7FF;
-    border-radius: 5px;
-}
-
-.selectedInside{
-    background: #E9F7FF;
-    border-radius: 5px;
-    cursor: pointer
-}
-
-.selectedInside:hover{
-    border: 1px solid #000000;
-}
-
-.img{
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.selectGrid{
-    height: 500px;
-    min-width: 350px;
-    gap: 10px;
-    justify-content: center;
-    border: 2px solid #C5C5C5;
-    border-radius: 5px;
-    padding: 10px;
+.innerGrid:hover{
+border: 2px solid #C5C5C5;
 }

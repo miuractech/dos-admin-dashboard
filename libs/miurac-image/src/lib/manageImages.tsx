@@ -1,4 +1,4 @@
-import { Tab, Tabs,Box } from '@mui/material'
+import { Tab, Tabs, Box } from '@mui/material'
 import { FirebaseApp } from 'firebase/app'
 import React, { useState } from 'react'
 import { stateUrl } from './miurac-image'
@@ -8,21 +8,21 @@ import { TabPanel } from './utils/tabPanel'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {
-    editMode:boolean,
-    setUrl:React.Dispatch<React.SetStateAction<stateUrl|null>>,
-    app:FirebaseApp,
-    getUrl:(url:string)=>unknown | void,
-    updateFirestore:boolean,
+  editMode: boolean,
+  setUrl: React.Dispatch<React.SetStateAction<stateUrl | null>>,
+  app: FirebaseApp,
+  getUrl: (url: string) => unknown | void,
+  updateFirestore: boolean,
 }
 
 // eslint-disable-next-line no-empty-pattern
-export default function ManageImages({editMode,setUrl,app,getUrl,updateFirestore}: Props) {
-    const [tabIndex, setTabIndex] = useState(0)
+export default function ManageImages({ editMode, setUrl, app, getUrl, updateFirestore }: Props) {
+  const [tabIndex, setTabIndex] = useState(0)
   return (
     <div>
-        <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={tabIndex} onChange={(__:unknown,v:number)=>setTabIndex(v)} textColor="primary">
+          <Tabs value={tabIndex} onChange={(__: unknown, v: number) => setTabIndex(v)} textColor="primary">
             <Tab label="Upload" aria-controls='upload your image' sx={theme => ({
               color: 'black'
             })} />
@@ -32,13 +32,13 @@ export default function ManageImages({editMode,setUrl,app,getUrl,updateFirestore
           </Tabs>
         </Box>
         <TabPanel value={tabIndex} index={0}>
-        <UploadImage app={app} getUrl={getUrl} editMode={editMode} setUrl={setUrl} updateFirestore={updateFirestore}/>
+          <UploadImage app={app} getUrl={getUrl} editMode={editMode} setUrl={setUrl} updateFirestore={updateFirestore} />
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
-        <UserImages getUrl={getUrl} app={app} />
+          <UserImages getUrl={getUrl} setUrl={setUrl} editMode={editMode} app={app} />
         </TabPanel>
       </Box>
-        
+
     </div>
   )
 }
