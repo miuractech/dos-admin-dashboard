@@ -44,11 +44,6 @@
     margin-bottom: 50px;
 }
 
-/* .center{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
 
 .divcenter{
     display: flex;
@@ -67,14 +62,7 @@
     border: 10px solid rgba(187, 181, 181, 0.3);
 }
 
-.styleDiv{
-border: 1px solid #C5C5C5;
-}
-
-.styleDiv:hover{
-border: 3px solid #C5C5C5;
-}
-
-.innerGrid:hover{
+.img:hover{
 border: 2px solid #C5C5C5;
+cursor: pointer;
 }

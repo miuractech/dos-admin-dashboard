@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { StoreFront } from './homepage/storeFrontInitial';
 import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
@@ -19,7 +18,7 @@ import { db } from '../firebaseConfig/config';
 import { doc, getDoc } from "firebase/firestore";
 import VerifyPhone from './Auth/verify-phone/verify-phone';
 import StorefrontCreator from './homepage/storefrontCreator';
-import Header from './components/header';
+import Header from './homepage/components/header';
 
 export function App() {
   const dispatch = useDispatch()
@@ -81,7 +80,6 @@ export function App() {
         <Header />
         <Routes>
           <Route path="/home" element={<StorefrontCreator />} />
-          <Route path="/homeold" element={<StoreFront />} />
           <Route path='*' element={<Navigate to='/home' replace />} />
         </Routes>
       </>
