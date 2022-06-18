@@ -12,17 +12,17 @@ export default function StorefrontCreator({ }: Props) {
   const [profileUrl, setProfileUrl] = useState<string | null>(null)
   const [storeName, setStoreName] = useState<string | null>(null)
   const [bannerUrl, setBannerUrl] = useState<string | null>(null)
-  const [selectedGrid, setSelectedGrid] = useState<number | null>(null)
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null)
+  const [selectedInnerGridID, setSelectedInnerGridID] = useState<null | number>(null)
   const onSubmit = (data: any) => {
     console.log({
       storeName,
       profileImg: profileUrl,
       bannerImg: bannerUrl,
-      selectedGrid: selectedGrid
+      selectedTemplate: selectedTemplate
     });
   }
-
-  console.log(selectedGrid);
+  // console.log(selectedTemplate);
 
   return (
     <div>
@@ -44,8 +44,10 @@ export default function StorefrontCreator({ }: Props) {
             bannerUrl={bannerUrl}
           />
           <WidgetStyle
-            setSelectedGrid={setSelectedGrid}
-            selectedGrid={selectedGrid}
+            setSelectedTemplate={setSelectedTemplate}
+            selectedTemplate={selectedTemplate}
+            setSelectedInnerGridID={setSelectedInnerGridID}
+            selectedInnerGridID={selectedInnerGridID}
           />
 
           <Button
