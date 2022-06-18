@@ -1,8 +1,12 @@
-import { Button, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { Alert, Button, Snackbar, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import WidgetStyle from './components/widgetStyle'
 import ProfileInfo from './components/profileInfo'
 import BannerImageUpload from './components/bannerImageUpload'
+import { doc, updateDoc } from 'firebase/firestore'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../redux-tool/store'
+import { db } from '../../firebaseConfig/config'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {}
@@ -13,19 +17,44 @@ export default function StorefrontCreator({ }: Props) {
   const [storeName, setStoreName] = useState<string | null>(null)
   const [bannerUrl, setBannerUrl] = useState<string | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null)
-  const [selectedInnerGridID, setSelectedInnerGridID] = useState<null | number>(null)
-  const onSubmit = (data: any) => {
-    console.log({
-      storeName,
-      profileImg: profileUrl,
-      bannerImg: bannerUrl,
-      selectedTemplate: selectedTemplate
-    });
+  const [error, setError] = useState<null | string>(null)
+  const [open, setOpen] = React.useState(false);
+  const { User } = useSelector((state: RootState) => state.User)
+  const onSubmit = async (data: any) => {
+
+    const undefinedImgs = selectedTemplate.map((obj: any) => obj.img).includes(undefined)
+    if (!profileUrl) return setError("Plese select logo")
+    if (!storeName) return setError("Store name is mandatory")
+    if (!bannerUrl) return setError("Plese select banner image")
+    if (undefinedImgs) return setError("Plese select all the images in the widget")
+    if (!User) return
+
+    const resellerRef = doc(db, "reSellers", User.uid);
+    try {
+      await updateDoc(resellerRef, {
+        storeName,
+        profileUrl,
+        bannerUrl,
+        selectedTemplate
+      })
+    } catch (error) {
+      setError("failed to save, please try again")
+    }
   }
-  // console.log(selectedTemplate);
+
+  const handleClose = () => {
+    setOpen(false)
+    setError(null)
+  }
+
 
   return (
     <div>
+      <Snackbar open={Boolean(error)} autoHideDuration={5000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
       <div id="bg">
         <Typography gutterBottom padding={5} variant='h4' align='center'>Customize Storefront</Typography>
         <div style={{ maxWidth: "800px", margin: "auto" }}>
@@ -46,18 +75,19 @@ export default function StorefrontCreator({ }: Props) {
           <WidgetStyle
             setSelectedTemplate={setSelectedTemplate}
             selectedTemplate={selectedTemplate}
-            setSelectedInnerGridID={setSelectedInnerGridID}
-            selectedInnerGridID={selectedInnerGridID}
+            error={error}
           />
 
-          <Button
-            onClick={onSubmit}
-            variant='contained'
-            color='primary'
-          >
-            SAVE
-          </Button>
-
+          <div style={{ display: "flex", gap: "20px", justifyContent: "center", marginBottom: "10px" }}>
+            <Button variant='outlined'>Cancel</Button><Button
+              onClick={onSubmit}
+              variant='contained'
+              color='primary'
+              disabled={!selectedTemplate}
+            >
+              SAVE
+            </Button>
+          </div>
         </div>
       </div>
     </div>

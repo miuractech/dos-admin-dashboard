@@ -226,8 +226,8 @@ export const grids = [
         {
             ...innerStyles,
 
-            width: 353,
-            height: 353 / 1.41421,
+            width: 350,
+            height: 350 / 1.41421,
             mobileWidth: 353,
             mobileHeight: 353 / 1.41421,
             aspectX: 1.41421,
@@ -236,8 +236,8 @@ export const grids = [
         {
             ...innerStyles,
 
-            width: 353,
-            height: 353 / 1.41421,
+            width: 350,
+            height: 350 / 1.41421,
             mobileWidth: 353,
             mobileHeight: 353 / 1.41421,
             aspectX: 1.41421,
@@ -246,8 +246,8 @@ export const grids = [
         {
             ...innerStyles,
 
-            width: 353,
-            height: 353 / 1.41421,
+            width: 350,
+            height: 350 / 1.41421,
             mobileWidth: 353,
             mobileHeight: 353 / 1.41421,
             aspectX: 1.41421,
@@ -256,8 +256,8 @@ export const grids = [
         {
             ...innerStyles,
 
-            width: 353,
-            height: 353 / 1.41421,
+            width: 350,
+            height: 350 / 1.41421,
             mobileWidth: 353,
             mobileHeight: 353 / 1.41421,
             aspectX: 1.41421,

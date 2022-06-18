@@ -31,13 +31,13 @@ export const createUser = createAsyncThunk("User/createUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
     try {
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
-      await setDoc(doc(db, "reSellers", response.user.uid), {
-        email: response.user.email,
-        phone: payload.phone,
-        storeName: payload.storeName,
-        fullName: payload.fullName
-      })
-      await sendEmailVerification(response.user)
+      // await setDoc(doc(db, "reSellers", response.user.uid), {
+      //   email: response.user.email,
+      //   phone: payload.phone,
+      //   storeName: payload.storeName,
+      //   fullName: payload.fullName
+      // })
+      // await sendEmailVerification(response.user)
       return { response }
 
     }
@@ -64,9 +64,6 @@ export const loginUser = createAsyncThunk("User/loginUser",
       console.log(errorCode);
       return rejectWithValue(error)
     }
-
-
-
   }
 )
 
@@ -121,6 +118,6 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { submit, setUser } = UserSlice.actions
+export const { setUser, submit } = UserSlice.actions
 
 export default UserSlice.reducer

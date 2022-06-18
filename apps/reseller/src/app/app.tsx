@@ -19,28 +19,40 @@ import { doc, getDoc } from "firebase/firestore";
 import VerifyPhone from './Auth/verify-phone/verify-phone';
 import StorefrontCreator from './homepage/storefrontCreator';
 import Header from './homepage/components/header';
+import { setStoreInfo } from '../redux-tool/functions';
 
 export function App() {
   const dispatch = useDispatch()
   const User = useSelector((state: RootState) => state.User.User)
   const { loading } = useSelector((state: RootState) => state.User)
+  const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
 
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
       if (cred) {
         const docRef = doc(db, "reSellers", cred.uid);
-        const docSnap = await (await getDoc(docRef)).data()
+        const docSnap = await getDoc(docRef)
         dispatch(submit(docSnap))
+        if (!docSnap.exists) return
+        const data = docSnap.data()
+        if (!data) return
+        dispatch(setStoreInfo(data['profileUrl']))
       }
     })
 
     return () => Unsubscribe()
 
   }, [])
+
+
+  console.log(profileUrl)
+
+
+
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
         <CircularProgress />
@@ -74,13 +86,25 @@ export function App() {
       <VerifyPhone />
     )
   }
-  else if (User?.emailVerified && userMultiFactor.length > 0) {
+  else if (!profileUrl) {
     return (
       <>
         <Header />
         <Routes>
-          <Route path="/home" element={<StorefrontCreator />} />
-          <Route path='*' element={<Navigate to='/home' replace />} />
+          <Route path="/editStore" element={<StorefrontCreator />} />
+          <Route path='*' element={<Navigate to='/editStore' replace />} />
+        </Routes>
+      </>
+    );
+  }
+  else if (profileUrl) {
+    return (
+      <>
+        <Header />
+        <Routes>
+          <Route path="/" element={<>abcdef</>} />
+          <Route path="/editStore" element={<StorefrontCreator />} />
+          <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       </>
     );
