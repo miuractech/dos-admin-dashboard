@@ -24,46 +24,48 @@ export default async function addProductType(param: {
   try {
     const { id, form, createdBy } = param;
     const res = runTransaction(firestore, async () => {
-      const uploaded = await uploadArrayOfFiles([form.displayImage]);
-      
-      if (uploaded instanceof ApplicationErrorHandler) return uploaded;
-      else {
-        const count = await countRepo.getOne('count');
-        if (count instanceof ApplicationErrorHandler) return count;
-        else {
-          const writeable:any = {
-            id: id,
-            index: count.product_type,
-            name: form.name,
-            description: form.description,
-            familyId: form.familyId,
-            categoryId: form.categoryId,
-            subcategoryId: form.subcategoryId,
-            displayImage: uploaded[0],
-            size: form.size,
-            color: form.color,
-            sideImages: form.sideImages,
-            basePrice: form.basePrice,
-            createdBy: createdBy,
-            updatedBy: createdBy,
-            status: 'published',
-            sku: form.sku,
-            // sideImages:
-          };
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const sides = Object.keys(form.sku).map((color: string) => {
-              const colorData = form.sku[color]
-              const side = Object.keys(colorData).map(async (size: string) => {
-                const skuId = colorData[size]
-                const query = doc(firestore, "inventory", skuId);
-                await setDoc(query,{sku:skuId,inventory:0,color,size,name:form.name,id});
-              })
-            })
-          await countRepo.updateOne({ product_type: count.product_type + 1 }, "count")
+      // const uploaded = await uploadArrayOfFiles([form.displayImage]);
 
-          return await productTypeRepo.createOne(writeable, id);
-        }
+      // if (uploaded instanceof ApplicationErrorHandler) return uploaded;
+      // else {
+      const count = await countRepo.getOne('count');
+      if (count instanceof ApplicationErrorHandler) return count;
+      else {
+        const writeable: any = {
+          id: id,
+          index: count.product_type,
+          name: form.name,
+          description: form.description,
+          familyId: form.familyId,
+          categoryId: form.categoryId,
+          subcategoryId: form.subcategoryId,
+          displayImage: form.displayImage,
+          size: form.size,
+          color: form.color,
+          sideImages: form.sideImages,
+          basePrice: form.basePrice,
+          createdBy: createdBy,
+          updatedBy: createdBy,
+          status: 'published',
+          sku: form.sku,
+          // sideImages:
+        };
+        console.log('writeable', writeable);
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const sides = Object.keys(form.sku).map((color: string) => {
+          const colorData = form.sku[color]
+          const side = Object.keys(colorData).map(async (size: string) => {
+            const skuId = colorData[size]
+            const query = doc(firestore, "inventory", skuId);
+            await setDoc(query, { sku: skuId, inventory: 0, color, size, name: form.name, id });
+          })
+        })
+        await countRepo.updateOne({ product_type: count.product_type + 1 }, "count")
+
+        return await productTypeRepo.createOne(writeable, id);
       }
+      // }
     });
     return res;
   } catch (error: any) {

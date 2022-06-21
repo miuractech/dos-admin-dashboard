@@ -11,7 +11,7 @@ const objects = [
   { x: 250, y: 250, type: 'circle', fill, radius: 100, icons: CircleOutlined, ...stroke },
 ] as const
 
-export default function NewDesignArea({ setpreviewScreen, setPreviewURL, url, close, imageFile, setValue, color, side }: { setPreviewURL: any, imageFile: File, color: string, side: string, url: string, close: () => void, setValue: any, setpreviewScreen: any }) {
+export default function NewDesignArea({ setImgUrl, close, imgUrl, setValue, color, side }: { setImgUrl: React.Dispatch<React.SetStateAction<string | null>>, imgUrl: string | null, color: string, side: string, close: () => void, setValue: any }) {
   const [selectedObject, setSelectedObject] = useState<any>(objects[0])
   const [selected, setSelected] = useState(true)
   const objRef = useRef()
@@ -43,7 +43,7 @@ export default function NewDesignArea({ setpreviewScreen, setPreviewURL, url, cl
       </Box>
       <Stage width={500} height={500} ref={stageRef}>
         <Layer>
-          <UrlImage src={url} props={bgImageProps} id="img" clicked={() => setSelected(false)} />
+          <UrlImage src={imgUrl} props={bgImageProps} id="img" clicked={() => setSelected(false)} />
           <GetKonvaObject selectedObject={selectedObject} setSelectedObject={setSelectedObject} objRef={objRef} selected={selected} setSelected={setSelected} transRef={transRef} />
           {selected &&
             <Transformer ref={transRef} />
@@ -65,11 +65,16 @@ export default function NewDesignArea({ setpreviewScreen, setPreviewURL, url, cl
             clickAction={() => {
               setSelected(false)
               setTimeout(() => {
+                console.log('selectedObject', selectedObject);
+                const copyOfSelectedObject = { ...selectedObject }
+                delete copyOfSelectedObject['icons']
                 setValue(`sideImages.${color}.${side}`, {
-                  ...selectedObject, imageFile: imageFile, previewScreen: stageRef.current.toDataURL()
+                  ...copyOfSelectedObject, imgUrl: imgUrl,
+                  // previewScreen: stageRef.current.toDataURL()
                 })
-                setpreviewScreen(stageRef.current.toDataURL())
-                setPreviewURL(null)
+                // setpreviewScreen(stageRef.current.toDataURL())
+                // setPreviewURL(null)
+                setImgUrl(null)
               }, 100);
             }}
             variant="default"

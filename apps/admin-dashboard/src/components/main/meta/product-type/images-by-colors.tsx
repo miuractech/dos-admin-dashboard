@@ -8,11 +8,11 @@ import {
   ApplicationOptionElement,
   ApplicationSelectInput,
 } from '../../../global/select-input';
-import usePreviewImage from 'apps/admin-dashboard/src/hooks/preview-image';
+import usePreviewImage from '../../../../hooks/preview-image';
 import ApplicationButton, { UploadButton } from '../../../global/buttons';
 import { UploadIcon } from '@admin/assets';
 import { useAsyncCall } from 'rxf-rewrite/dist';
-import addImagesByColor from 'apps/admin-dashboard/src/Midl/meta-products/hooks/product-type/add-images-by-color';
+import addImagesByColor from '../../../../Midl/meta-products/hooks/product-type/add-images-by-color';
 import ApplicationSpinner from '../../../global/spinner';
 
 const schema = yup.object({

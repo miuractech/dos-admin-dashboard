@@ -1,7 +1,7 @@
 export function undefinedArrayCheck<T>(arr: Array<T | undefined>) {
   if (arr.filter((a) => typeof a === 'undefined').length === 0) {
     console.log(arr);
-    
+
     return arr as Array<T>;
   } else {
     return [] as Array<T>;

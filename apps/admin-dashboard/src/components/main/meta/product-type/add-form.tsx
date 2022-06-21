@@ -58,8 +58,9 @@ import { Clear, ColorLens } from '@mui/icons-material';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 import SideImages from './sideImages';
 import InventoryManagement from './inventoryManagement';
-import { firestore } from '../../../../config/firebase.config';
-import { productTypeRepo, uploadArrayOfFiles } from '../../../../Midl/meta-products/hooks/product-type/helpers';
+import { app, firestore } from '../../../../config/firebase.config';
+// import { productTypeRepo, uploadArrayOfFiles } from '../../../../Midl/meta-products/hooks/product-type/helpers';
+import { MiuracImage } from '@miurac/image-upload';
 
 const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues, unregister, clearErrors } = useForm<TAddFormSchema>({
@@ -95,6 +96,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
   );
 
   const inventoryValidation = async (data: any) => {
+    setLoading(true)
     const { sku, sideImages } = data
     const id = uuidv4()
     let skuError = false
@@ -115,49 +117,51 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
       }
     }
     if (skuError) {
+      setLoading(false)
       return;
     }
-    setLoading(true)
 
-    const colorObj: any = {}
-    for (const color of Object.keys(sideImages)) {
-      const sideData: any = {}
-      const colorValues = sideImages[color]
-      for (const side of Object.keys(colorValues)) {
-        const sideValues = colorValues[side]
-        if (!_.isEmpty(sideValues)) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          const url = sideValues.image ? [sideValues.image] : await uploadArrayOfFiles([[sideValues.imageFile]])
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          const sideObj = { ...sideValues, image: url[0] }
-          delete sideObj['imageFile']
-          delete sideObj['icons']
-          // console.log(sideObj);
-          sideData[side] = sideObj
-        }
-      }
-      colorObj[color] = sideData
-      // let sideData = {}
-    }
+
+    // const colorObj: any = {}
+    // for (const color of Object.keys(sideImages)) {
+    //   const sideData: any = {}
+    //   const colorValues = sideImages[color]
+    //   for (const side of Object.keys(colorValues)) {
+    //     const sideValues = colorValues[side]
+    //     if (!_.isEmpty(sideValues)) {
+    //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //       //@ts-ignore
+    //       const url = sideValues.image ? [sideValues.image] : await uploadArrayOfFiles([[sideValues.imageFile]])
+    //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //       //@ts-ignore
+    // const sideObj = { ...sideValues }
+    //       delete sideObj['imageFile']
+    // delete sideObj['icons']
+    //       // console.log(sideObj);
+    // sideData[side] = sideObj
+    //   }
+    // }
+    // colorObj[color] = sideData
+    // let sideData = {}
+    // }
     // console.log({ ...data, sideImages: colorObj });
     if (!item) {
       asyncWrapper({
         id,
-        form: { ...data, sideImages: colorObj },
+        form: { ...data },
         createdBy: 'Somnath',
         // counter:item?item.count:null,
         // editMode:Boolean(item)
       })
     } else {
-      const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
+      // const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
+      const uploaded = data.displayImage
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      await productTypeRepo.updateOne({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }, item.id)
+      await productTypeRepo.updateOne({ ...item, ...data, displayImage: uploaded, sideImages: sideImages }, item.id)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: uploaded[0], sideImages: colorObj }));
+      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: uploaded, sideImages: sideImages }));
       dispatch(setMetaProductTypeAddError(null))
       setLoading(false)
       onClose()
@@ -169,18 +173,28 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     // eslint-disable-next-line no-case-declarations
-    const { sideImages } = data
+    const { sideImages, color: allcolor } = data
+    console.log(allcolor.map((c: any) => c.colorName), sideImages);
+
     // eslint-disable-next-line no-case-declarations
     let errorExist = false
 
-    for (const color of Object.keys(sideImages)) {
-      const colorData = sideImages[color];
+    for (const color of allcolor.map((c: any) => c.colorName)) {
       let errorCount = 0
-      for (const side of Object.keys(colorData)) {
-        const sideData = colorData[side]
-        if (_.isEmpty(sideData)) {
-          errorCount = errorCount + 1
+      if (sideImages) {
+        const colorData = sideImages[color];
+        if (colorData) {
+          for (const side of Object.keys(colorData)) {
+            const sideData = colorData[side]
+            if (_.isEmpty(sideData)) {
+              errorCount = errorCount + 1
+            }
+          }
+        } else {
+          errorCount = 6
         }
+      } else {
+        errorCount = 6
       }
       if (errorCount === 6) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -300,6 +314,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
                 // variant="contained"
                 // color='secondary'
                 onClick={handleSubmit((data) => {
+                  console.log(data);
                   switch (tab) {
                     case 0:
                       if (data.color.length === 0) return
@@ -497,31 +512,33 @@ const ProductDisplayImage: React.FC<{
   getValue: any
   clearErrors: any
 }> = ({ register, getValue, setValue, watch, errors, showLable, side, setError, clearErrors }) => {
-  useEffect(() => {
 
-    if (watch('displayImage') === "" && watch('displayImage')?.length > 0 && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)) {
-      setError('displayImage', { type: 'type', message: 'must be a jpeg/png fileee' })
-      // setValue('displayImage',undefined)
-    } else {
-      // clearErrors('displayImage')
-    }
-    // 
+  const [preview, setPreview] = useState<string | null>(null)
+  // useEffect(() => {
 
-  }, [watch('displayImage')])
+  //   if (watch('displayImage') === "" && watch('displayImage')?.length > 0 && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)) {
+  //     setError('displayImage', { type: 'type', message: 'must be a jpeg/png fileee' })
+  //     // setValue('displayImage',undefined)
+  //   } else {
+  //     // clearErrors('displayImage')
+  //   }
+  //   // 
 
-  const getPreview = usePreviewImage(watch('displayImage'));
+  // }, [watch('displayImage')])
 
-  const preview = typeof (getValue('displayImage')) === 'string' ? watch('displayImage') : getPreview.preview
+  // const getPreview = usePreviewImage(watch('displayImage'));
+
+  // const preview = typeof (getValue('displayImage')) === 'string' ? watch('displayImage') : getPreview.preview
 
 
-  const imageFieldRef = React.useRef<HTMLInputElement | null>();
+  // const imageFieldRef = React.useRef<HTMLInputElement | null>();
 
   return (
     <div>
       <div className={styles['field-container']}>
         {showLable && <label>Display Image:</label>}
         <div>
-          {preview.length > 0 ? (
+          {preview ? (
             <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
               <IconButton
                 size="small"
@@ -531,7 +548,7 @@ const ProductDisplayImage: React.FC<{
                   position: "absolute",
                   right: "0px"
                 }}
-                onClick={() => setValue('displayImage', '')}
+                onClick={() => { setValue('displayImage', ''); setPreview(null) }}
               >
                 <Clear />
               </IconButton>
@@ -544,34 +561,48 @@ const ProductDisplayImage: React.FC<{
               />
             </div>
           ) : (
-            <div style={{ height: 100, width: 100 }}>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/jpg"
-                style={{ display: 'none' }}
-                {...register('displayImage')}
-                ref={(e) => {
-                  register('displayImage').ref(e);
-                  imageFieldRef.current = e;
-                }}
-              />
-              <UploadButton
-                dimension={{ height: '100%', width: '100%' }}
-                clickAction={() => {
-                  imageFieldRef.current?.click();
-                }}
-              >
-                <UploadIcon />
-              </UploadButton>
-            </div>
+            // <div style={{ height: 100, width: 100 }}>
+            //   <input
+            //     type="file"
+            //     accept="image/jpeg,image/png,image/jpg"
+            //     style={{ display: 'none' }}
+            //     {...register('displayImage')}
+            //     ref={(e) => {
+            //       register('displayImage').ref(e);
+            //       imageFieldRef.current = e;
+            //     }}
+            //   />
+            //   <UploadButton
+            //     dimension={{ height: '100%', width: '100%' }}
+            //     clickAction={() => {
+            //       imageFieldRef.current?.click();
+            //     }}
+            //   >
+            //     <UploadIcon />
+            //   </UploadButton>
+            // </div>
+            <MiuracImage app={app} updateFirestore={false} editConfig={{ aspectX: 1, aspectY: 1 }} setUrlFunc={(url) => { setValue("displayImage", url); setPreview(url) }}
+              buttonComponent={
+                <div style={{ height: 100, width: 100 }}>
+                  <UploadButton clickAction={() => console.log("upload")
+                  }
+                    dimension={{ height: '100%', width: '100%' }}
+                  >
+                    <UploadIcon />
+                  </UploadButton>
+                </div>
+              }
+            />
           )}
         </div>
       </div>
-      {errors.displayImage && <Typography gutterBottom width="55%" fontSize={12} variant='subtitle1' color='error' textAlign="right" margin="0 auto 10px">
-        {errors.displayImage?.message}
-      </Typography>}
+      {
+        errors.displayImage && <Typography gutterBottom width="55%" fontSize={12} variant='subtitle1' color='error' textAlign="right" margin="0 auto 10px">
+          {errors.displayImage?.message}
+        </Typography>
+      }
       {!showLable && <div style={{ marginTop: "15px", textAlign: "center" }}>{side}</div>}
-    </div>
+    </div >
   );
 };
 
@@ -815,6 +846,6 @@ function a11yProps(index: number) {
   };
 }
 
-function colorObj(colorObj: any) {
-  throw new Error('Function not implemented.');
-}
+// function colorObj(colorObj: any) {
+//   throw new Error('Function not implemented.');
+// }

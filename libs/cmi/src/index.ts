@@ -1,3 +1,5 @@
-import CMI from './lib/cmi';
+// import CMI from './lib/cmi';
 
-export default CMI
+// export default CMI
+
+export * from './lib/cmi';

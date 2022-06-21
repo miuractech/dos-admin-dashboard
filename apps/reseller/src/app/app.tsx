@@ -20,6 +20,7 @@ import VerifyPhone from './Auth/verify-phone/verify-phone';
 import StorefrontCreator from './homepage/storefrontCreator';
 import Header from './homepage/components/header';
 import { setStoreInfo } from '../redux-tool/functions';
+import CMI, { CustomMerchInterface } from './cmi/cmi';
 
 export function App() {
   const dispatch = useDispatch()
@@ -102,7 +103,7 @@ export function App() {
       <>
         <Header />
         <Routes>
-          <Route path="/" element={<>abcdef</>} />
+          <Route path="/" element={<CustomMerchInterface />} />
           <Route path="/editStore" element={<StorefrontCreator />} />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>

@@ -1,5 +1,5 @@
 import { UploadIcon } from '@admin/assets';
-import { Clear } from '@mui/icons-material';
+import { Clear, Delete } from '@mui/icons-material';
 import { Grid, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { UploadButton } from '../../../global/buttons';
@@ -9,6 +9,8 @@ import SimpleModal from '../../../global/simpleModal/modal';
 import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 import NewDesignArea, { UrlImage } from './newDesignArea';
 import { Circle, Layer, Rect, Stage, Transformer } from 'react-konva'
+import { MiuracImage } from '@miurac/image-upload';
+import { app } from '../../../../config/firebase.config';
 
 type Props = {
   register: TRegister;
@@ -65,27 +67,28 @@ const ProductDisplayImage: React.FC<{
   side: string
   color: string
 }> = ({ register, setValue, watch, errors, showLable, side, registerName, color, getValues }) => {
-  const [imageFile, setImageFile] = useState<any>(null)
+  // const [imageFile, setImageFile] = useState<any>(null)
+  const [imgUrl, setImgUrl] = useState<string | null>(null)
   const [exit, setExit] = useState(false)
-  const [previewURL, setPreviewURL] = useState<string | null>(null)
+  // const [previewURL, setPreviewURL] = useState<string | null>(null)
   // const { preview } = usePreviewImage();
-  const [previewScreen, setpreviewScreen] = useState<string>('')
+  const [previewScreen, setpreviewScreen] = useState<string | null>(null)
   const imageFieldRef = React.useRef<HTMLInputElement | null>();
   const [error, setError] = useState("")
+  // useEffect(() => {
+  //   let url: string;
+  //   if (imageFile) {
+  //     url = URL.createObjectURL(imageFile)
+  //     setPreviewURL(url)
+  //   } else {
+  //     setPreviewURL(null)
+  //   }
+  //   return () => {
+  //     URL.revokeObjectURL(url)
+  //   }
+  // }, [imageFile])
   useEffect(() => {
-    let url: string;
-    if (imageFile) {
-      url = URL.createObjectURL(imageFile)
-      setPreviewURL(url)
-    } else {
-      setPreviewURL(null)
-    }
-    return () => {
-      URL.revokeObjectURL(url)
-    }
-  }, [imageFile])
-  useEffect(() => {
-    setpreviewScreen(getValues(`sideImages.${color}.${side}.previewScreen`));
+    setpreviewScreen(getValues(`sideImages.${color}.${side}.imgUrl`));
   }, [])
 
   useEffect(() => {
@@ -108,38 +111,52 @@ const ProductDisplayImage: React.FC<{
     }
   }
 
+  const dimensions = getValues(`sideImages.${color}.${side}`)
+  // console.log(dimensions);
+
+
 
   return (
     <div>
       <div className={styles['field-container']}>
         {showLable && <label>Display Image:</label>}
         <div>
-          <SimpleModal disableCloseButton open={Boolean(previewURL)} onClose={() => setExit(true)} >
+          <SimpleModal disableCloseButton open={Boolean(imgUrl)} onClose={() => setExit(true)} >
             <div key={registerName} style={{ width: "31.2rem", margin: "auto" }}>
-              <NewDesignArea setpreviewScreen={setpreviewScreen} setPreviewURL={setPreviewURL} imageFile={imageFile} url={previewURL ? previewURL : ''} close={() => setExit(true)} setValue={setValue} color={color} side={side} />
+              <NewDesignArea
+                // setpreviewScreen={setpreviewScreen}
+                // setPreviewURL={setPreviewURL}
+                imgUrl={imgUrl}
+                setImgUrl={setImgUrl}
+                // url={previewURL ? previewURL : ''}
+                close={() => setExit(true)}
+                setValue={setValue}
+                color={color}
+                side={side} />
             </div>
           </SimpleModal>
-          <AreYouSure open={exit} onClose={() => setExit(false)} discard={() => { setExit(false); setPreviewURL(null); setImageFile(null) }} text="discard the image?" />
+          <AreYouSure open={exit} onClose={() => setExit(false)} discard={() => { setExit(false); setImgUrl(null) }} text="discard the image?" />
           {
-            previewScreen ? (
+            watch(`sideImages.${color}.${side}.imgUrl`) ? (
               <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
                 <IconButton
                   size="small"
                   style={{
-                    backgroundColor: '#888',
-                    color: 'white',
+                    zIndex: "10",
+                    backgroundColor: 'white',
+                    color: 'red',
                     position: "absolute",
-                    right: "0px"
+                    left: "140px"
                   }}
                   onClick={() => {
                     setValue(registerName, {})
-                    setpreviewScreen('')
+                    setImgUrl(null)
                   }}
                 >
-                  <Clear />
+                  <Delete fontSize='small' />
                 </IconButton>
                 {/* < img
-                  src={previewScreen}
+                  src={getValues(`sideImages.${color}.${side}.imgUrl`)}
                   style={{
                     objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
                   }}
@@ -149,13 +166,18 @@ const ProductDisplayImage: React.FC<{
                 /> */}
                 <Stage Stage width={170} height={170}>
                   <Layer>
-                    <UrlImage src={previewURL} props={bgImageProps} id="img" />
+                    <UrlImage src={getValues(`sideImages.${color}.${side}.imgUrl`)} props={bgImageProps} id="img" />
+                    {getValues(`sideImages.${color}.${side}.type`) === "rect" ? (
+                      <Rect x={dimensions.x / 2.9} y={dimensions.y / 2.9} width={dimensions.width / 2.9} height={dimensions.height / 2.9} stroke="white" strokeWidth={1} dash={[5, 2]} />
+                    ) : (
+                      <Circle x={dimensions.x / 2.9} y={dimensions.y / 2.9} radius={dimensions.radius / 2.9} stroke="white" strokeWidth={2} dash={[5, 2]} />
+                    )}
                   </Layer>
                 </Stage>
               </div>
             ) : (
               <div style={{ height: 100, width: 100 }}>
-                <input
+                {/* <input
                   type="file"
                   style={{ display: 'none', }}
                   onChange={(e) => {
@@ -176,16 +198,17 @@ const ProductDisplayImage: React.FC<{
                     register(registerName).ref(e);
                     imageFieldRef.current = e;
                   }}
-                />
-                < UploadButton
-                  dimension={{ height: '100%', width: '100%' }}
-                  clickAction={() => {
-                    imageFieldRef.current?.click();
-                  }}
-                  style={{ border: error ? '1px solid red' : '1px solid #222' }}
-                >
-                  <UploadIcon />
-                </UploadButton >
+                /> */}
+                <MiuracImage app={app} updateFirestore={false} editConfig={{ aspectX: 1, aspectY: 1 }} setUrlFunc={(url) => setImgUrl(url)}
+                  buttonComponent={
+                    < UploadButton
+                      dimension={{ height: '100%', width: '100%' }}
+                      clickAction={() => console.log("")}
+                      style={{ border: error ? '1px solid red' : '1px solid #222' }}
+                    >
+                      <UploadIcon />
+                    </UploadButton >
+                  } />
               </div>
             )}
         </div>
