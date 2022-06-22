@@ -212,7 +212,10 @@ export const UrlImage = ({ props, src, clicked }: any) => {
       {...object}
       image={image}
       id={index}
-      onClick={(e: any) => clicked(e)}
+      onClick={(e: any) => {
+        clicked && clicked(e)
+
+      }}
     />
   );
 }

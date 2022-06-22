@@ -80,6 +80,7 @@ export interface Color {
 }
 
 export interface RootObject {
+    colorName: any
     subcategoryId: string;
     status: string;
     displayImage: string;

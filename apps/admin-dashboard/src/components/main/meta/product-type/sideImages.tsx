@@ -88,8 +88,8 @@ const ProductDisplayImage: React.FC<{
   //   }
   // }, [imageFile])
   useEffect(() => {
-    setpreviewScreen(getValues(`sideImages.${color}.${side}.imgUrl`));
-  }, [])
+    setpreviewScreen(watch(`sideImages.${color}.${side}.imgUrl`));
+  }, [watch(`sideImages.${color}.${side}`)])
 
   useEffect(() => {
 
@@ -115,9 +115,10 @@ const ProductDisplayImage: React.FC<{
   // console.log(dimensions);
 
 
-
+  console.log('watcjh', `sideImages.${color}.${side}.imgUrl`, watch(`sideImages.${color}.${side}.imgUrl`))
   return (
     <div>
+      {previewScreen && ''}
       <div className={styles['field-container']}>
         {showLable && <label>Display Image:</label>}
         <div>
@@ -136,26 +137,26 @@ const ProductDisplayImage: React.FC<{
             </div>
           </SimpleModal>
           <AreYouSure open={exit} onClose={() => setExit(false)} discard={() => { setExit(false); setImgUrl(null) }} text="discard the image?" />
-          {
-            watch(`sideImages.${color}.${side}.imgUrl`) ? (
-              <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
-                <IconButton
-                  size="small"
-                  style={{
-                    zIndex: "10",
-                    backgroundColor: 'white',
-                    color: 'red',
-                    position: "absolute",
-                    left: "140px"
-                  }}
-                  onClick={() => {
-                    setValue(registerName, {})
-                    setImgUrl(null)
-                  }}
-                >
-                  <Delete fontSize='small' />
-                </IconButton>
-                {/* < img
+          {watch(`sideImages.${color}.${side}.imgUrl`) ? (
+            <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
+              <IconButton
+                size="small"
+                style={{
+                  zIndex: "10",
+                  backgroundColor: 'white',
+                  color: 'red',
+                  position: "absolute",
+                  left: "140px"
+                }}
+                onClick={() => {
+                  setValue(`sideImages.${color}.${side}`, null)
+                  // setValue(registerName, {})
+                  setImgUrl(null)
+                }}
+              >
+                <Delete fontSize='small' />
+              </IconButton>
+              {/* < img
                   src={getValues(`sideImages.${color}.${side}.imgUrl`)}
                   style={{
                     objectFit: 'cover', maxHeight: "200px", maxWidth: "200px", display: "block"
@@ -164,20 +165,20 @@ const ProductDisplayImage: React.FC<{
                   height="170px"
                   width="170px"
                 /> */}
-                <Stage Stage width={170} height={170}>
-                  <Layer>
-                    <UrlImage src={getValues(`sideImages.${color}.${side}.imgUrl`)} props={bgImageProps} id="img" />
-                    {getValues(`sideImages.${color}.${side}.type`) === "rect" ? (
-                      <Rect x={dimensions.x / 2.9} y={dimensions.y / 2.9} width={dimensions.width / 2.9} height={dimensions.height / 2.9} stroke="white" strokeWidth={1} dash={[5, 2]} />
-                    ) : (
-                      <Circle x={dimensions.x / 2.9} y={dimensions.y / 2.9} radius={dimensions.radius / 2.9} stroke="white" strokeWidth={2} dash={[5, 2]} />
-                    )}
-                  </Layer>
-                </Stage>
-              </div>
-            ) : (
-              <div style={{ height: 100, width: 100 }}>
-                {/* <input
+              <Stage Stage width={170} height={170}>
+                <Layer>
+                  <UrlImage src={getValues(`sideImages.${color}.${side}.imgUrl`)} props={bgImageProps} id="img" />
+                  {getValues(`sideImages.${color}.${side}.type`) === "rect" ? (
+                    <Rect x={dimensions.x / 2.9} y={dimensions.y / 2.9} width={dimensions.width / 2.9} height={dimensions.height / 2.9} stroke="white" strokeWidth={1} dash={[5, 2]} />
+                  ) : (
+                    <Circle x={dimensions.x / 2.9} y={dimensions.y / 2.9} radius={dimensions.radius / 2.9} stroke="white" strokeWidth={2} dash={[5, 2]} />
+                  )}
+                </Layer>
+              </Stage>
+            </div>
+          ) : (
+            <div style={{ height: 100, width: 100 }}>
+              {/* <input
                   type="file"
                   style={{ display: 'none', }}
                   onChange={(e) => {
@@ -199,18 +200,18 @@ const ProductDisplayImage: React.FC<{
                     imageFieldRef.current = e;
                   }}
                 /> */}
-                <MiuracImage app={app} updateFirestore={false} editConfig={{ aspectX: 1, aspectY: 1 }} setUrlFunc={(url) => setImgUrl(url)}
-                  buttonComponent={
-                    < UploadButton
-                      dimension={{ height: '100%', width: '100%' }}
-                      clickAction={() => console.log("")}
-                      style={{ border: error ? '1px solid red' : '1px solid #222' }}
-                    >
-                      <UploadIcon />
-                    </UploadButton >
-                  } />
-              </div>
-            )}
+              <MiuracImage app={app} updateFirestore={false} editConfig={{ aspectX: 1, aspectY: 1 }} setUrlFunc={(url) => setImgUrl(url)}
+                buttonComponent={
+                  < UploadButton
+                    dimension={{ height: '100%', width: '100%' }}
+                    clickAction={() => console.log("")}
+                    style={{ border: error ? '1px solid red' : '1px solid #222' }}
+                  >
+                    <UploadIcon />
+                  </UploadButton >
+                } />
+            </div>
+          )}
         </div>
       </div>
       {

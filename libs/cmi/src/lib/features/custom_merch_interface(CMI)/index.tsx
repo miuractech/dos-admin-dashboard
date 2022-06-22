@@ -9,6 +9,27 @@ import Center from './components/center';
 import RightPanel from './components/rightPanel';
 
 const theme = createTheme({
+    palette: {
+        // type: 'light',
+        primary: {
+            main: '#ff002e',
+        },
+        secondary: {
+            main: '#ff002e',
+        },
+        error: {
+            main: '#bd5857',
+        },
+        text: {
+            secondary: 'rgba(249,249,249,0.54)',
+        },
+        background: {
+            default: '#FBFAF8',
+        },
+        info: {
+            main: "#167AF9",
+        }
+    },
     typography: {
         fontFamily: "'Montserrat', sans-serif"
     }
@@ -32,14 +53,12 @@ export default function CustomMerchInterface() {
                         {loading ?
                             <CircularProgress />
                             :
-                            <>
-                                <Center
-                                    setLoading={setLoading}
-                                    loading={loading}
-                                    selectedId={selectedId}
-                                    setSelectedId={setSelectedId}
-                                />
-                            </>
+                            <Center
+                                setLoading={setLoading}
+                                loading={loading}
+                                selectedId={selectedId}
+                                setSelectedId={setSelectedId}
+                            />
                         }
                     </Grid>
                     <Grid item xs={12} md={3}>

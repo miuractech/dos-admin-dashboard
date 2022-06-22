@@ -59,7 +59,7 @@ import AreYouSure from '../../../../UI/dosinput/AreYouSure';
 import SideImages from './sideImages';
 import InventoryManagement from './inventoryManagement';
 import { app, firestore } from '../../../../config/firebase.config';
-// import { productTypeRepo, uploadArrayOfFiles } from '../../../../Midl/meta-products/hooks/product-type/helpers';
+import { productTypeRepo } from '../../../../Midl/meta-products/hooks/product-type/helpers';
 import { MiuracImage } from '@miurac/image-upload';
 
 const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => {
@@ -148,20 +148,19 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     if (!item) {
       asyncWrapper({
         id,
-        form: { ...data },
+        form: data,
         createdBy: 'Somnath',
         // counter:item?item.count:null,
         // editMode:Boolean(item)
       })
     } else {
       // const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
-      const uploaded = data.displayImage
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      await productTypeRepo.updateOne({ ...item, ...data, displayImage: uploaded, sideImages: sideImages }, item.id)
+      await productTypeRepo.updateOne({ ...item, ...data, displayImage: data.displayImage, sideImages: sideImages })
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: uploaded, sideImages: sideImages }));
+      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: data.displayImage, sideImages: sideImages }));
       dispatch(setMetaProductTypeAddError(null))
       setLoading(false)
       onClose()
@@ -241,7 +240,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
               errors={errors}
               showLable={true}
               setError={setError}
-              getValue={getValues}
+              getValues={getValues}
               clearErrors={clearErrors}
             />
             <ProductSizeField
@@ -509,22 +508,25 @@ const ProductDisplayImage: React.FC<{
   showLable: boolean
   side?: string
   setError: any
-  getValue: any
+  getValues: any
   clearErrors: any
-}> = ({ register, getValue, setValue, watch, errors, showLable, side, setError, clearErrors }) => {
+}> = ({ register, getValues, setValue, watch, errors, showLable, side, setError, clearErrors }) => {
 
   const [preview, setPreview] = useState<string | null>(null)
-  // useEffect(() => {
+  useEffect(() => {
+    // if (watch('displayImage') === "" && watch('displayImage')?.length > 0 && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)) {
+    //   setError('displayImage', { type: 'type', message: 'must be a jpeg/png fileee' })
+    //   // setValue('displayImage',undefined)
+    // } else {
+    //   // clearErrors('displayImage')
+    // }
+    // // 
+    if (watch('displayImage')) {
+      setPreview(watch('displayImage'))
+    }
+  }, [watch('displayImage')])
+  console.log(watch('displayImage'));
 
-  //   if (watch('displayImage') === "" && watch('displayImage')?.length > 0 && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)) {
-  //     setError('displayImage', { type: 'type', message: 'must be a jpeg/png fileee' })
-  //     // setValue('displayImage',undefined)
-  //   } else {
-  //     // clearErrors('displayImage')
-  //   }
-  //   // 
-
-  // }, [watch('displayImage')])
 
   // const getPreview = usePreviewImage(watch('displayImage'));
 
@@ -532,6 +534,9 @@ const ProductDisplayImage: React.FC<{
 
 
   // const imageFieldRef = React.useRef<HTMLInputElement | null>();
+
+  console.log(getValues("displayImage"));
+
 
   return (
     <div>
@@ -548,7 +553,7 @@ const ProductDisplayImage: React.FC<{
                   position: "absolute",
                   right: "0px"
                 }}
-                onClick={() => { setValue('displayImage', ''); setPreview(null) }}
+                onClick={() => { setValue('displayImage', null); setPreview(null) }}
               >
                 <Clear />
               </IconButton>
