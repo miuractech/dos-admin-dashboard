@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export const dataURLtoFile = (dataURL: string | null | undefined, fileName?:string) => {
+  console.log('dataURL',dataURL);
+  
     return new Promise((resolve,reject)=>{
         if (!dataURL) resolve(null)
         else{
@@ -8,8 +10,8 @@ export const dataURLtoFile = (dataURL: string | null | undefined, fileName?:stri
               .then(res => res.blob())
               .then(blob => {
                 const myBlob = blobToFile(blob, "")
-                const file = new File([myBlob], fileName??'image.jpeg', {
-                  type: myBlob.type
+                const file = new File([myBlob], fileName??`${uuidv4()}.png`, {
+                  type: 'image/png'
               })
               resolve(file)
             })

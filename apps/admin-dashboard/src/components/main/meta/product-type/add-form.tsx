@@ -144,7 +144,7 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     // colorObj[color] = sideData
     // let sideData = {}
     // }
-    // console.log({ ...data, sideImages: colorObj });
+    // console.log(data);
     if (!item) {
       asyncWrapper({
         id,
@@ -153,13 +153,16 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         // counter:item?item.count:null,
         // editMode:Boolean(item)
       })
-    } else {
+    }
+    else {
       // const uploaded = typeof (data.displayImage) === 'string' ? [data.displayImage] : await uploadArrayOfFiles([data.displayImage]);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      await productTypeRepo.updateOne({ ...item, ...data, displayImage: data.displayImage, sideImages: sideImages })
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
+      
+      await productTypeRepo.updateOne({ 
+        ...item, 
+        ...data, 
+        displayImage: data.displayImage, 
+        sideImages: sideImages 
+      }, item.id)
       dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: data.displayImage, sideImages: sideImages }));
       dispatch(setMetaProductTypeAddError(null))
       setLoading(false)
@@ -169,13 +172,10 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
   }
 
   const navigateAwayFromImages = (data: any) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    // eslint-disable-next-line no-case-declarations
+   
     const { sideImages, color: allcolor } = data
     console.log(allcolor.map((c: any) => c.colorName), sideImages);
 
-    // eslint-disable-next-line no-case-declarations
     let errorExist = false
 
     for (const color of allcolor.map((c: any) => c.colorName)) {

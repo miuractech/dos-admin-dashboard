@@ -60,21 +60,31 @@ export default function Center({ selectedId, setSelectedId }: Props) {
 
 
     useEffect(() => {
-        if (!selectedSide && selectedColor && sides) {
-            // setSelectedSide(Object.keys(sides[selectedColor.colorName])[0])
-            setSelectedSide(["Front", "Back", "Left", "Right", "Top", "Bottom"].filter(side => sides[selectedColor.colorName][side]?.imgUrl)[0])
+        if(selectedColor && sides){
+            if(!selectedSide){
+                setSelectedSide(["Front", "Back", "Left", "Right", "Top", "Bottom"].filter(side => sides[selectedColor.colorName][side]?.imgUrl)[0])
+            }else if(sides[selectedColor.colorName][selectedSide]){
+                const img = sides[selectedColor.colorName][selectedSide].imgUrl
+                const obj = sides[selectedColor.colorName][selectedSide]
+                setselectedObj(obj)
+                setImage(img)
+            }
         }
+        // if (!selectedSide && selectedColor && sides) {
+        //     // setSelectedSide(Object.keys(sides[selectedColor.colorName])[0])
+        //     setSelectedSide(["Front", "Back", "Left", "Right", "Top", "Bottom"].filter(side => sides[selectedColor.colorName][side]?.imgUrl)[0])
+        // }
     }, [selectedColor, selectedSide, sides])
 
-    useEffect(() => {
-        if (selectedSide && selectedColor) {
-            const img = sides[selectedColor.colorName][selectedSide].imgUrl
-            const obj = sides[selectedColor.colorName][selectedSide]
-            setselectedObj(obj)
-            setImage(img)
-        }
+    // useEffect(() => {
+    //     if (selectedSide && selectedColor && sides[selectedColor.colorName][selectedSide]) {
+    //         const img = sides[selectedColor.colorName][selectedSide].imgUrl
+    //         const obj = sides[selectedColor.colorName][selectedSide]
+    //         setselectedObj(obj)
+    //         setImage(img)
+    //     }
 
-    }, [selectedColor, selectedSide, sides])
+    // }, [selectedColor, selectedSide, sides])
 
     console.log(selectedObj);
 

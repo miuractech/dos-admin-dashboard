@@ -17,13 +17,15 @@ export interface MiuracImageProps {
   updateFirestore: boolean,
   editConfig: editConfigType | null,
   setUrlFunc: (url: string) => unknown | void,
-  buttonComponent?: ReactNode
+  buttonComponent?: ReactNode,
+  minHeight?:number, 
+  minWidth?:number
 
 }
 
 export type stateUrl = { url: string, fileName: string }
 
-export function MiuracImage({ app, authComponent, updateFirestore, editConfig, setUrlFunc, buttonComponent }: MiuracImageProps) {
+export function MiuracImage({ app, authComponent, updateFirestore, editConfig, setUrlFunc, buttonComponent, minHeight, minWidth }: MiuracImageProps) {
   const user = getAuth(app).currentUser
   const [url, setUrl] = useState<stateUrl | null>(null)
   const [open, setOpen] = useState(false)
@@ -51,7 +53,10 @@ export function MiuracImage({ app, authComponent, updateFirestore, editConfig, s
               updateFirestore={updateFirestore}
               editConfig={editConfig}
               getUrl={getUrl}
+              // setUrl = {setUrl}
               app={app}
+              // minHeight={minHeight}
+              // minWidth={minWidth}
             />
           </SimpleModal>
         }
