@@ -30,6 +30,7 @@ export interface DesignerState {
   selectedSideName:string | null;
   colors:colorProps[] | null;
   sideNames:string[];
+  designPreviewImages:string[]
 }
 
 const initialState: DesignerState = {
@@ -55,7 +56,8 @@ const initialState: DesignerState = {
   },
   selectedColor:null,
   colors:null,
-  sideNames:[]
+  sideNames:[],
+  designPreviewImages:[]
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -72,6 +74,8 @@ const initialState: DesignerState = {
 //   }
 // );
 
+export const orderedSides = ["Front", "Back", "Left", "Right", "Top", "Bottom"]
+
 export const DesignerSlice = createSlice({
   name: 'designer',
   initialState,
@@ -84,7 +88,7 @@ export const DesignerSlice = createSlice({
       console.log(action.payload);
       const { payload } = action
       const { sideImages } = payload[0]
-      const sideNames = ["Front", "Back", "Left", "Right", "Top", "Bottom"].filter((side: string ) => sideImages[payload[0].color[0].colorName][side])
+      const sideNames = orderedSides.filter((side: string ) => sideImages[payload[0].color[0].colorName][side])
       const sides = payload[0].sideImages[payload[0].color[0].colorName]
       state.products = payload;
       state.product = {...payload[0]}
@@ -99,7 +103,7 @@ export const DesignerSlice = createSlice({
     setProduct: (state, action) => {
       const { payload } = action
       const { sideImages } = payload
-      const sideNames = ["Front", "Back", "Left", "Right", "Top", "Bottom"].filter((side: string ) => sideImages[payload.color[0].colorName][side])
+      const sideNames = orderedSides.filter((side: string ) => sideImages[payload.color[0].colorName][side])
       const sides = payload.sideImages[payload.color[0].colorName]
       state.product = payload;
       state.colors = payload.color
@@ -127,7 +131,7 @@ export const DesignerSlice = createSlice({
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const sideNames = ["Front", "Back", "Left", "Right", "Top", "Bottom"].filter((side ) => product?.sideImages[payload.colorName][side] ) 
+        const sideNames = orderedSize.filter((side ) => product?.sideImages[payload.colorName][side] ) 
         state.selectedColor = payload
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -141,12 +145,15 @@ export const DesignerSlice = createSlice({
         // @ts-ignore
         state.image = sideImages[payload.colorName][sideNames[0]].imgUrl
       }
-
+      
+    },
+    setPreviewImagesToRedux:(state,action)=>{
+      state.designPreviewImages = action.payload
     }
   },
 });
 
-export const { setBgImage, setProduct, setProducts, setSelectedColor, setSelectedSide } = DesignerSlice.actions;
+export const { setBgImage, setProduct, setProducts, setSelectedColor, setSelectedSide, setPreviewImagesToRedux } = DesignerSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

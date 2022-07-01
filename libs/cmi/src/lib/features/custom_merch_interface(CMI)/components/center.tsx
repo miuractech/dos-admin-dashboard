@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 // import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 // import { useAppSelector } from '../../../app/hooks'
-import { selectDesigner, setSelectedSide, sideType } from '../store/designerSlice'
+import { orderedSides, selectDesigner, setPreviewImagesToRedux, setSelectedSide, sideType } from '../store/designerSlice'
 import { Stage, Layer, Rect, Circle, Group, Transformer, Arc } from 'react-konva';
 import { changeSide, endExport, startExport, updateObject } from '../store/objects';
 import GetShape from './getShape';
@@ -12,9 +12,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { RootObject } from './selectProduct';
 import { Button, Typography } from '@mui/material';
-import { RootState } from '../store/store';
 import SimpleModal from '../ui-components/modal';
 import UrlImage from '../objects/urlImage';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { RootState } from 'apps/reseller/src/redux-tool/store';
+import AreYouSure from './AreYouSure';
 
 type Props = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -28,9 +30,10 @@ type Props = {
 
 export default function Center({ selectedId, setSelectedId, previews, setPreviews }: Props) {
     // const selectedProduct: RootObject = useSelector((state:RootState) => state.designer.product)
-    const { sides, selectedSide, image, selectedSideName, sideNames } = useSelector((state: RootState) => state.designer)
-
+    const { sides, selectedSide, image, selectedSideName, sideNames, designPreviewImages } = useSelector((state: RootState) => state.designer)
+    const [previewImages, setPreviewImages] = useState<string[]>([])
     // const products: RootObject[] = useAppSelector(state => state.designer.products)
+    const [createProductConsent, setCreateProductConsent] = useState(false)
     const objects = useSelector((state: RootState) => state.objects)
     const dispatch = useDispatch()
     const stageRef = useRef<any>(null)
@@ -40,12 +43,13 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
     const rightRef = useRef()
     const topRef = useRef()
     const bottomRef = useRef()
-    const allRefs = [frontRef, backRef, rightRef, topRef, bottomRef, leftRef]
+    const allRefs = [frontRef, backRef, rightRef, topRef, bottomRef, leftRef]   
+    
 
     return (
         <div>
             <div
-                className=''
+                // className=''
             >
                 <div className="flex justify-center margin2" style={{ width: 400, margin: 'auto', boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, marginBottom: 25 }}>
                     {sideNames.map((side: string) => {
@@ -89,6 +93,8 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                         PREVIEW
                     </Typography>
                     {sideNames.map((sideName: string, index: number) => {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        //@ts-ignore
                         const current = (sideName === selectedSideName) ? objects.currentObjects : objects.sides[sideName]
                         return <div
                             key={sideName}
@@ -120,9 +126,21 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                             color='secondary'
                             sx={{ width: 150 }}
                             onClick={() => {
-                                allRefs.map((sideRef: any) => {
-                                    console.log(sideRef?.current?.toDataURL())
-                                })
+                                setPreviewImages([])
+                                setTimeout(() => {     
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    //@ts-ignore
+                                    const allImg = sideNames.map((s,index)=>({name:s,backgroundUrl:sides[s].imgUrl,photoUrl:allRefs[index]?.current?.toDataURL()}))
+                                   
+                                    for (const pre in allImg){
+                                        getPreviewImg(allImg[pre], setPreviewImages)
+                                        if(parseInt(pre) === allImg.length-1){
+                                            setTimeout(() => {
+                                                setCreateProductConsent(true)
+                                            }, 100);
+                                        }
+                                    }                                
+                                }, 100);
                             }}
                         >
                             Add Product
@@ -130,6 +148,13 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                     </div>
                 </div>
             </SimpleModal>
+            <AreYouSure open={createProductConsent} onClose={()=>{
+                setCreateProductConsent(false)
+            }} discard={()=>{
+                
+                dispatch(setPreviewImagesToRedux(previewImages))
+                setCreateProductConsent(false)
+                }} text={'add this product?'} />
         </div >
     )
 }
@@ -255,7 +280,6 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                             // eslint-disable-next-line no-unsafe-optional-chaining
                                             const target = [...currentObjects]
                                             const index = target.findIndex((obj: any) => obj.id === object.id);
-                                            console.log(newAttrs);
 
                                             target[index] = newAttrs;
                                             // console.log(target);
@@ -303,4 +327,47 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
             </div>
         </div>
     )
+}
+
+
+const getPreviewImg = async({backgroundUrl, photoUrl}:{backgroundUrl:string, photoUrl:string},setPreviewImages:any) => {
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d");
+    canvas.height = 500
+    canvas.width = 500
+    const background = new Image();
+    background.height =500
+    background.width = 500
+    const photo = new Image();
+    photo.height =500
+    photo.width = 500
+    
+    background.crossOrigin = 'Anonymous'
+    photo.crossOrigin = 'Anonymous'
+    function counter() {
+        count--;
+        if (count === 0) drawImages();
+    }
+
+    /// is called when all images are loaded
+    function drawImages() {
+       
+        const images = [background, photo]
+        if(ctx){
+            for(let i = 0; i < images.length; i++){
+                ctx.drawImage(images[i], 0, 0, 500, 500);
+            }
+        }
+        setPreviewImages((t: any)=>[...t,canvas.toDataURL()])
+    }
+    let count = 2;
+
+    background.onload = photo.onload = counter;
+    background.src = backgroundUrl;
+    photo.src = photoUrl
+
+    /// common loader keeping track if loads
+   
+
+
 }
