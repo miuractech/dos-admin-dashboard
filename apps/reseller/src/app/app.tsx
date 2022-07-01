@@ -22,11 +22,11 @@ import Header from './sideNav/header'
 import { setStoreInfo } from '../redux-tool/functions';
 import CMI, { CustomMerchInterface } from './cmi/cmi';
 import { Verification } from './storeFrontForm/verification';
-import SideNav from './sideNav/navbar';
+import { NewHeader } from './sideNav/navbar';
 
 export function App() {
   const dispatch = useDispatch()
-  const User = useSelector((state: RootState) => state.User.User)
+  const { User } = useSelector((state: RootState) => state.User)
   const { loading } = useSelector((state: RootState) => state.User)
   const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
   // signOut(getAuth(app))
@@ -105,9 +105,9 @@ export function App() {
   else if (profileUrl) {
     return (
       <Routes>
-        <Route path="/" element={<CustomMerchInterface />} />
+        <Route path="/cmi" element={<CustomMerchInterface />} />
         <Route path="/editStore" element={<StorefrontCreator />} />
-        <Route path='/' element={<Verification />} />
+        <Route path='/' element={<NewHeader><Verification /></NewHeader>} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     );

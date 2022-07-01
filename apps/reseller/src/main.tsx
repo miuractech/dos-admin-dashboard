@@ -17,7 +17,7 @@ export const theme = createTheme({
       main: '#ff002e',
     },
     error: {
-      main: '#bd5857',
+      main: '#FF2943',
     },
     text: {
       secondary: 'rgba(249,249,249,0.54)',

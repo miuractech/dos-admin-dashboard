@@ -10,7 +10,11 @@ type forminputType = TextFieldProps & rhfType
 
 export function InputField(props: forminputType) {
   return (
-    <TextField color='secondary' inputProps={{ className: 'dos-input', style: { background: 'white' }, ...props.forminput }} {...props} />
+    <TextField color='primary' inputProps={{
+      className: 'dos-input', style: {
+        background: '#F9F9F9'
+      }, ...props.forminput
+    }} {...props} />
   );
 }
 
