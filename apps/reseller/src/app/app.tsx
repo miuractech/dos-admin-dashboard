@@ -4,7 +4,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { multiFactor, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, multiFactor, onAuthStateChanged, signOut } from 'firebase/auth';
 import { setUser, auth, submit } from '../redux-tool/auth';
 import { CircularProgress } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
@@ -14,20 +14,22 @@ import RegistrationPassword from './Auth/confrimPassword/registration-password';
 import Login from './Auth/loginpage/login';
 import VerifyEmail from './Auth/verify-email/verify-email';
 import { PasswordReset } from './Auth/loginpage/passwordReset';
-import { db } from '../firebaseConfig/config';
+import { app, db, } from '../firebaseConfig/config';
 import { doc, getDoc } from "firebase/firestore";
 import VerifyPhone from './Auth/verify-phone/verify-phone';
-import StorefrontCreator from './homepage/storefrontCreator';
-import Header from './homepage/components/header';
+import StorefrontCreator from './storeFrontForm/storefrontCreator';
+import Header from './sideNav/header'
 import { setStoreInfo } from '../redux-tool/functions';
 import CMI, { CustomMerchInterface } from './cmi/cmi';
+import { Verification } from './storeFrontForm/verification';
+import SideNav from './sideNav/navbar';
 
 export function App() {
   const dispatch = useDispatch()
   const User = useSelector((state: RootState) => state.User.User)
   const { loading } = useSelector((state: RootState) => state.User)
   const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
-
+  // signOut(getAuth(app))
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
@@ -39,6 +41,8 @@ export function App() {
         const data = docSnap.data()
         if (!data) return
         dispatch(setStoreInfo(data['profileUrl']))
+      } else {
+        dispatch(setStoreInfo(null))
       }
     })
 
@@ -47,7 +51,7 @@ export function App() {
   }, [])
 
 
-  console.log(profileUrl)
+  console.log("URL", profileUrl)
 
 
 
@@ -100,14 +104,12 @@ export function App() {
   }
   else if (profileUrl) {
     return (
-      <>
-        <Header />
-        <Routes>
-          <Route path="/" element={<CustomMerchInterface />} />
-          <Route path="/editStore" element={<StorefrontCreator />} />
-          <Route path='*' element={<Navigate to='/' replace />} />
-        </Routes>
-      </>
+      <Routes>
+        <Route path="/" element={<CustomMerchInterface />} />
+        <Route path="/editStore" element={<StorefrontCreator />} />
+        <Route path='/' element={<Verification />} />
+        <Route path='*' element={<Navigate to='/' replace />} />
+      </Routes>
     );
   }
   else {

@@ -16,7 +16,7 @@ import Test from './test';
 
 export function App() {
   const dispatch = useDispatch()
-  const {loading} = useSelector((state: RootState) => state.User)
+  const { loading } = useSelector((state: RootState) => state.User)
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
@@ -24,15 +24,16 @@ export function App() {
     return () => Unsubscribe()
 
   }, [])
-  if(loading) return <CircularProgress />
+  if (loading) return <CircularProgress />
   return (
     <div>
       <Routes>
-        <Route path='/auth' element={<Auth/>} />
+        <Route path='/auth' element={<Auth />} />
         <Route path='/image-upload' element={<Test />} />
         <Route path='/logout' element={<Logout />} />
         <Route path='*' element={<>not found</>} />
       </Routes>
+      <div id="sign-in-button"></div>
     </div>
   );
 }

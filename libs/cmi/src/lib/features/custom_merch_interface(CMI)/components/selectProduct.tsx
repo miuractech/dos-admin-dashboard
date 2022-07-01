@@ -35,6 +35,7 @@ import { db } from '../../../config/firebase'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { resetObjects } from '../store/objects'
 import AreYouSure from './AreYouSure'
+import { Typography } from '@mui/material'
 
 export interface CreatedAt {
     nanoseconds: number;
@@ -52,15 +53,15 @@ export interface baseSides {
     x: number;
 }
 
-export interface rectSide extends baseSides{
+export interface rectSide extends baseSides {
     type: 'rect';
     height: number;
     width: number;
 }
 
-export interface circleSide extends baseSides{
-    type:'circle';
-    radius:number;
+export interface circleSide extends baseSides {
+    type: 'circle';
+    radius: number;
 }
 
 export type side = {
@@ -116,13 +117,13 @@ type Props = {
     open: boolean
     // eslint-disable-next-line @typescript-eslint/ban-types
     onClose: (event?: {}, reason?: "backdropClick" | "escapeKeyDown") => void | undefined,
-    selectedId?:boolean,
+    selectedId?: boolean,
     setSelectedId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export default function SelectProduct({ open, onClose, setSelectedId }: Props) {
     const dispatch = useAppDispatch()
-    const docRef = query(collection(db, "meta", "products", "product_type"), orderBy("index")) ;
+    const docRef = query(collection(db, "meta", "products", "product_type"), orderBy("index"));
     const [products, setproducts] = useState<RootObject[]>([])
     const [sure, setSure] = useState<RootObject | null>(null)
     useEffect(() => {
@@ -147,12 +148,14 @@ export default function SelectProduct({ open, onClose, setSelectedId }: Props) {
 
         >
             <div>
-                <br />
-                <Grid container spacing={2}>
+                <Typography style={{ padding: "20px" }} variant="h6" align='center' fontWeight={500}>Choose Product</Typography>
+                <Grid container spacing={2} padding="0 20px 20px">
                     {products.map((product) => (
-                        <Grid item xs={12} md={3} className='pointer-cursor' style={{ borderRadius: 8 }} key={product.id} >
+                        <Grid item xs={12} md={3} style={{ borderRadius: 8 }} key={product.id} >
                             <Card
-                                elevation={0}
+                                className='pointer-cursor'
+                                style={{ padding: "20px" }}
+                                elevation={3}
                                 onClick={() => {
                                     setSure(product)
                                 }}
@@ -160,29 +163,28 @@ export default function SelectProduct({ open, onClose, setSelectedId }: Props) {
                                 <CardMedia
                                     component="img"
                                     placeholder='Loading image...'
-                                    // height="194"
                                     loading='lazy'
                                     image={product.displayImage}
                                     alt={product.name}
                                 />
                                 <div>
-                                    {product.name}
+                                    <Typography align='center' fontWeight={500}>{product.name}</Typography>
                                 </div>
                             </Card>
                         </Grid>
                     ))}
-                            <div
-                            >
-                                <AreYouSure open={Boolean(sure)} onClose={()=>setSure(null)} discard={()=>{
-                                    dispatch(setProduct(sure))
-                                    dispatch(resetObjects())
-                                    setSelectedId(null)
-                                    onClose()
-                                    setSure(null)
-                                    }} text={'discard the Design?'} />
-                            </div>
+                    <div
+                    >
+                        <AreYouSure open={Boolean(sure)} onClose={() => setSure(null)} discard={() => {
+                            dispatch(setProduct(sure))
+                            dispatch(resetObjects())
+                            setSelectedId(null)
+                            onClose()
+                            setSure(null)
+                        }} text={'discard the Design?'} />
+                    </div>
                 </Grid>
-           
+
             </div>
 
         </SimpleModal>

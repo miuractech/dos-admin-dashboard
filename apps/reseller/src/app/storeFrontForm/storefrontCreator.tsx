@@ -7,6 +7,8 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux-tool/store'
 import { db } from '../../firebaseConfig/config'
+import { useNavigate } from 'react-router-dom'
+import Header from '../sideNav/header'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {}
@@ -19,9 +21,9 @@ export default function StorefrontCreator({ }: Props) {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null)
   const [error, setError] = useState<null | string>(null)
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate()
   const { User } = useSelector((state: RootState) => state.User)
   const onSubmit = async (data: any) => {
-
     const undefinedImgs = selectedTemplate.map((obj: any) => obj.img).includes(undefined)
     if (!profileUrl) return setError("Plese select logo")
     if (!storeName) return setError("Store name is mandatory")
@@ -37,8 +39,10 @@ export default function StorefrontCreator({ }: Props) {
         bannerUrl,
         selectedTemplate
       })
+      navigate("/verification")
     } catch (error) {
       setError("failed to save, please try again")
+      console.log("error");
     }
   }
 
@@ -55,6 +59,7 @@ export default function StorefrontCreator({ }: Props) {
           {error}
         </Alert>
       </Snackbar>
+      <Header />
       <div id="bg">
         <Typography gutterBottom padding={5} variant='h4' align='center'>Customize Storefront</Typography>
         <div style={{ maxWidth: "800px", margin: "auto" }}>

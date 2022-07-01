@@ -16,4 +16,3 @@ export const send = functions.auth.user().onCreate(async (user) => {
   }
   return;
 });
-

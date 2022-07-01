@@ -1,10 +1,10 @@
 import { MoreVert, PersonOutlineOutlined } from '@mui/icons-material'
 import { IconButton, Popover, Typography, Box } from '@mui/material'
-import { logoutUser } from 'apps/reseller/src/redux-tool/auth'
-import { RootState } from 'apps/reseller/src/redux-tool/store'
+import { logoutUser } from '../../redux-tool/auth'
+import { RootState } from '../../redux-tool/store'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import "../homepage.css"
+import "./homepage.css"
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {}

@@ -12,50 +12,52 @@ import StyleBar from './styleBar';
 type Props = {
   selectedId: string | null,
   setSelectedId: React.Dispatch<React.SetStateAction<string | null>>
-  setLoading:React.Dispatch<React.SetStateAction<boolean>>
-  previews:boolean, 
-  setPreviews:React.Dispatch<React.SetStateAction<boolean>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  previews: boolean,
+  setPreviews: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function RightPanel({ selectedId, setSelectedId, setLoading, previews, setPreviews }: Props) {
   const dispatch = useDispatch()
-  const { currentObjects, history } = useSelector((state:RootState)=>state.objects)
+  const { currentObjects, history } = useSelector((state: RootState) => state.objects)
   console.log({ currentObjects, history });
-  
+
   return (
     <div
       className="flex vertical-center justify-center "
       style={{ minHeight: 450, margin: 'auto' }}
     >
       <div
-        // className="grey-bg full-width r5"
+      // className="grey-bg full-width r5"
       >
-      <div className='flex'>
-        {
-        [{icon:<Undo />,name:'undo', onClick:()=>dispatch(undo())},
-         {icon:<Redo />,name:'redo', onClick:()=>dispatch(redo())},
-         {icon:<ContentCopy />,name:'copy', onClick:()=>dispatch(copyObject(selectedId))},
-         {icon:<Delete />,name:'delete', onClick:()=>{
-          if(selectedId){
-            setLoading(true)
-            dispatch(removeObject(selectedId))
-            setTimeout(() => {
-              setLoading(false)
-            }, 100);
+        <div className='flex'>
+          {
+            [{ icon: <Undo />, name: 'undo', onClick: () => dispatch(undo()) },
+            { icon: <Redo />, name: 'redo', onClick: () => dispatch(redo()) },
+            { icon: <ContentCopy />, name: 'copy', onClick: () => dispatch(copyObject(selectedId)) },
+            {
+              icon: <Delete />, name: 'delete', onClick: () => {
+                if (selectedId) {
+                  setLoading(true)
+                  dispatch(removeObject(selectedId))
+                  setTimeout(() => {
+                    setLoading(false)
+                  }, 100);
+                }
+              }
+            },
+            ].map(({ icon, name, onClick }) => (
+              <Tooltip title={name} onClick={onClick} key={name} >
+                <div className='margin1 pointer-cursor'>
+                  {icon}
+                </div>
+              </Tooltip>
+            ))
           }
-        }},
-        ].map(({icon, name, onClick})=>(
-          <Tooltip title={name} onClick={onClick} >
-            <div className='margin1 pointer-cursor'>
-              {icon}
-            </div>
-          </Tooltip>
-        ))
-        }
-      </div>
-      <div
-        className="grey-bg full-width r5"
-      >
+        </div>
+        <div
+          className="grey-bg full-width r5"
+        >
           <StyleBar
             selectedId={selectedId}
             setSelectedId={setSelectedId}
@@ -63,10 +65,10 @@ export default function RightPanel({ selectedId, setSelectedId, setLoading, prev
           <RightInfo
             selectedId={selectedId}
             setSelectedId={setSelectedId}
-            previews={previews} 
+            previews={previews}
             setPreviews={setPreviews}
           />
-      </div>
+        </div>
       </div>
     </div>
   )

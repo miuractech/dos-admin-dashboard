@@ -7,25 +7,25 @@ import { Button } from '@mui/material';
 
 
 const schema = yup.object().shape({
-    otp:yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(0,'enter valid otp').max(999999,'enter valid otp').required('otp is required')
-  })
+  otp: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(0, 'enter valid otp').max(999999, 'enter valid otp').required('otp is required')
+})
 
 type Props = {
-    verifyOtp:(otp:string)=>void
+  verifyOtp: (otp: string) => void
 }
 
 
 // eslint-disable-next-line no-empty-pattern
-export default function VerifyOtp({verifyOtp}: Props) {
-    const { register, formState:{errors}, handleSubmit } = useForm({resolver:yupResolver(schema)})
+export default function VerifyOtp({ verifyOtp }: Props) {
+  const { register, formState: { errors }, handleSubmit } = useForm({ resolver: yupResolver(schema) })
   return (
-    <form onSubmit={handleSubmit(data=>verifyOtp(data['otp']))} >
-    <InputField error={Boolean(errors['otp'])} helperText={errors['otp']?.message} forminput={{...register('otp')}} />
-    <Button
-    type='submit'
-    >
-      get otp
-    </Button>
-  </form>
+    <form onSubmit={handleSubmit(data => verifyOtp(data['otp']))} >
+      <InputField error={Boolean(errors['otp'])} helperText={errors['otp']?.message} forminput={{ ...register('otp') }} />
+      <Button
+        type='submit'
+      >
+        get otp
+      </Button>
+    </form>
   )
 }

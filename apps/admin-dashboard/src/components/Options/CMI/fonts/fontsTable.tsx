@@ -235,7 +235,6 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
                 subHeaderComponent={<SubHeaderComponent filterText={filterText} setFilterText={setFilterText} />}
                 onChangePage={handlePageChange}
                 paginationTotalRows={numberOfRows}
-
             />
             <PopUpAction
                 open={Boolean(popUpInfo)}

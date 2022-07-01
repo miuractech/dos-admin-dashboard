@@ -1,4 +1,4 @@
-import { Button, Checkbox, Grid, IconButton, Typography } from '@mui/material'
+import { Button, Card, CardMedia, Checkbox, Grid, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import SimpleModal from './modal'
 import Accept from '../components/uploadComponent'
@@ -63,37 +63,60 @@ export default function ArtInsert({ open, onClose, setLoading, loading }: Props)
                     {error.message}
                 </Typography>
                 :
-                <Grid container spacing={3} >
-                    {arts.map((art: any) => (
-                        <Grid key={art.id} item xs={12} md={4} sm={6}  >
-                            <div className="flex vertical-center justify-center"
-                                onClick={() => {
-                                    setLoading(true)
-                                    dispatch(addObject({
-                                        type: 'img',
-                                        image: art.url,
-                                        width: 100,
-                                        height: 100,
-                                        x: 125,
-                                        y: 125,
-                                        id: art.id,
-                                    }))
-                                    setTimeout(() => {
-                                        setLoading(false)
-                                    }, 100);
-                                    onClose()
-                                }}
+                <>
+                    <Typography style={{ padding: "20px" }} variant="h6" align='center' fontWeight={500}>Choose Art</Typography>
+                    <Grid container spacing={3} padding="0 20px 20px" >
+                        {arts.map((art: any) => (
+                            <Grid style={{ borderRadius: 8 }} key={art.id} item xs={12} md={4} sm={6}  >
+                                <Card className="pointer-cursor"
+                                    style={{ height: "100%", paddingTop: "10px" }}
+                                    elevation={3}
+                                    onClick={() => {
+                                        setLoading(true)
+                                        dispatch(addObject({
+                                            type: 'img',
+                                            image: art.url,
+                                            width: 100,
+                                            height: 100,
+                                            x: 125,
+                                            y: 125,
+                                            id: art.id,
+                                        }))
+                                        setTimeout(() => {
+                                            setLoading(false)
+                                        }, 100);
+                                        onClose()
+                                    }}
 
-                            >
-                                <img src={art.url} className='full-width' alt="" />
-                            </div>
-                            <div>
-                                {art.artName}
-                            </div>
-                        </Grid>
-                    ))}
-                </Grid>
+                                >
+                                    <div style={{ height: "80%", width: "80%", margin: "auto", display: "flex", justifyContent: "center", alignContent: "center" }}>
+                                        {/* <CardMedia
+                                            component="img"
+                                            // height="100px"
+                                            // width="100px"
+                                            placeholder='Loading image...'
+                                            // width="80%"
+                                            loading='lazy'
+                                            image={art.url}
+                                            alt={art.artName}
+                                        /> */}
+                                        <img src={art.url} alt={art.artName} style={{ maxWidth: "80%" }} />
+                                    </div>
+                                    <div>
+                                        {art.artName ? (<Typography style={{
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis"
+                                        }} align='center' fontWeight={500}>
+                                            {art.artName}
+                                        </Typography>) : (<Typography align='center' fontWeight={500}>Art</Typography>)}
+                                    </div>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </>
             }
-        </SimpleModal>
+        </SimpleModal >
     )
 }

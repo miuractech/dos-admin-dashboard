@@ -9,6 +9,7 @@ import { Image } from "react-konva";
   useEffect(() => {
     if(src){
       var Timage = new window.Image();
+      Timage.crossOrigin = 'Anonymous'
       Timage.src = src;
       setImage(Timage)
     }

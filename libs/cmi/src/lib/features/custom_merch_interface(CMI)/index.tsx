@@ -13,7 +13,7 @@ const theme = createTheme({
         // type: 'light',
         primary: {
             main: '#ff002e',
-            dark:'#fa1e46'
+            dark: '#fa1e46'
         },
         secondary: {
             main: '#161C33',
@@ -52,17 +52,17 @@ export default function CustomMerchInterface() {
                             setSelectedId={setSelectedId}
                         />
                     </Grid>}
-                    <Grid item xs={12} md={6} style={{height:700, paddingTop:50}} >
+                    <Grid item xs={12} md={6} style={{ height: 700, paddingTop: 50 }} >
                         {loading ?
                             <CircularProgress />
                             :
                             <Center
-                            setLoading={setLoading}
-                            loading={loading}
-                            selectedId={selectedId}
-                            setSelectedId={setSelectedId} 
-                            previews={previews} 
-                            setPreviews={setPreviews}
+                                setLoading={setLoading}
+                                loading={loading}
+                                selectedId={selectedId}
+                                setSelectedId={setSelectedId}
+                                previews={previews}
+                                setPreviews={setPreviews}
                             />
                         }
                     </Grid>
@@ -71,7 +71,7 @@ export default function CustomMerchInterface() {
                             selectedId={selectedId}
                             setSelectedId={setSelectedId}
                             setLoading={setLoading}
-                            previews={previews} 
+                            previews={previews}
                             setPreviews={setPreviews}
                         />
                     </Grid>

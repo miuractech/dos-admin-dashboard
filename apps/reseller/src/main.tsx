@@ -70,12 +70,12 @@ export const theme = createTheme({
 ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
-    <ThemeProvider theme={theme} >
-      <BrowserRouter>
+      <ThemeProvider theme={theme} >
+        <BrowserRouter>
           <App />
-      </BrowserRouter>
+        </BrowserRouter>
       </ThemeProvider>
-       </Provider>
+    </Provider>
   </StrictMode>,
   document.getElementById('root')
 );

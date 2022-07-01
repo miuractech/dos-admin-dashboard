@@ -9,14 +9,14 @@ import CustomMerchInterface from './features/custom_merch_interface(CMI)';
 export interface CmiProps { }
 
 export function CMI(props: CmiProps) {
-  const { isExporting } = useSelector((state:RootState)=>state.objects)
+  const { isExporting } = useSelector((state: RootState) => state.objects)
   return (
     <div className={styles['container']}>
       <CustomMerchInterface />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isExporting}
-        // onClick={handleClose}
+      // onClick={handleClose}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
