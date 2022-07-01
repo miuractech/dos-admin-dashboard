@@ -3,17 +3,20 @@ import React, { useEffect, useState } from 'react'
 import { circleStyle, topBarStyle } from '../setting/topStyles'
 import { Rect, RectConfig } from 'konva/lib/shapes/Rect'
 import { Card, Grid, IconButton, MenuItem, Paper, Popover, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useAppSelector } from '../store/store'
-import { useDispatch } from 'react-redux'
-import { updateObject } from '../store/objects'
+// import { useAppSelector } from '../store/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { resetObjects, updateObject } from '../store/objects'
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import CustomFonts from './customFonts'
 import { Add, FormatAlignCenter, FormatAlignLeft, FormatAlignRight, Remove } from '@mui/icons-material'
-import { RootObject } from './selectProduct'
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { RootState } from '../../../../../../../apps/reseller/src/redux-tool/store';
 import { Box } from '@mui/system'
-import { choosenColor } from '../store/color&size'
+import { setSelectedColor } from '../store/designerSlice';
+import AreYouSure from './AreYouSure'
+import { Color } from './selectProduct'
 type Props = {
   selectedId: string | null,
   setSelectedId: React.Dispatch<React.SetStateAction<string | null>>
@@ -44,42 +47,44 @@ type colorProps = {
 
 export default function StyleBar({ selectedId, setSelectedId }: Props) {
   const [selectedComponent, setSelectedComponent] = useState<{ name: string | null, target: any } | null>(null)
-  const objects = useAppSelector(state => state.objects)
+  const objects = useSelector((state:RootState) => state.objects)
   const selectedObject = objects?.currentObjects.filter((obj: any) => obj.id === selectedId)[0]
   const dispatch = useDispatch()
-  const selectedProduct: RootObject = useAppSelector(state => state.designer.product)
-
+  const { product, image,selectedSide,selectedColor,sides, colors } = useSelector((state:RootState) => state.designer)
+  const [sure, setSure] = useState<Color | null>(null)
   const { handelChange } = useChanges({
     selectedId,
     selectedObject,
     objects
   })
 
-  const [colors, setColors] = useState<colorProps[] | null>(null)
-  const [selectedColor, setSelectedColor] = useState<colorProps | null>(null)
-  const [sizes, setSizes] = useState<any>(null)
+  // const [colors, setColors] = useState<colorProps[] | null>(null)
+  // const [selectedColor, setSelectedColor] = useState<colorProps | null>(null)
+  // const [sizes, setSizes] = useState<any>(null)
 
-  useEffect(() => {
-    if (!colors) return
-    setSelectedColor(colors[0])
-    dispatch(choosenColor(colors[0]))
-  }, [colors])
+  // useEffect(() => {
+  //   if (!colors) return
+  //   setSelectedColor(colors[0])
+  //   dispatch(setSelectedColor(colors[0]))
+    
 
-
-  useEffect(() => {
-    if (selectedProduct) {
-      setColors(selectedProduct.color)
-      setSizes(selectedProduct.size)
-    }
-  }, [selectedProduct])
-
-  useEffect(() => {
-    if (selectedColor) { dispatch(choosenColor(selectedColor)) }
-  }, [selectedColor])
+  // }, [colors])
 
 
+  // useEffect(() => {
+  //   if (selectedProduct) {
+  //     setColors(selectedProduct.color)
+  //     setSizes(selectedProduct.size)
+  //   }
+  // }, [selectedProduct])
 
-  // console.log(selectedProduct);
+  // useEffect(() => {
+  //   if (selectedColor) { dispatch(setSelectedColor(selectedColor)) }
+  // }, [selectedColor])
+
+
+
+  console.log(selectedObject);
 
 
 
@@ -96,69 +101,135 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails
-          style={{ maxHeight: 320, overflowY: 'scroll' }}
+          style={{ maxHeight: 200, overflowY: 'scroll' }}
         >
 
           <div className="white-bg r5" style={{ ...topBarStyle, }}   >
             <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <textarea
-                    value={selectedObject?.text}
-                    name="text"
-                    id="text-id"
-                    className='stylebar-input'
-                    onChange={(event) => handelChange(event.target.value, "text")}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <div>
-                    Font:
-                    &ensp;
-                  </div>
-                  <CustomFonts fontFamily={selectedObject?.fontFamily} />
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <div>
-                    Font Size:
-                    &ensp;
-                  </div>
-                  <TextField
-                    onChange={(event) => handelChange(event.target.value, "fontSize")}
-                    size="small"
-                    type="number"
-                    value={selectedObject?.fontSize}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <div >
-                    Align Text:
-                    &ensp;
-                  </div>
-                  <ToggleButtonGroup
-                    value={selectedObject?.align}
-                    exclusive
-                    onChange={(event, newAlignment) => handelChange(newAlignment, "align")}
-                    aria-label="text alignment"
+              {selectedObject?.type === 'text' ?
+                <>
+                  <Grid item xs={12}>
+                    <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
+                      <textarea
+                        value={selectedObject?.text}
+                        name="text"
+                        id="text-id"
+                        className='stylebar-input'
+                        onChange={(event) => handelChange(event.target.value, "text")}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
+                      <div>
+                        Font:
+                        &ensp;
+                      </div>
+                      <CustomFonts fontFamily={selectedObject?.fontFamily} />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
+                      <div>
+                        Font Size:
+                        &ensp;
+                      </div>
+                      <TextField
+                        onChange={(event) => handelChange(event.target.value, "fontSize")}
+                        size="small"
+                        type="number"
+                        value={selectedObject?.fontSize}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
+                      <div >
+                        Align Text:
+                        &ensp;
+                      </div>
+                      <ToggleButtonGroup
+                        value={selectedObject?.align}
+                        exclusive
+                        onChange={(event, newAlignment) => handelChange(newAlignment, "align")}
+                        aria-label="text alignment"
+                      >
+                        <ToggleButton value="left" aria-label="left aligned">
+                          <FormatAlignLeft />
+                        </ToggleButton>
+                        <ToggleButton value="center" aria-label="centered">
+                          <FormatAlignCenter />
+                        </ToggleButton>
+                        <ToggleButton value="right" aria-label="right aligned">
+                          <FormatAlignRight />
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start', justifyContent: 'space-between' }}>
+                  <div
+                    style={{ alignSelf: 'center' }}
                   >
-                    <ToggleButton value="left" aria-label="left aligned">
-                      <FormatAlignLeft />
-                    </ToggleButton>
-                    <ToggleButton value="center" aria-label="centered">
-                      <FormatAlignCenter />
-                    </ToggleButton>
-                    <ToggleButton value="right" aria-label="right aligned">
-                      <FormatAlignRight />
-                    </ToggleButton>
-                  </ToggleButtonGroup>
+                    color:
+                    &ensp;
+                  </div>
+                  <div
+                    style={{ ...circleStyle, backgroundColor: selectedObject?.fill }}
+                    className='pointer-cursor'
+                    onClick={e => setSelectedComponent({ name: 'fill', target: e.currentTarget })}
+                  />
                 </div>
               </Grid>
+              
+              
+                </>
+                :
+                <>
+                <Grid item xs={12} xl={6}>
+                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
+                  <div
+                    style={{ alignSelf: 'center' }}
+                  >
+                    Width:
+                    &ensp;
+                  </div>
+                  <div
+                  >
+                    <input
+                      type="number"
+                      name="height"
+                      id="x"
+                      className='stylebar-input'
+                      value={selectedObject?.width}
+                      onChange={(event) => handelChange(Number(event.target.value), "width")}
+                    />
+                  </div>
+                </div>
+              </Grid>
+                <Grid item xs={12} xl={6}>
+                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
+                  <div
+                    style={{ alignSelf: 'center' }}
+                  >
+                    Height:
+                    &ensp;
+                  </div>
+                  <div
+                  >
+                    <input
+                      type="number"
+                      name="height"
+                      id="y"
+                      className='stylebar-input'
+                      value={selectedObject?.height}
+                      onChange={(event) => handelChange(Number(event.target.value), "height")}
+                    />
+                  </div>
+                </div>
+              </Grid>
+              </>
+              }
               <Grid item xs={12} xl={6}>
                 <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
                   <div
@@ -200,100 +271,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
                   </div>
                 </div>
               </Grid>
-              <Grid item xs={12} xl={6}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <div
-                    style={{ alignSelf: 'center' }}
-                  >
-                    Width:
-                    &ensp;
-                  </div>
-                  <div
-                  >
-                    <input
-                      type="number"
-                      name="height"
-                      id="x"
-                      className='stylebar-input'
-                      value={selectedObject?.width}
-                      onChange={(event) => handelChange(Number(event.target.value), "width")}
-                    />
-                  </div>
-                </div>
-              </Grid>
-              <Grid item xs={12} xl={6}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <div
-                    style={{ alignSelf: 'center' }}
-                  >
-                    Height:
-                    &ensp;
-                  </div>
-                  <div
-                  >
-                    <input
-                      type="number"
-                      name="height"
-                      id="y"
-                      className='stylebar-input'
-                      value={selectedObject?.height}
-                      onChange={(event) => handelChange(Number(event.target.value), "height")}
-                    />
-                  </div>
-                </div>
-              </Grid>
-              <Grid item xs={12} >
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
-                  <div
-                    style={{ alignSelf: 'center' }}
-                  >
-                    Rotation:
-                    &ensp;
-                  </div>
-                  <div
-                  >
-                    <input
-                      type="number"
-                      name="Rot"
-                      id="R"
-                      className='stylebar-input'
-                      value={selectedObject?.rotation}
-                      onChange={(event) => handelChange(Number(event.target.value), "rotation")}
-                    />
-                  </div>
-                </div>
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start', justifyContent: 'space-between' }}>
-                  <div
-                    style={{ alignSelf: 'center' }}
-                  >
-                    color:
-                    &ensp;
-                  </div>
-                  <div
-                    style={{ ...circleStyle, backgroundColor: selectedObject?.color }}
-                    className='pointer-cursor'
-                    onClick={e => setSelectedComponent({ name: 'color', target: e.currentTarget })}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start', justifyContent: 'space-between' }}>
-                  <div
-                    style={{ alignSelf: 'center' }}
-                  >
-                    Fill:
-                    &ensp;
-                  </div>
-                  <div
-                    style={{ ...circleStyle, backgroundColor: selectedObject?.fill }}
-                    className='pointer-cursor'
-                    onClick={e => setSelectedComponent({ name: 'fill', target: e.currentTarget })}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={12} >
+             {selectedObject?.type === 'text' && <> <Grid item xs={12} >
                 <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
                   <div
                     style={{ alignSelf: 'center' }}
@@ -329,33 +307,25 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
                   />
                 </div>
               </Grid>
-
+              </>
+              }
               <Grid item xs={12} >
-                <div className="flex margin1 grey-bg padding1" style={{ alignSelf: 'flex-start' }}>
+                <div className="flex margin1 grey-bg padding1 r5" style={{ alignSelf: 'flex-start' }}>
                   <div
                     style={{ alignSelf: 'center' }}
                   >
-                    Corner:
+                    Rotation:
                     &ensp;
                   </div>
                   <div
                   >
                     <input
                       type="number"
-                      name="height"
-                      id="x"
+                      name="Rot"
+                      id="R"
                       className='stylebar-input'
-                      value={selectedObject?.cornerRadius}
-                      onChange={(e) => {
-                        // eslint-disable-next-line no-unsafe-optional-chaining
-                        const target = [...objects?.currentObjects]
-                        const index = target.findIndex((obj: any) => obj.id === selectedId);
-                        const cr = Number(e.target.value)
-                        if (cr >= 0) {
-                          target[index] = { ...selectedObject, cornerRadius: cr };
-                          dispatch(updateObject(target));
-                        }
-                      }}
+                      value={selectedObject?.rotation}
+                      onChange={(event) => handelChange(Number(event.target.value), "rotation")}
                     />
                   </div>
                 </div>
@@ -393,7 +363,11 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
           </div>
         </AccordionDetails>
       </Accordion >
-      <Accordion>
+      <Accordion
+      expanded={!selectedId}
+      style={{marginTop:0}}
+      variant='outlined'
+      >
         <AccordionSummary
           // expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2a-content"
@@ -409,7 +383,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
               {colors && <div style={{ display: "flex", gap: "10px" }}>
                 {colors.map((color: colorProps) =>
                   <div
-                    onClick={() => { setSelectedColor(color) }}
+                    onClick={() => { setSure(color) }}
                     style={{
                       cursor: "pointer",
                       height: "25px", width: "25px",
@@ -421,13 +395,26 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
             </Card>
             <Card style={{ padding: "10px" }}>
               <Typography gutterBottom align='center'>Choose size</Typography>
-              {sizes && <div style={{ display: "flex", gap: "20px" }}>
-                {sizes.map((size: any) => <Paper style={{ padding: "5px", cursor: "pointer" }}><strong>{size}</strong></Paper>)}
+              {product?.size && <div style={{ display: "flex", gap: "20px" }}>
+                {product.size.map((size: any) => <Paper style={{ padding: "5px", cursor: "pointer" }}><strong>{size}</strong></Paper>)}
               </div>}
             </Card>
           </div>
         </AccordionDetails>
       </Accordion>
+      <AreYouSure
+      open={Boolean(sure)} 
+      onClose={()=>setSure(null)} 
+      discard={()=>{
+      // dispatch(setProduct(sure))
+      dispatch(setSelectedColor(sure)) 
+      dispatch(resetObjects())
+      setSelectedId(null)
+      // onClose()
+      setSure(null)
+      }} 
+      text={'discard the Design?'} 
+      />
     </div>
 
 

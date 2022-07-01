@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import QRCode from 'qrcode';
-import { SimpleModal } from './modal';
+import SimpleModal from './modal';
 import { Button, Container, Grid, TextField } from '@mui/material'
 import { v4 as uuidv4 } from 'uuid';
 import { addObject } from '../store/objects';
@@ -39,7 +39,7 @@ export default function Qr({ open, onClose, setLoading }: Props) {
                 setText('')
                 setTimeout(() => {
                     setLoading(false)
-                }, 150);;
+                }, 100);;
                 onClose()
             })
             .catch((err: any) => {

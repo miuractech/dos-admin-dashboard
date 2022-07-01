@@ -1,37 +1,29 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from "./store"
+// import { createSlice } from '@reduxjs/toolkit'
 
-// Define a type for the slice state
+// // Define a type for the slice state
 
-type colorProps = {
-    colorName: string
-    colorCode: string
-}
 
-interface colorState {
-    selectedColor: null | colorProps
-}
 
-// Define the initial state using that type
-const initialState: colorState = {
-    selectedColor: null
-}
+// // Define the initial state using that type
+// const initialState: colorState = {
+    
+// }
 
-export const selectSlice = createSlice({
-    name: 'select',
-    // `createSlice` will infer the state type from the `initialState` argument
-    initialState,
-    reducers: {
-        choosenColor: (state, action) => {
-            state.selectedColor = action.payload
+// export const selectSlice = createSlice({
+//     name: 'select',
+//     // `createSlice` will infer the state type from the `initialState` argument
+//     initialState,
+//     reducers: {
+//         choosenColor: (state, action) => {
+//             state.selectedColor = action.payload
 
-        },
-    },
-})
+//         },
+//     },
+// })
 
-export const { choosenColor } = selectSlice.actions
+// export const { choosenColor } = selectSlice.actions
 
-// Other code such as selectors can use the imported `RootState` type
-// export const selectCount = (state: RootState) => state.counter.value
+// // Other code such as selectors can use the imported `RootState` type
+// // export const selectCount = (state: RootState) => state.counter.value
 
-export default selectSlice.reducer
+// export default selectSlice.reducer

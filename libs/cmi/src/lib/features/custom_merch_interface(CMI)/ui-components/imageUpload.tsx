@@ -1,20 +1,23 @@
 import { Button, Checkbox, Grid, IconButton, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { SimpleModal } from './modal'
+import SimpleModal from './modal'
 import Accept from '../components/uploadComponent'
 import { Clear } from '@mui/icons-material'
 import { useDispatch } from 'react-redux'
 import { addObject } from '../store/objects'
 import { v4 as uuidv4 } from 'uuid';
+import { MiuracImage } from '@miurac/image-upload'
+import { app } from '../../../config/firebase'
 type Props = {
     open: boolean
-    onClose : (event?: {}, reason?: "backdropClick" | "escapeKeyDown") => void | undefined,
+    onClose : (event?: Record<string, unknown>, reason?: "backdropClick" | "escapeKeyDown") => void | undefined,
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     loading:boolean,
 }
 
 export default function ImageUpload({open,onClose,setLoading}: Props) {
-    const [image, setImage] = useState<{preview:string} | null>(null)
+    const [image, setImage] = useState< string | null>(null)
+    const [agree, setAgree] = useState(false)
     const dispatch = useDispatch()
     return (
         <SimpleModal
@@ -22,70 +25,70 @@ export default function ImageUpload({open,onClose,setLoading}: Props) {
         onClose={onClose}    
         >
             <Grid container spacing={1} >
-                <Grid item xs={12} >
-                    <br />
-                    {image?
-                    <div
-                    className='relative padding1'
-                    style={{width:308,margin:'auto',background:'#ddd'}}
-                    >
-                        <div
-                        className='absolute'
-                        style={{top:0,right:5}}
-                        
-                        >
-                            <IconButton 
-                            size='small' 
-                            style={{
-                                backgroundColor: '#eee',
-                                color: 'black',
-                            }}
-                            onClick={()=>setImage(null)}
-                            >
-                                <Clear />
-                            </IconButton>
-                        </div>
-                        <img style={{maxWidth:300,maxHeight:300}} src={image?.preview} alt="" />
-                    </div>
-                        :
-                    <Accept 
-                    // image={image} 
-                    setImage={setImage}
-                    />}
-                    {/* <input type="file" name="" id="" /> */}
-                </Grid>
-                <Grid item xs={12}>
+            <Grid item xs={12}>
                     <br />
                     <br />
                     <Typography>
-                        <Checkbox disabled={!image} />
+                        <Checkbox disabled={agree} onChange={(e)=>setAgree(e.target.checked)} />
                         By clicking "Upload", you agree to the terms and conditions
                     </Typography>
                     <br />
-                    <Button
+                   
+                </Grid>
+                <Grid item xs={12} >
+                    <br />
+                    
+                    {!agree?<Button
                     variant='contained'
-                    style={{}}
-                    disabled={!image}
-                    onClick={()=>{
-                        setLoading(true)
-                        dispatch(addObject({
-                            type:'img',
-                            image:image?.preview,
-                            width:100,
-                            height:100,
-                            x:125,
-                            y:125,
-                            id:uuidv4(),
-                        }))
-                        setTimeout(() => {
-                            setLoading(false)
-                          }, 150);;
-                          onClose()
-                    }}
+                    // style={{}}
+                    disabled={agree}
                     >
                         Upload
                     </Button>
+                    :
+                    <MiuracImage 
+                            setUrlFunc={(url) =>{
+                                    setLoading(true)
+                                    const img = new Image();
+                                    img.onload = function(){
+                                        const { height, width } = img;
+                                        const aspect = width/height
+                                        const x = aspect>1?300:(300*aspect)
+                                        const y = (aspect<=1)?(300):(300/aspect)
+                                        dispatch(addObject({
+                                            type:'img',
+                                            image:url,
+                                            width:x,
+                                            height:y,
+                                            x:100,
+                                            y:100,
+                                            id:uuidv4(),
+                                            keepRatio:true
+                                        }))
+                                        setImage(null)
+                                        setTimeout(() => {
+                                            setLoading(false)
+                                          }, 150);;
+                                          onClose()
+                                        // code here to use the dimensions
+                                      }
+                                      img.src = url
+                                }} 
+                            app={app} 
+                            updateFirestore={false} 
+                            editConfig={null}
+                            buttonComponent={
+                                <Button
+                                variant='contained'
+                                // style={{}}
+                                // disabled={agree}
+                                >
+                                    Upload
+                                </Button>
+                            }
+                            />}
                 </Grid>
+               
             </Grid>
         </SimpleModal>
     )

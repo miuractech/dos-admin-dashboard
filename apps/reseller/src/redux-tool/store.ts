@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import UserReduser from "./auth"
 import designerReducer from '../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/designerSlice';
 import ObjectReducer from '../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/objects';
-import selectSlice from "../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/color&size"
+// import selectSlice from "../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/color&size"
 import conditionSlice from './functions';
 
 export const store = configureStore({
@@ -11,7 +11,7 @@ export const store = configureStore({
     designer: designerReducer,
     objects: ObjectReducer,
     condition: conditionSlice,
-    selectSlice: selectSlice
+    // selectSlice: selectSlice
 
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({

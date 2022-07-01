@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { SimpleModal } from '../ui-components/modal'
+import SimpleModal from '../ui-components/modal'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
@@ -32,29 +32,39 @@ import CardMedia from '@mui/material/CardMedia'
 import { useAppDispatch } from '../../../app/hooks'
 import { setProducts, setProduct } from '../store/designerSlice'
 import { db } from '../../../config/firebase'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { resetObjects } from '../store/objects'
+import AreYouSure from './AreYouSure'
 
 export interface CreatedAt {
     nanoseconds: number;
     seconds: number;
 }
 
-export interface sides {
-    height: number;
-    previewScreen: string;
-    type: string;
+export interface baseSides {
+    // previewScreen: string;
+    imgUrl: string;
+    // strokeWidth: number;
+    // stroke: string;
+    // dash: number[];
+    // fill: string;
     y: number;
-    image: string;
-    strokeWidth: number;
-    stroke: string;
-    width: number;
-    dash: number[];
-    fill: string;
     x: number;
 }
 
+export interface rectSide extends baseSides{
+    type: 'rect';
+    height: number;
+    width: number;
+}
+
+export interface circleSide extends baseSides{
+    type:'circle';
+    radius:number;
+}
+
 export type side = {
-    [sideName in 'front' | 'back' | "right" | "left" | "top" | "bottom"]: sides
+    [sideName in 'Front' | 'Back' | "Right" | "Left" | "Top" | "Bottom"]: circleSide | rectSide
 }
 
 export interface SideImage {
@@ -80,7 +90,7 @@ export interface Color {
 }
 
 export interface RootObject {
-    colorName: any
+    // colorName: any
     subcategoryId: string;
     status: string;
     displayImage: string;
@@ -106,13 +116,15 @@ type Props = {
     open: boolean
     // eslint-disable-next-line @typescript-eslint/ban-types
     onClose: (event?: {}, reason?: "backdropClick" | "escapeKeyDown") => void | undefined,
+    selectedId?:boolean,
+    setSelectedId: React.Dispatch<React.SetStateAction<string | null>>
 }
 
-export default function SelectProduct({ open, onClose }: Props) {
+export default function SelectProduct({ open, onClose, setSelectedId }: Props) {
     const dispatch = useAppDispatch()
-    const docRef = collection(db, "meta", "products", "product_type");
+    const docRef = query(collection(db, "meta", "products", "product_type"), orderBy("index")) ;
     const [products, setproducts] = useState<RootObject[]>([])
-
+    const [sure, setSure] = useState<RootObject | null>(null)
     useEffect(() => {
         product()
     }, [])
@@ -128,9 +140,6 @@ export default function SelectProduct({ open, onClose }: Props) {
         }
     }
 
-
-
-
     return (
         <SimpleModal
             open={open}
@@ -145,12 +154,12 @@ export default function SelectProduct({ open, onClose }: Props) {
                             <Card
                                 elevation={0}
                                 onClick={() => {
-                                    dispatch(setProduct(product))
-                                    onClose()
+                                    setSure(product)
                                 }}
                             >
                                 <CardMedia
                                     component="img"
+                                    placeholder='Loading image...'
                                     // height="194"
                                     loading='lazy'
                                     image={product.displayImage}
@@ -162,7 +171,18 @@ export default function SelectProduct({ open, onClose }: Props) {
                             </Card>
                         </Grid>
                     ))}
+                            <div
+                            >
+                                <AreYouSure open={Boolean(sure)} onClose={()=>setSure(null)} discard={()=>{
+                                    dispatch(setProduct(sure))
+                                    dispatch(resetObjects())
+                                    setSelectedId(null)
+                                    onClose()
+                                    setSure(null)
+                                    }} text={'discard the Design?'} />
+                            </div>
                 </Grid>
+           
             </div>
 
         </SimpleModal>

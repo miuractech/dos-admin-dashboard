@@ -1,6 +1,6 @@
 import { Button, Checkbox, Grid, IconButton, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { SimpleModal } from './modal'
+import SimpleModal from './modal'
 import Accept from '../components/uploadComponent'
 import { Clear } from '@mui/icons-material'
 import { useDispatch } from 'react-redux'
@@ -80,7 +80,7 @@ export default function ArtInsert({ open, onClose, setLoading, loading }: Props)
                                     }))
                                     setTimeout(() => {
                                         setLoading(false)
-                                    }, 150);;
+                                    }, 100);
                                     onClose()
                                 }}
 

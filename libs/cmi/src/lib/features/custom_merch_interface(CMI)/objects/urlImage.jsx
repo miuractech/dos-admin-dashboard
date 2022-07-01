@@ -20,8 +20,10 @@ import { Image } from "react-konva";
    React.useEffect(() => {
         if (isSelected) {
           // we need to attach transformer manually
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           trRef.current?.nodes([shapeRef.current]);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           trRef.current?.getLayer().batchDraw();
         }
@@ -39,8 +41,8 @@ import { Image } from "react-konva";
           onDragEnd={(e) => {
             onChange({
               ...object,
-              x: e.target.x(),
-              y: e.target.y(),
+              x: Math.trunc(e.target.x()),
+              y: Math.trunc(e.target.y()),
             });
           }}
           onTransformEnd={() => {
@@ -50,16 +52,16 @@ import { Image } from "react-konva";
             const scaleY = node.scaleY();
             const width = node.width()
             const height = node.height()
-            const rotation = Math.round(node.rotation());
+            const rotation = Math.trunc(node.rotation());
             console.log(scaleX,scaleY,width,height);
             node.scaleX(1);
             node.scaleY(1);
             onChange({
               ...object,
-              x: Math.round(node.x()),
-              y: Math.round(node.y()),
-              width: Math.round(width * scaleX ),
-              height: Math.round(height * scaleY ),
+              x: Math.trunc(node.x()),
+              y: Math.trunc(node.y()),
+              width: Math.trunc(width * scaleX ),
+              height: Math.trunc(height * scaleY ),
               rotation,
             });
           }}

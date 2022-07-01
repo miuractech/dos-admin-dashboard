@@ -1,50 +1,32 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from './store';
-import { fetchCount } from './api';
+import { createSlice, current } from '@reduxjs/toolkit';
+import { RootState } from './store';
 // import { productSideType, productType, productVariantType } from '../components/selectProduct';
-import { historyLength } from '../setting/center';
-
-const initialRectangles: any[] = [
-  // {
-  //   x: 100,
-  //   y: 100,
-  //   width: 100,
-  //   height: 100,
-  //   fill: '#00ff00',
-  //   id: 'rect1',
-  //   type:'rect',
-  //   strokeWidth:0,
-  //   stroke:'#fff',
-  //   cornerRadius:0
-  // },
-  // {
-  //   x: 150,
-  //   y: 150,
-  //   width: 100,
-  //   height: 100,
-  //   fill: '#ff0000',
-  //   id: 'rect2',
-  //   type: 'rect',
-  //   strokeWidth:0,
-  //   stroke:'#fff',
-  //   cornerRadius:0
-  // },
-];
-
+import { v4 as uuidv4 } from 'uuid';
 export interface DesignerState {
-  currentSide: 'left' | 'right' | 'top' | 'bottom' | 'front' | 'back';
+  // currentSide: 'left' | 'right' | 'top' | 'bottom' | 'front' | 'back';
   currentObjects: Array<any>;
   history: Array<Array<any>>;
-  sides: any
+  forward:Array<Array<any>>;
+  sides: {[sideName in 'Front' | 'Back' | "Right" | "Left" | "Top" | "Bottom"]:any[]}
   status: 'idle' | 'loading' | 'failed';
+  isExporting:boolean;
 }
 
 const initialState: DesignerState = {
-  currentSide: 'front',
-  currentObjects: initialRectangles,
+  // currentSide: 'front',
+  currentObjects: [],
   history: [[]],
-  sides: [[]],
-  status: 'idle'
+  forward : [[]],
+  sides: {
+    'Front':[],
+    'Back':[],
+    'Right':[],
+    'Left':[],
+    'Top':[],
+    'Bottom':[],
+  },
+  status: 'idle',
+  isExporting:false
 };
 
 export const ObjectSlice = createSlice({
@@ -53,38 +35,90 @@ export const ObjectSlice = createSlice({
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     updateObject: (state, action) => {
+      state.history = lastN(10,[...current(state.history), current(state.currentObjects)]).getAll()
       state.currentObjects = action.payload;
+      state.forward=[[]]
     },
     addObject: (state, action) => {
       // state.history = addElementToQueue(state.history,state.currentObjects)
+      state.history = lastN(10,[...current(state.history), current(state.currentObjects)]).getAll()
+      state.forward = [[]]
       state.currentObjects = [...state.currentObjects, action.payload];
     },
-    //     decrement: (state) => {
-    //       state.value -= 1;
-    //     },
-    //     incrementByAmount: (state, action: PayloadAction<number>) => {
-    //       state.value += action.payload;
-    //     },
-    //   },
-    //   extraReducers: (builder) => {
-    //     builder
-    //       .addCase(incrementAsync.pending, (state) => {
-    //         state.status = 'loading';
-    //       })
-    //       .addCase(incrementAsync.fulfilled, (state, action) => {
-    //         state.status = 'idle';
-    //         state.value += action.payload;
-    //       });
+    undo: (state) => {
+      const history = current(state.history)
+      const currentObjects = current(state.currentObjects)
+      if(history.length>0){ 
+        const last = history[history.length-1]
+        const copy =  [...history]
+        copy.pop()
+        state.history = copy
+        state.currentObjects = last
+        state.forward = [...current(state.forward),currentObjects]
+      }
+    }, 
+    redo:(state)=>{
+      const forward = current(state.forward)
+      const currentObjects = current(state.currentObjects)
+      if(forward.length>1){ 
+        const last = forward[forward.length-1]
+        const copy =  [...forward]
+        copy.pop()
+        state.forward = copy
+        state.currentObjects = last
+        state.history = [...current(state.history),currentObjects]
+      }
+    },
+    changeSide:(state,action) =>{
+      const currentObjs = current(state.currentObjects)
+      const sides = {...state.sides}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      sides[action.payload.current] = currentObjs
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      state.currentObjects = sides[action.payload.to]
+      state.sides = sides
+      state.history = [[]]
+      state.forward = [[]]
+    },
+    removeObject:(state,action)=>{
+      state.history = lastN(10,[...current(state.history), current(state.currentObjects)]).getAll()
+      state.currentObjects = state.currentObjects.filter(({id})=>action.payload !== id)
+    },
+    resetObjects:() => initialState,
+    copyObject:(state,action) => {
+      state.history = lastN(10,[...current(state.history), current(state.currentObjects)]).getAll()
+      state.forward = [[]]
+      const copiedObj = state.currentObjects.filter(obj=>obj.id === action.payload)[0]
+      state.currentObjects = [...state.currentObjects, {...copiedObj, id:uuidv4(), x:copiedObj.x+5,y:copiedObj.y+5}];
+    },
+    startExport:(state)=>{
+      state.isExporting = true
+    },
+    endExport:(state)=>{
+      state.isExporting = false
+    },
   },
 });
 
-export const { updateObject, addObject } = ObjectSlice.actions;
+export const { updateObject, addObject, undo, redo, changeSide, removeObject, resetObjects, copyObject, startExport, endExport } = ObjectSlice.actions;
 
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectObject = (state: RootState) => state.objects;
 
 export default ObjectSlice.reducer;
 
 
+function lastN(limit: number, array:any[] = []) {
+  if (array.length > limit) array.splice(0, array.length - limit);
+  const
+      fluent = {
+          add: (value: any) => {
+              if (array.length >= limit) array.splice(0, array.length - limit + 1);
+              array.push(value);
+              return fluent;
+          },
+          getAll: () => array
+      };
+  return fluent;
+}
