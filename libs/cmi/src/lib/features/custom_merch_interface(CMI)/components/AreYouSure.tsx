@@ -36,7 +36,7 @@ export default function AreYouSure({open,text,onClose,discard}: Props) {
                 color='error'
                 onClick={discard}
                 >
-                    Discard
+                    Confirm
                 </Button>
             </div>
         </div>
