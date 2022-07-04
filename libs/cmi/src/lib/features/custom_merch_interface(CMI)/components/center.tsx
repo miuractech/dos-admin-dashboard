@@ -17,6 +17,7 @@ import UrlImage from '../objects/urlImage';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { RootState } from 'apps/reseller/src/redux-tool/store';
 import AreYouSure from './AreYouSure';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -43,13 +44,12 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
     const rightRef = useRef()
     const topRef = useRef()
     const bottomRef = useRef()
-    const allRefs = [frontRef, backRef, rightRef, topRef, bottomRef, leftRef]   
-    
-
+    const allRefs = [frontRef, backRef, rightRef, topRef, bottomRef, leftRef]
+    const navigate = useNavigate()
     return (
         <div>
             <div
-                // className=''
+            // className=''
             >
                 <div className="flex justify-center margin2" style={{ width: 400, margin: 'auto', boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, marginBottom: 25 }}>
                     {sideNames.map((side: string) => {
@@ -127,19 +127,19 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                             sx={{ width: 150 }}
                             onClick={() => {
                                 setPreviewImages([])
-                                setTimeout(() => {     
+                                setTimeout(() => {
                                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                     //@ts-ignore
-                                    const allImg = sideNames.map((s,index)=>({name:s,backgroundUrl:sides[s].imgUrl,photoUrl:allRefs[index]?.current?.toDataURL()}))
-                                   
-                                    for (const pre in allImg){
+                                    const allImg = sideNames.map((s, index) => ({ sideName: s, backgroundUrl: sides[s].imgUrl, photoUrl: allRefs[index]?.current?.toDataURL() }))
+
+                                    for (const pre in allImg) {
                                         getPreviewImg(allImg[pre], setPreviewImages)
-                                        if(parseInt(pre) === allImg.length-1){
+                                        if (parseInt(pre) === allImg.length - 1) {
                                             setTimeout(() => {
                                                 setCreateProductConsent(true)
                                             }, 100);
                                         }
-                                    }                                
+                                    }
                                 }, 100);
                             }}
                         >
@@ -148,13 +148,14 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                     </div>
                 </div>
             </SimpleModal>
-            <AreYouSure open={createProductConsent} onClose={()=>{
+            <AreYouSure open={createProductConsent} onClose={() => {
                 setCreateProductConsent(false)
-            }} discard={()=>{
-                
+            }} discard={() => {
+
                 dispatch(setPreviewImagesToRedux(previewImages))
                 setCreateProductConsent(false)
-                }} text={'add this product?'} />
+                navigate("/designproduct/addproducts")
+            }} text={'add this product?'} />
         </div >
     )
 }
@@ -330,18 +331,18 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
 }
 
 
-const getPreviewImg = async({backgroundUrl, photoUrl}:{backgroundUrl:string, photoUrl:string},setPreviewImages:any) => {
+const getPreviewImg = async ({ backgroundUrl, photoUrl, sideName }: { backgroundUrl: string, photoUrl: string, sideName: string }, setPreviewImages: any) => {
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d");
     canvas.height = 500
     canvas.width = 500
     const background = new Image();
-    background.height =500
+    background.height = 500
     background.width = 500
     const photo = new Image();
-    photo.height =500
+    photo.height = 500
     photo.width = 500
-    
+
     background.crossOrigin = 'Anonymous'
     photo.crossOrigin = 'Anonymous'
     function counter() {
@@ -351,14 +352,14 @@ const getPreviewImg = async({backgroundUrl, photoUrl}:{backgroundUrl:string, pho
 
     /// is called when all images are loaded
     function drawImages() {
-       
+
         const images = [background, photo]
-        if(ctx){
-            for(let i = 0; i < images.length; i++){
+        if (ctx) {
+            for (let i = 0; i < images.length; i++) {
                 ctx.drawImage(images[i], 0, 0, 500, 500);
             }
         }
-        setPreviewImages((t: any)=>[...t,canvas.toDataURL()])
+        setPreviewImages((t: any) => [...t, { url: canvas.toDataURL(), sideName }])
     }
     let count = 2;
 
@@ -367,7 +368,7 @@ const getPreviewImg = async({backgroundUrl, photoUrl}:{backgroundUrl:string, pho
     photo.src = photoUrl
 
     /// common loader keeping track if loads
-   
+
 
 
 }

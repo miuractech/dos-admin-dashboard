@@ -15,5 +15,6 @@ export interface UserDetailState {
     loading: boolean
     error: null | FirebaseError
     User: User | null | undefined
+    notification: null | string
 
 }

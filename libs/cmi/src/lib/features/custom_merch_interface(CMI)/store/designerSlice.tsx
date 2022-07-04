@@ -10,27 +10,27 @@ type colorProps = {
 }
 
 export type sideType = {
-  height?:number,
-  imgUrl:string,
-  rotation:number,
-  type:'rect' | 'circle'
-  width?:number
-  x:number
-  y:number
-  radius:number
+  height?: number,
+  imgUrl: string,
+  rotation: number,
+  type: 'rect' | 'circle'
+  width?: number
+  x: number
+  y: number
+  radius: number
 }
 export interface DesignerState {
   products: RootObject[] | null;
   product: RootObject | null;
   // sides:sideType[];
-  sides:{[sideName:string]:sideType} ;
-  image:string | null;
-  selectedSide:sideType;
-  selectedColor:colorProps | null;
-  selectedSideName:string | null;
-  colors:colorProps[] | null;
-  sideNames:string[];
-  designPreviewImages:string[]
+  sides: { [sideName: string]: sideType };
+  image: string | null;
+  selectedSide: sideType;
+  selectedColor: colorProps | null;
+  selectedSideName: string | null;
+  colors: colorProps[] | null;
+  sideNames: string[];
+  designPreviewImages: { sideName: string, url: string }[]
 }
 
 const initialState: DesignerState = {
@@ -43,21 +43,21 @@ const initialState: DesignerState = {
   product: null,
   sides: {},
   image: null,
-  selectedSideName:null,
+  selectedSideName: null,
   selectedSide: {
     // height:0,
-    imgUrl:'',
-    rotation:0,
-    type:'circle',
+    imgUrl: '',
+    rotation: 0,
+    type: 'circle',
     // width:0
-    x:0,
-    y:0,
-    radius:0
+    x: 0,
+    y: 0,
+    radius: 0
   },
-  selectedColor:null,
-  colors:null,
-  sideNames:[],
-  designPreviewImages:[]
+  selectedColor: null,
+  colors: null,
+  sideNames: [],
+  designPreviewImages: []
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -88,10 +88,10 @@ export const DesignerSlice = createSlice({
       console.log(action.payload);
       const { payload } = action
       const { sideImages } = payload[0]
-      const sideNames = orderedSides.filter((side: string ) => sideImages[payload[0].color[0].colorName][side])
+      const sideNames = orderedSides.filter((side: string) => sideImages[payload[0].color[0].colorName][side])
       const sides = payload[0].sideImages[payload[0].color[0].colorName]
       state.products = payload;
-      state.product = {...payload[0]}
+      state.product = { ...payload[0] }
       state.colors = payload[0].color
       state.selectedColor = payload[0].color[0]
       state.sides = sides
@@ -103,7 +103,7 @@ export const DesignerSlice = createSlice({
     setProduct: (state, action) => {
       const { payload } = action
       const { sideImages } = payload
-      const sideNames = orderedSides.filter((side: string ) => sideImages[payload.color[0].colorName][side])
+      const sideNames = orderedSides.filter((side: string) => sideImages[payload.color[0].colorName][side])
       const sides = payload.sideImages[payload.color[0].colorName]
       state.product = payload;
       state.colors = payload.color
@@ -117,21 +117,21 @@ export const DesignerSlice = createSlice({
       // state.productSide = action.payload.variants[0].sides[0]
       // state.bgImage = action.payload.variants[0].sides[0].img
     },
-    setSelectedSide:(state, action) => {
+    setSelectedSide: (state, action) => {
       console.log(action.payload);
       state.selectedSideName = action.payload
       state.selectedSide = state.sides[action.payload]
       state.image = state.sides[action.payload].imgUrl
     },
-    setSelectedColor:(state,action) => {
-      const payload = action.payload as Color 
-      const product = {...current(state).product} as RootObject      
-      if(product){
+    setSelectedColor: (state, action) => {
+      const payload = action.payload as Color
+      const product = { ...current(state).product } as RootObject
+      if (product) {
         const sideImages = product.sideImages as SideImage
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const sideNames = orderedSize.filter((side ) => product?.sideImages[payload.colorName][side] ) 
+        const sideNames = orderedSize.filter((side) => product?.sideImages[payload.colorName][side])
         state.selectedColor = payload
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -145,9 +145,9 @@ export const DesignerSlice = createSlice({
         // @ts-ignore
         state.image = sideImages[payload.colorName][sideNames[0]].imgUrl
       }
-      
+
     },
-    setPreviewImagesToRedux:(state,action)=>{
+    setPreviewImagesToRedux: (state, action) => {
       state.designPreviewImages = action.payload
     }
   },

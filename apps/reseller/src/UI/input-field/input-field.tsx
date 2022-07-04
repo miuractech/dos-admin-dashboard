@@ -5,16 +5,20 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 type rhfType = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   forminput?: any
+  size?: any
 }
 type forminputType = TextFieldProps & rhfType
 
 export function InputField(props: forminputType) {
   return (
-    <TextField color='primary' inputProps={{
-      className: 'dos-input', style: {
-        background: '#F9F9F9'
-      }, ...props.forminput
-    }} {...props} />
+    <TextField
+      {...props}
+      size={props.size} color='primary'
+      inputProps={{
+        className: 'dos-input', style: {
+          background: '#F9F9F9'
+        }, ...props.forminput
+      }} />
   );
 }
 

@@ -8,7 +8,7 @@ export interface FooterProps { }
 
 export function Footer(props: FooterProps) {
   return (
-    <div style={{ backgroundColor: "#161C33", padding: "5% 10% 5px" }}>
+    <div style={{ backgroundColor: "#161C33", padding: "5% 10% 5px", marginTop: "50px" }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <div className="footer-text">

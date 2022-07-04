@@ -4,6 +4,7 @@ import designerReducer from '../../../../libs/cmi/src/lib/features/custom_merch_
 import ObjectReducer from '../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/objects';
 // import selectSlice from "../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/color&size"
 import conditionSlice from './functions';
+import ListingsSlice from "./products"
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,7 @@ export const store = configureStore({
     designer: designerReducer,
     objects: ObjectReducer,
     condition: conditionSlice,
-    // selectSlice: selectSlice
+    listings: ListingsSlice
 
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({

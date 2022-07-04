@@ -7,8 +7,9 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux-tool/store'
 import { db } from '../../firebaseConfig/config'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../sideNav/header'
+import "./homepage.css"
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Props = {}
@@ -50,6 +51,10 @@ export default function StorefrontCreator({ }: Props) {
     setOpen(false)
     setError(null)
   }
+
+  // const location = useLocation();
+  // console.log(location.pathname);
+
 
 
   return (

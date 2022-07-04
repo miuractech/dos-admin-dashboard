@@ -17,6 +17,7 @@ const initialState: UserDetailState = {
   loading: true,
   error: null,
   User: undefined,
+  notification: null
 }
 
 type createPayloadType = {
@@ -88,6 +89,9 @@ export const UserSlice = createSlice({
     setUser: (state, action) => {
       state.User = action.payload
       state.loading = false
+    },
+    setNotification: (state, action) => {
+      state.notification = action.payload
     }
   },
   extraReducers: {
@@ -118,6 +122,6 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { setUser, submit } = UserSlice.actions
+export const { setUser, submit, setNotification } = UserSlice.actions
 
 export default UserSlice.reducer

@@ -143,8 +143,8 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                     </div>
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open} style={{ height: "30%" }}>
-                <DrawerHeader style={{ height: "15%" }}>
+            <Drawer variant="permanent" open={open} >
+                <DrawerHeader >
                     <img src={logo} alt="logo" width="80%" height="80%" />
                     <IconButton onClick={() => setOpen(false)}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon style={{ color: 'white' }} />}
@@ -153,7 +153,10 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                 <Divider />
                 <List>
                     {navData.map((data) => (
-                        <ListItem className="menu" key={data.name} disablePadding sx={{ display: 'block', color: selectedOption === data.name ? "#42a5f5" : "white", height: "15%" }} >
+                        <ListItem className="menu" key={data.name}
+                            disablePadding sx={{ display: 'block', color: selectedOption === data.name ? "#42a5f5" : "white", height: "15%" }}
+                            onClick={() => navigate(`/${data.route}`)}
+                        >
                             <ListItemButton
                                 className="menu"
                                 onClick={() => setSelectedOption(data.name)}
@@ -180,7 +183,7 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                     ))}
                 </List>
             </Drawer >
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1 }}>
                 <DrawerHeader />
                 {children}
             </Box>
@@ -189,11 +192,6 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
 }
 
 const navData = [
-    {
-        icon: add,
-        name: 'Add Product',
-        route: "addproduct"
-    },
     {
         icon: designLine,
         name: 'Design Product',

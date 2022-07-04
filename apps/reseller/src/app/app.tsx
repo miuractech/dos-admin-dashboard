@@ -5,8 +5,8 @@ import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getAuth, multiFactor, onAuthStateChanged, signOut } from 'firebase/auth';
-import { setUser, auth, submit } from '../redux-tool/auth';
-import { CircularProgress } from '@mui/material';
+import { setUser, auth, submit, setNotification } from '../redux-tool/auth';
+import { Alert, CircularProgress, Snackbar } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
 import Home from './Auth/regHomePage/home';
 import Registration from './Auth/registration/registration';
@@ -20,13 +20,19 @@ import VerifyPhone from './Auth/verify-phone/verify-phone';
 import StorefrontCreator from './storeFrontForm/storefrontCreator';
 import Header from './sideNav/header'
 import { setStoreInfo } from '../redux-tool/functions';
-import CMI, { CustomMerchInterface } from './cmi/cmi';
-import { Verification } from './storeFrontForm/verification';
+import CMI, { CustomMerchInterface } from './DesignProduct/cmi';
+import { AddProduct } from './DesignProduct/AddProducts';
 import { NewHeader } from './sideNav/navbar';
+import { Products } from './Products/Products';
+import { SalesView } from './Sales View/SalesView';
+import { Payment } from './Payment/Payment';
+import { Settings } from './Settings/Settings';
+import { Support } from './Support/Support';
+import Footer from './Auth/footer/footer';
 
 export function App() {
   const dispatch = useDispatch()
-  const { User } = useSelector((state: RootState) => state.User)
+  const { User, notification } = useSelector((state: RootState) => state.User)
   const { loading } = useSelector((state: RootState) => state.User)
   const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
   // signOut(getAuth(app))
@@ -36,13 +42,12 @@ export function App() {
       if (cred) {
         const docRef = doc(db, "reSellers", cred.uid);
         const docSnap = await getDoc(docRef)
-        dispatch(submit(docSnap))
-        if (!docSnap.exists) return
         const data = docSnap.data()
         if (!data) return
-        dispatch(setStoreInfo(data['profileUrl']))
-      } else {
-        dispatch(setStoreInfo(null))
+        dispatch(submit(data))
+        if (data['profileUrl']) {
+          dispatch(setStoreInfo(data['profileUrl']))
+        } else dispatch(setStoreInfo(null))
       }
     })
 
@@ -57,7 +62,14 @@ export function App() {
 
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
-  if (loading || profileLoading) {
+  if (loading) {
+    return (
+      <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
+        <CircularProgress />
+      </div>
+    )
+  }
+  if (profileLoading) {
     return (
       <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
         <CircularProgress />
@@ -104,12 +116,24 @@ export function App() {
   }
   else if (profileUrl) {
     return (
-      <Routes>
-        <Route path="/cmi" element={<CustomMerchInterface />} />
-        <Route path="/editStore" element={<StorefrontCreator />} />
-        <Route path='/' element={<NewHeader><Verification /></NewHeader>} />
-        <Route path='*' element={<Navigate to='/' replace />} />
-      </Routes>
+      <>
+        <NewHeader>
+          <Routes>
+            <Route path='/designproduct/addproducts' element={<AddProduct />} />
+            <Route path="/designproduct" element={<CustomMerchInterface />} />
+            <Route path='/products' element={<Products />} />
+            <Route path='/payment' element={<Payment />} />
+            <Route path='/settings' element={<Settings />} />
+            <Route path='/support' element={<Support />} />
+            <Route path='/' element={<SalesView />} />
+            <Route path='*' element={<Navigate to='/' replace />} />
+          </Routes>
+        </NewHeader>
+        {/* <Footer /> */}
+        <Snackbar open={Boolean(notification)} autoHideDuration={5000} onClose={() => dispatch(setNotification(null))}>
+          <Alert severity='success'>{notification}</Alert>
+        </Snackbar>
+      </>
     );
   }
   else {
