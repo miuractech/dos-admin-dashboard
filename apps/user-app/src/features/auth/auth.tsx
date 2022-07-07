@@ -16,17 +16,16 @@ export interface AuthProps { }
 
 export function Auth(props: AuthProps) {
 
-  const { user, loading, error } = useSelector((state: RootState) => state.User)
-  const { sendOtp, step, verifyOtp, logout } = usePhoneAuth(app, '/image-upload')
+  const { user, loading, error, step } = useSelector((state: RootState) => state.User)
+  const { sendOtp, verifyOtp } = usePhoneAuth(app, '/home')
   const dispatch = useDispatch()
-  // logout()
   const currentComponent = () => {
+    if (!step) return
     switch (step) {
       case 'phone':
         return <GetPhoneNumber sendOtp={sendOtp} />
       case 'otp':
         return <VerifyOtp verifyOtp={verifyOtp} />
-
       default:
         return <>unknown error</>;
     }
@@ -44,7 +43,6 @@ export function Auth(props: AuthProps) {
       <Snackbar open={Boolean(error)} autoHideDuration={5000} onClose={() => dispatch(removeUserError())}>
         <Alert severity='error'>{error?.message}</Alert>
       </Snackbar>
-
     </div>
   );
 }

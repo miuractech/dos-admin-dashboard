@@ -24,7 +24,7 @@ export default function VerifyOtp({ verifyOtp }: Props) {
       <Button
         type='submit'
       >
-        get otp
+        submit
       </Button>
     </form>
   )

@@ -23,8 +23,6 @@ const widgets = [widget1, widget2, widget3, widget4, widget5, widget6, widget7]
 export default function WidgetStyle({ error, selectedTemplate, setSelectedTemplate }: Props) {
   const theme = useTheme()
   const media = useMediaQuery(theme.breakpoints.up('md'))
-
-
   function extended(url: string, id: number) {
     setSelectedTemplate((prev: any) => {
       const target = { ...prev[id], img: url }

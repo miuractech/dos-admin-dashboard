@@ -4,6 +4,7 @@ import { Button, IconButton, Typography } from '@mui/material'
 import { app } from 'apps/reseller/src/firebaseConfig/config'
 import upload from "../../../assets/images/upload.svg"
 import Login from '../../Auth/loginpage/login'
+import ProgressiveImg from './imageLoad'
 
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -24,6 +25,7 @@ export default function BannerImageUpload({ setBannerUrl, bannerUrl }: Props) {
               aspectX: 3,
               aspectY: 1,
             }} setUrlFunc={(url) => setBannerUrl(url)} buttonComponent={<BannerEditIcon />} />
+            {/* <ProgressiveImg src={bannerUrl} alt={"banner"} /> */}
             <img src={bannerUrl} alt="banner" width="100%" style={{ borderRadius: "5px" }} />
           </div>
         ) : (

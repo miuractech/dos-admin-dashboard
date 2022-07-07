@@ -4,14 +4,13 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from 'fire
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { analytics } from '../../configs/firebaseConfig';
-import { removeUserError, removeUserLoading, setUser, setUserError, setUserLoading } from './authSlice';
+import { removeUserError, removeUserLoading, setPhone, setStep, setUser, setUserError, setUserLoading } from './authSlice';
 
 type stepType = 'phone' | 'otp'
 
-export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { sendOtp: (phone: string) => void, step: stepType, verifyOtp: (otp: string) => void, logout: () => void } {
+export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { sendOtp: (phone: string) => void, verifyOtp: (otp: string) => void, logout: () => void } {
     const auth = getAuth(app);
     const dispatch = useDispatch()
-    const [step, setStep] = useState<stepType>('phone')
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
@@ -23,8 +22,6 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
             }, auth);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            console.log(window.recaptchaVerifier);
-
         }
 
         return () => {
@@ -46,10 +43,8 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
             window.confirmationResult = confirmationResult;
             dispatch(removeUserError())
             dispatch(removeUserLoading())
-            console.log('before otp');
-
-            setStep('otp')
-            console.log('after otp');
+            dispatch(setStep("otp"))
+            dispatch(setPhone(phone))
         } catch (error) {
             dispatch(setUserError(error))
         }
@@ -78,5 +73,5 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
         });
     }
 
-    return { sendOtp, step, verifyOtp, logout }
+    return { sendOtp, verifyOtp, logout }
 }

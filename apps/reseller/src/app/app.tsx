@@ -4,7 +4,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getAuth, multiFactor, onAuthStateChanged, signOut } from 'firebase/auth';
+import { multiFactor, onAuthStateChanged } from 'firebase/auth';
 import { setUser, auth, submit, setNotification } from '../redux-tool/auth';
 import { Alert, CircularProgress, Snackbar } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
@@ -28,7 +28,6 @@ import { SalesView } from './Sales View/SalesView';
 import { Payment } from './Payment/Payment';
 import { Settings } from './Settings/Settings';
 import { Support } from './Support/Support';
-import Footer from './Auth/footer/footer';
 
 export function App() {
   const dispatch = useDispatch()
@@ -69,13 +68,6 @@ export function App() {
       </div>
     )
   }
-  if (profileLoading) {
-    return (
-      <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
-        <CircularProgress />
-      </div>
-    )
-  }
   else if (!User) {
     return (
       <>
@@ -103,6 +95,13 @@ export function App() {
       <VerifyPhone />
     )
   }
+  if (profileLoading) {
+    return (
+      <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
+        <CircularProgress />
+      </div>
+    )
+  }
   else if (!profileUrl) {
     return (
       <>
@@ -122,6 +121,7 @@ export function App() {
             <Route path='/designproduct/addproducts' element={<AddProduct />} />
             <Route path="/designproduct" element={<CustomMerchInterface />} />
             <Route path='/products' element={<Products />} />
+            <Route path="/editStore" element={<StorefrontCreator />} />
             <Route path='/payment' element={<Payment />} />
             <Route path='/settings' element={<Settings />} />
             <Route path='/support' element={<Support />} />

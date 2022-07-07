@@ -18,6 +18,7 @@ import UrlImage from '../objects/urlImage';
 import { RootState } from 'apps/reseller/src/redux-tool/store';
 import AreYouSure from './AreYouSure';
 import { useNavigate } from 'react-router-dom';
+import ProgressiveImg from './imageLoad';
 
 type Props = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -197,7 +198,8 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                     left: 'calc(50% - 225px)',
                 }}
             >
-                {image && <img src={image} style={{ width: 500 }} alt="img" />}
+                {/* {image && <img src={image} style={{ width: 500 }} alt="img" />} */}
+                {image && <ProgressiveImg src={image} alt="img" style={{ width: 500 }} />}
             </div>
             <div
                 className='relative'

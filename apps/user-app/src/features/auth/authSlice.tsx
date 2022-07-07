@@ -6,18 +6,22 @@ import { collection, addDoc, setDoc, doc, getDoc, query, where, getDocs } from "
 // import { db } from "../firebaseConfig/config"
 
 type UserDetailState = {
-    loading:boolean,
-    error:{
-        errorCode:number,
-        message:string
-    } | null,
-    user:User | null | undefined
+  loading: boolean,
+  step: 'phone' | 'otp'
+  error: {
+    errorCode: number,
+    message: string
+  } | null,
+  user: User | null | undefined
+  phoneNumber: null | number
 }
 
 const initialState: UserDetailState = {
   loading: true,
   error: null,
   user: undefined,
+  phoneNumber: null,
+  step: "phone"
 }
 
 export const UserSlice = createSlice({
@@ -29,23 +33,29 @@ export const UserSlice = createSlice({
       state.loading = false
       state.error = null
     },
-    setUserError: (state, action) =>{
-        state.error = action.payload
-        state.loading = false
+    setUserError: (state, action) => {
+      state.error = action.payload
+      state.loading = false
     },
-    setUserLoading:(state) => {
-        state.loading=true
+    setUserLoading: (state) => {
+      state.loading = true
     },
-    removeUserLoading:state=>{
-        state.loading=false
+    removeUserLoading: state => {
+      state.loading = false
     },
-    removeUserError:(state)=>{
-        state.error = null
+    removeUserError: (state) => {
+      state.error = null
 
+    },
+    setStep: (state, action) => {
+      state.step = action.payload
+    },
+    setPhone: (state, action) => {
+      state.phoneNumber = action.payload
     }
   },
 })
 
-export const { setUser,setUserError,setUserLoading,removeUserError,removeUserLoading } = UserSlice.actions
+export const { setUser, setUserError, setUserLoading, removeUserError, removeUserLoading, setStep, setPhone } = UserSlice.actions
 
 export default UserSlice.reducer

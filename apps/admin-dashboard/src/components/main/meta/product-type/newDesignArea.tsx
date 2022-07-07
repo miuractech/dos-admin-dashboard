@@ -197,7 +197,7 @@ export const UrlImage = ({ props, src, clicked }: any) => {
   useEffect(() => {
     if (src) {
       const Timage = new window.Image();
-      Timage.src = src;
+      Timage.src = src
       setImage(Timage)
     }
 
