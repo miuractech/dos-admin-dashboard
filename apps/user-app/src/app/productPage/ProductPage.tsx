@@ -1,9 +1,13 @@
 import { useMediaQuery, useTheme } from '@mui/material'
 import React from 'react'
-import { Header } from '../components/Header'
+import { Header } from './header/Header'
 import { HeaderTop } from '../components/HeaderTop'
+import { MobileContent } from '../components/MobileContent'
 import { MobileHeader } from '../components/MobileHeader'
-import { ProductImages } from '../components/ProductImages'
+import { MobilePriceComponent } from '../components/PriceComponent'
+import { MobileProductImages } from '../components/ProductImages'
+import { NavBar } from '../components/NavBar'
+import { ImageContant } from '../components/ImageContant'
 
 const ProductPage = () => {
     const theme = useTheme()
@@ -13,13 +17,19 @@ const ProductPage = () => {
             <HeaderTop />
             {media ?
                 (
-                    <Header />
+                    <>
+                        <Header />
+                        <NavBar />
+                        <ImageContant />
+                    </>
                 )
                 :
                 (
                     <>
                         <MobileHeader />
-                        <ProductImages />
+                        <MobileProductImages />
+                        <MobilePriceComponent />
+                        <MobileContent />
                     </>
                 )}
         </div>

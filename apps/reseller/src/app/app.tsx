@@ -53,12 +53,6 @@ export function App() {
     return () => Unsubscribe()
 
   }, [])
-
-
-  console.log("URL", profileUrl)
-
-
-
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
   if (loading) {

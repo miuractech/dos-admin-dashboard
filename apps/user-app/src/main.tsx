@@ -11,10 +11,10 @@ export const theme = createTheme({
   palette: {
     // type: 'light',
     primary: {
-      main: '#0057FF',
+      main: '#292931',
     },
     secondary: {
-      main: '#ff002e',
+      main: '#FF002E',
     },
     error: {
       main: '#bd5857',
@@ -70,12 +70,12 @@ export const theme = createTheme({
 ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
-    <ThemeProvider theme={theme} >
-      <BrowserRouter>
+      <ThemeProvider theme={theme} >
+        <BrowserRouter>
           <App />
-      </BrowserRouter>
+        </BrowserRouter>
       </ThemeProvider>
-       </Provider>
+    </Provider>
   </StrictMode>,
   document.getElementById('root')
 );

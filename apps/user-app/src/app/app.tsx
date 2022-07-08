@@ -1,6 +1,6 @@
 import './app.css';
 import { Route, Link, Routes } from 'react-router-dom';
-import { app, auth } from '../configs/firebaseConfig';
+import { app, auth, db } from '../configs/firebaseConfig';
 import { lazy, Suspense, useEffect } from 'react';
 import { RootState } from '../store/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { setUser } from '../features/auth/authSlice';
 import { Alert, CircularProgress, Snackbar } from '@mui/material';
 import { setError, setNotification } from '../store/alertslice';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { setFamily } from '../store/product';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -19,6 +21,9 @@ export function App() {
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
+      const q = query(collection(db, "meta", "products", "family"), orderBy("index", "asc"));
+      const querySnapshot = await getDocs(q)
+      dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
     })
     return () => Unsubscribe()
 
@@ -27,7 +32,7 @@ export function App() {
   return (
     <>
       <div>
-        <Suspense fallback={() => <div>...loading</div>}>
+        <Suspense fallback={<div>...loading</div>}>
           <Routes>
             <Route path='/auth' element={<Auth />} />
             <Route path='/logout' element={<Logout />} />

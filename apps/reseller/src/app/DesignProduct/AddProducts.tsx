@@ -86,7 +86,8 @@ export const AddProduct = () => {
                 basePrice: product.basePrice,
                 sideImages: sideImages,
                 familyId: product.familyId,
-                status: "inactive"
+                status: "inactive",
+                productTypeName: product.name
             });
             setLoading(false)
             dispatch(setNotification("Product added successfully"))
