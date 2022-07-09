@@ -8,7 +8,7 @@ export const Header = () => {
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("md"))
     return (
-        <div style={{ display: "grid", gridTemplateColumns: media ? "3fr 3fr 6fr" : "3fr 6fr", height: "85px", alignItems: "center", padding: "10px", gap: "10px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: media ? "3fr 3fr 6fr" : "3fr 6fr", height: "10%", alignItems: "center", padding: "10px", gap: "10px" }}>
             <div>
                 <img src={logo} alt="dropout" width="90%" height="100%" style={{ marginLeft: "20px" }} />
             </div>

@@ -10,7 +10,7 @@ export const NavBar = () => {
     const theme = useTheme()
     return (
         Family &&
-        <div style={{ height: "65px", display: "grid", gridTemplateColumns: "repeat(7,1fr)", backgroundColor: "#E2E2E2" }}>
+        <div style={{ height: "50px", display: "grid", gridTemplateColumns: "repeat(7,1fr)", backgroundColor: "#E2E2E2" }}>
             {Family.map(family => {
                 return (
                     <div className='flexCenter pointer-cursor' style={{
