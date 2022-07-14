@@ -13,10 +13,6 @@ export const MobileContent = () => {
                 <Typography fontWeight={500} variant="h5">{product.productName}</Typography>
                 <img src={reviews} alt="reviews" width="140px" />
             </div>
-            <div>
-                {product.price}
-            </div>
-
         </div>
     )
 }

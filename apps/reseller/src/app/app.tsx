@@ -28,6 +28,8 @@ import { SalesView } from './Sales View/SalesView';
 import { Payment } from './Payment/Payment';
 import { Settings } from './Settings/Settings';
 import { Support } from './Support/Support';
+import { BankVerification } from './verification/BankVerification';
+import { Cart } from './cart/Cart';
 
 export function App() {
   const dispatch = useDispatch()
@@ -39,7 +41,7 @@ export function App() {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
       if (cred) {
-        const docRef = doc(db, "reSellers", cred.uid);
+        const docRef = doc(db, "reSellers", cred.uid)
         const docSnap = await getDoc(docRef)
         const data = docSnap.data()
         if (!data) return
@@ -49,15 +51,13 @@ export function App() {
         } else dispatch(setStoreInfo(null))
       }
     })
-
     return () => Unsubscribe()
-
   }, [])
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
   if (loading) {
     return (
-      <div className='flex justify-center vertical-center' style={{ height: '100vh' }} >
+      <div className='flex justify-center vertical-center' style={{ height: '100vh' }}>
         <CircularProgress />
       </div>
     )
@@ -119,6 +119,7 @@ export function App() {
             <Route path='/payment' element={<Payment />} />
             <Route path='/settings' element={<Settings />} />
             <Route path='/support' element={<Support />} />
+            <Route path='/bankverification' element={<BankVerification />} />
             <Route path='/' element={<SalesView />} />
             <Route path='*' element={<Navigate to='/' replace />} />
           </Routes>

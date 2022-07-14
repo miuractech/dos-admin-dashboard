@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux'
 import { store } from './redux-tool/store';
+import { StyledEngineProvider } from '@mui/material/styles';
 import App from './app/app';
 
 
@@ -70,11 +71,13 @@ export const theme = createTheme({
 ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
-      <ThemeProvider theme={theme} >
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst >
+        <ThemeProvider theme={theme} >
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </Provider>
   </StrictMode>,
   document.getElementById('root')
