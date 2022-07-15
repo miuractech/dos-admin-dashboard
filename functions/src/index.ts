@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+// import { publicIpv4 } from 'public-ip';
 // import fetch from "node-fetch"
 const cfSdk = require('cashfree-sdk');
 // import * as crosModule from "cors"
@@ -45,7 +46,7 @@ export const createDocstorage = functions.region("asia-south1")
 
 export const bank = functions.https.onCall(async (data, context) => {
   console.log("data");
-
+  // console.log(await publicIpv4());
   const { Payouts } = cfSdk;
   const { Validation } = Payouts;
   const config = {

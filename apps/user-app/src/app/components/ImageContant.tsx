@@ -1,5 +1,5 @@
 import { CurrencyRupee, LocationOnOutlined, Loop, Share } from '@mui/icons-material'
-import { Button, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Button, Card, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
@@ -7,9 +7,11 @@ import InputField from '../../UI/input-field/input-field'
 import reviews from "../components/images/reviews.svg"
 import { MobileProductImages } from './ProductImages'
 
-export const ImageContant = ({ AddToCard }: { AddToCard: () => void }) => {
+export const ImageContant = ({ AddToCard, setSize }: {
+    AddToCard: () => void,
+    setSize: React.Dispatch<React.SetStateAction<string | null>>
+}) => {
     const { product } = useSelector((state: RootState) => state.product)
-    // const { storeFrontDetails } = useSelector((state: RootState) => state.storeFront)
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("md"))
     return (
@@ -24,7 +26,7 @@ export const ImageContant = ({ AddToCard }: { AddToCard: () => void }) => {
                 }}>
                     {[...product.sideImages].map(img => {
                         return (
-                            <div>
+                            <div key={img.sideName}>
                                 <img src={img.url} alt="img" width="100%" />
                             </div>
                         )
@@ -47,9 +49,11 @@ export const ImageContant = ({ AddToCard }: { AddToCard: () => void }) => {
                     <Typography variant='h4' fontWeight={600}>₹{product.price}</Typography>
                     <Typography variant='caption'>Plus shipping</Typography>
                 </div>
-                <div className='p-1 flex gap-4 flex-auto'>
+                <div className='p-1'>
                     <Typography fontWeight={500}>Choose a size :</Typography>
-                    {product.sizeAvailable.map(size => <Typography>{size}</Typography>)}
+                    <div className='flex gap-4'>
+                        {product.sizeAvailable.map((size, index) => <div onClick={() => setSize(size)} className='size'><Typography variant='subtitle2' key={index}>{size}</Typography></div>)}
+                    </div>
                 </div>
                 <div className='p-1 gap-4' style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr" }}>
                     <div><Button variant='contained' color='primary' fullWidth onClick={AddToCard}>Add to cart</Button></div>

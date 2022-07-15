@@ -72,9 +72,9 @@ export const MobileHeader = () => {
             <div style={{ height: "65px", display: "grid", gridTemplateColumns: "1fr 4fr 1fr 1fr 1fr", padding: "0px 0px 0px", alignItems: "center", boxShadow: "0px 9px 9px rgba(229, 229, 229, 0.3)" }}>
                 <div ><IconButton onClick={toggleDrawer(true)}><MenuOutlined /></IconButton></div>
                 <div style={{ paddingTop: "5px 5px", alignSelf: "center" }}><img src={logo} alt="dropoutstore" style={{ maxWidth: "150px" }} /></div>
-                <div><IconButton><SearchOutlined /></IconButton></div>
-                <div><IconButton><PersonOutlineOutlined /></IconButton></div>
-                <div><IconButton><ShoppingCartOutlined /></IconButton></div>
+                <IconButton><SearchOutlined /></IconButton>
+                <IconButton><PersonOutlineOutlined /></IconButton>
+                <IconButton><ShoppingCartOutlined /></IconButton>
             </div>
         </>
     )

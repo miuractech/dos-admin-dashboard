@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { setUser } from '../features/auth/authSlice';
 import { Alert, CircularProgress, Snackbar, useMediaQuery, useTheme } from '@mui/material';
-import { setError, setNotification } from '../store/alertslice';
+import { setError, setNotification, setWarning } from '../store/alertslice';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { setFamily } from '../store/product';
 import { ContactUs } from './components/contactUs/ContactUs';
@@ -23,7 +23,7 @@ const ProductPage = lazy(() => import('./productPage/ProductPage'));
 export function App() {
   const dispatch = useDispatch()
   const { loading } = useSelector((state: RootState) => state.User)
-  const { error, notification } = useSelector((state: RootState) => state.alerts)
+  const { error, notification, warning } = useSelector((state: RootState) => state.alerts)
   const location = useLocation();
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
@@ -37,7 +37,6 @@ export function App() {
   }, [])
   const theme = useTheme()
   const media = useMediaQuery(theme.breakpoints.up("sm"))
-  console.log(location.pathname);
   if (loading) return <CircularProgress />
   return (
     <>
@@ -70,6 +69,9 @@ export function App() {
       </Snackbar>
       <Snackbar open={Boolean(notification)} autoHideDuration={5000} onClose={() => dispatch(setNotification(null))}>
         <Alert severity='success'>{notification}</Alert>
+      </Snackbar>
+      <Snackbar open={Boolean(warning)} autoHideDuration={5000} onClose={() => dispatch(setWarning(null))}>
+        <Alert severity='warning'>{warning}</Alert>
       </Snackbar>
     </>
   );

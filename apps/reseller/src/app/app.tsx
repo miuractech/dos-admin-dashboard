@@ -29,7 +29,7 @@ import { Payment } from './Payment/Payment';
 import { Settings } from './Settings/Settings';
 import { Support } from './Support/Support';
 import { BankVerification } from './verification/BankVerification';
-import { Cart } from './cart/Cart';
+// import { Cart } from './cart/Cart';
 
 export function App() {
   const dispatch = useDispatch()

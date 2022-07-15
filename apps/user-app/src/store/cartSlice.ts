@@ -1,12 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { produstsType } from './storeFrontslice'
 
+type cartProduct = {
+    product: produstsType
+    size: string
+}
+
+type localCart = {
+    productID: string,
+    size: string
+}
+
 type cartType = {
-    cartProductList: produstsType[] | null
+    cartProductList: cartProduct[],
+    localCart: localCart[]
 }
 
 const initialState: cartType = {
-    cartProductList: null
+    cartProductList: [],
+    localCart: []
 }
 
 export const CartSlice = createSlice({
@@ -14,11 +26,14 @@ export const CartSlice = createSlice({
     initialState,
     reducers: {
         setCartProducts: (state, action) => {
-            state.cartProductList = action.payload
+            state.cartProductList.push(action.payload)
+        },
+        setLocatCart: (state, action) => {
+            state.localCart.push(action.payload)
         }
     },
 })
 
-export const { setCartProducts } = CartSlice.actions
+export const { setCartProducts, setLocatCart } = CartSlice.actions
 
 export default CartSlice.reducer
