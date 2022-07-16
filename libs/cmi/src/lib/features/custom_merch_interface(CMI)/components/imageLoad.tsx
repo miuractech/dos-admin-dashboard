@@ -1,7 +1,7 @@
-import { CircularProgress } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export const ProgressiveImg = ({ src, alt, style }: { src: string, alt: string, style: any }) => {
+export const ProgressiveImg = ({ src, alt, style, skeletonDimension }: { src: string, alt: string, style: any,skeletonDimension?:{width:number,height:number} }) => {
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         if (src) {
@@ -20,7 +20,7 @@ export const ProgressiveImg = ({ src, alt, style }: { src: string, alt: string, 
         <div>
             {
                 loading ? (
-                    <CircularProgress />
+                    <Skeleton  variant="rectangular" width={skeletonDimension?.width??250} height={skeletonDimension?.height??250} />
                 ) : (
                     <img
                         style={style}

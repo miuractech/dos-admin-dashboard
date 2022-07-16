@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, current, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from './store';
 import { fetchCount } from './api';
-import { Color, RootObject, side, SideImage } from '../components/selectProduct';
+import { circleSide, Color, rectSide, RootObject, SideImage, sideType } from '../components/selectProduct';
 // import { productSideType, productType, productVariantType } from '../components/selectProduct';
 
 type colorProps = {
@@ -9,27 +9,29 @@ type colorProps = {
   colorCode: string
 }
 
-export type sideType = {
-  height?: number,
-  imgUrl: string,
-  rotation: number,
-  type: 'rect' | 'circle'
-  width?: number
-  x: number
-  y: number
-  radius: number
-}
+// export type sideType = {
+//   height?: number,
+//   imgUrl: string,
+//   rotation: number,
+//   type: 'rect' | 'circle'
+//   width?: number
+//   x: number
+//   y: number
+//   radius: number
+// }
+
+export type sideNameType = 'Front' | 'Back' | "Right" | "Left" | "Top" | "Bottom" 
 export interface DesignerState {
   products: RootObject[] | null;
   product: RootObject | null;
   // sides:sideType[];
-  sides: { [sideName: string]: sideType };
+  sides: sideType | null ;
   image: string | null;
-  selectedSide: sideType;
+  selectedSide: circleSide | rectSide;
   selectedColor: colorProps | null;
-  selectedSideName: string | null;
+  selectedSideName: sideNameType | null;
   colors: colorProps[] | null;
-  sideNames: string[];
+  sideNames: sideNameType[];
   designPreviewImages: { sideName: string, url: string }[]
 }
 
@@ -41,7 +43,7 @@ const initialState: DesignerState = {
   // productSide: null
   products: null,
   product: null,
-  sides: {},
+  sides: null,
   image: null,
   selectedSideName: null,
   selectedSide: {
@@ -74,7 +76,7 @@ const initialState: DesignerState = {
 //   }
 // );
 
-export const orderedSides = ["Front", "Back", "Left", "Right", "Top", "Bottom"]
+export const orderedSides:["Front", "Back", "Left", "Right", "Top", "Bottom"] = ["Front", "Back", "Left", "Right", "Top", "Bottom"]
 
 export const DesignerSlice = createSlice({
   name: 'designer',
@@ -117,43 +119,38 @@ export const DesignerSlice = createSlice({
       // state.productSide = action.payload.variants[0].sides[0]
       // state.bgImage = action.payload.variants[0].sides[0].img
     },
-    setSelectedSide: (state, action) => {
-      console.log(action.payload);
-      state.selectedSideName = action.payload
-      state.selectedSide = state.sides[action.payload]
-      state.image = state.sides[action.payload].imgUrl
+    setSelectedSide: (state, action:PayloadAction<'Front' | 'Back' | "Right" | "Left" | "Top" | "Bottom">) => {
+      if(state.sides){
+        state.selectedSideName = action.payload  
+        state.selectedSide = state.sides[action.payload]
+        state.image = state.sides[action.payload].imgUrl
+      }
     },
-    setSelectedColor: (state, action) => {
-      const payload = action.payload as Color
-      const product = { ...current(state).product } as RootObject
+    setSelectedColor: (state, action:PayloadAction<Color>) => {
+      const payload = action.payload 
+      console.log(payload);
+      
+      const product = current(state.product) as RootObject
       if (product) {
         const sideImages = product.sideImages as SideImage
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const sideNames = orderedSize.filter((side) => product?.sideImages[payload.colorName][side])
+        const sideNames = orderedSides.filter((side) => product?.sideImages[payload.colorName][side])
         state.selectedColor = payload
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        state.sides = product.sideImages[payload.colorName] as side
+        state.sides = product.sideImages[payload.colorName]
         state.sideNames = sideNames
         state.selectedSideName = sideNames[0]
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        state.selectedSide = sideImages[payload.colorName][sideNames[0]]
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        state.selectedSide = sideImages[payload.colorName][sideNames[0]] 
         state.image = sideImages[payload.colorName][sideNames[0]].imgUrl
       }
 
     },
     setPreviewImagesToRedux: (state, action) => {
       state.designPreviewImages = action.payload
-    }
+    },
+    resetDesigner:() => initialState,
   },
 });
 
-export const { setBgImage, setProduct, setProducts, setSelectedColor, setSelectedSide, setPreviewImagesToRedux } = DesignerSlice.actions;
+export const { setBgImage, setProduct, setProducts, setSelectedColor, setSelectedSide, setPreviewImagesToRedux, resetDesigner } = DesignerSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

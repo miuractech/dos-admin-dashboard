@@ -30,11 +30,19 @@ export default function RightPanel({ selectedId, setSelectedId, setLoading, prev
       <div
       // className="grey-bg full-width r5"
       >
-        <div className='flex'>
+        <div className='flex justify-evenly'>
           {
             [{ icon: <Undo />, name: 'undo', onClick: () => dispatch(undo()) },
             { icon: <Redo />, name: 'redo', onClick: () => dispatch(redo()) },
-            { icon: <ContentCopy />, name: 'copy', onClick: () => dispatch(copyObject(selectedId)) },
+            { icon: <ContentCopy />, name: 'copy', onClick: () => {
+              if(selectedId){
+                setLoading(true)
+                dispatch(copyObject(selectedId))
+                setTimeout(() => {
+                  setLoading(false)
+                }, 50);
+              }
+            } },
             {
               icon: <Delete />, name: 'delete', onClick: () => {
                 if (selectedId) {

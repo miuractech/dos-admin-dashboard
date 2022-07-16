@@ -84,7 +84,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
 
 
 
-  console.log(selectedObject);
+  // console.log(selectedObject);
 
 
 
@@ -383,6 +383,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
               {colors && <div style={{ display: "flex", gap: "10px" }}>
                 {colors.map((color: colorProps) =>
                   <div
+                    key={color.colorName}
                     onClick={() => { setSure(color) }}
                     style={{
                       cursor: "pointer",
@@ -396,7 +397,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
             <Card style={{ padding: "10px" }}>
               <Typography gutterBottom align='center'>Choose size</Typography>
               {product?.size && <div style={{ display: "flex", gap: "20px" }}>
-                {product.size.map((size: any) => <Paper style={{ padding: "5px", cursor: "pointer" }}><strong>{size}</strong></Paper>)}
+                {product.size.map((size) => <Paper key={size} style={{ padding: "5px", cursor: "pointer" }}><strong>{size}</strong></Paper>)}
               </div>}
             </Card>
           </div>
@@ -407,11 +408,13 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
       onClose={()=>setSure(null)} 
       discard={()=>{
       // dispatch(setProduct(sure))
-      dispatch(setSelectedColor(sure)) 
-      dispatch(resetObjects())
-      setSelectedId(null)
-      // onClose()
-      setSure(null)
+      if(sure){
+        dispatch(setSelectedColor(sure)) 
+        dispatch(resetObjects())
+        setSelectedId(null)
+        // onClose()
+        setSure(null)
+      }
       }} 
       text={'discard the Design?'} 
       />

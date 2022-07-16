@@ -20,7 +20,7 @@ import VerifyPhone from './Auth/verify-phone/verify-phone';
 import StorefrontCreator from './storeFrontForm/storefrontCreator';
 import Header from './sideNav/header'
 import { setStoreInfo } from '../redux-tool/functions';
-import CMI, { CustomMerchInterface } from './DesignProduct/cmi';
+import { CustomMerchInterface } from './DesignProduct/cmi';
 import { AddProduct } from './DesignProduct/AddProducts';
 import { NewHeader } from './sideNav/navbar';
 import { Products } from './Products/Products';
@@ -29,7 +29,7 @@ import { Payment } from './Payment/Payment';
 import { Settings } from './Settings/Settings';
 import { Support } from './Support/Support';
 import { BankVerification } from './verification/BankVerification';
-import { Cart } from './cart/Cart';
+// import { Cart } from './cart/Cart';
 
 export function App() {
   const dispatch = useDispatch()

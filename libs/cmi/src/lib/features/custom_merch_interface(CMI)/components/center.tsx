@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 // import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 // import { useAppSelector } from '../../../app/hooks'
-import { orderedSides, selectDesigner, setPreviewImagesToRedux, setSelectedSide, sideType } from '../store/designerSlice'
+import { orderedSides, selectDesigner, setPreviewImagesToRedux, setSelectedSide, sideNameType } from '../store/designerSlice'
 import { Stage, Layer, Rect, Circle, Group, Transformer, Arc } from 'react-konva';
 import { changeSide, endExport, startExport, updateObject } from '../store/objects';
 import GetShape from './getShape';
@@ -10,8 +10,8 @@ import TopBar from './styleBar';
 import StyleBar from './styleBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { KonvaEventObject } from 'konva/lib/Node';
-import { RootObject } from './selectProduct';
-import { Button, Typography } from '@mui/material';
+import { circleSide, rectSide, RootObject, sideType } from './selectProduct';
+import { Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import SimpleModal from '../ui-components/modal';
 import UrlImage from '../objects/urlImage';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
@@ -32,7 +32,7 @@ type Props = {
 
 export default function Center({ selectedId, setSelectedId, previews, setPreviews }: Props) {
     // const selectedProduct: RootObject = useSelector((state:RootState) => state.designer.product)
-    const { sides, selectedSide, image, selectedSideName, sideNames, designPreviewImages } = useSelector((state: RootState) => state.designer)
+    const { sides, selectedSide, image, selectedSideName, sideNames } = useSelector((state: RootState) => state.designer)
     const [previewImages, setPreviewImages] = useState<string[]>([])
     // const products: RootObject[] = useAppSelector(state => state.designer.products)
     const [createProductConsent, setCreateProductConsent] = useState(false)
@@ -47,22 +47,26 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
     const bottomRef = useRef()
     const allRefs = [frontRef, backRef, rightRef, topRef, bottomRef, leftRef]
     const navigate = useNavigate()
+    const theme = useTheme()
+    const media = useMediaQuery(theme.breakpoints.up('md'))
     return (
         <div>
             <div
             // className=''
             >
-                <div className="flex justify-center margin2" style={{ width: 400, margin: 'auto', boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, marginBottom: 25 }}>
-                    {sideNames.map((side: string) => {
+                <div className="flex justify-center m-auto" style={{ boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, width:'min-content' }}>
+                    {sideNames.map((side) => {
                         // if (selectedSide?.imgUrl) {
                         return (
                             <div key={side}>
                                 <Button
-                                    sx={{ py: 1.5, px: 3, width: 100, }}
+                                    sx={{ py: media?1.5:1, px: media?3:0, width: media?100:80, }}
                                     onClick={() => {
-                                        dispatch(setSelectedSide(side))
-                                        dispatch(changeSide({ current: selectedSideName, to: side }))
-                                        setSelectedId(null)
+                                        if(selectedSideName){
+                                            dispatch(setSelectedSide(side))
+                                            dispatch(changeSide({ current: selectedSideName, to: side }))
+                                            setSelectedId(null)
+                                        }
                                     }}
                                     variant={selectedSideName === side ? "contained" : "text"}
                                     disableElevation color={selectedSideName === side ? 'primary' : 'inherit'}
@@ -93,7 +97,7 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                     <Typography variant='h5' align='center' >
                         PREVIEW
                     </Typography>
-                    {sideNames.map((sideName: string, index: number) => {
+                    {sideNames.map((sideName: sideNameType, index: number) => {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
                         const current = (sideName === selectedSideName) ? objects.currentObjects : objects.sides[sideName]
@@ -105,8 +109,8 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                                 stageRef={allRefs[index]}
                                 selectedId={selectedId}
                                 setSelectedId={setSelectedId}
-                                selectedSide={sides[sideName]}
-                                image={sides[sideName].imgUrl}
+                                selectedSide={sides?sides[sideName]:null}
+                                image={sides?sides[sideName].imgUrl:''}
                                 currentObjects={current}
                             />
                         </div>
@@ -166,7 +170,7 @@ type CMIstageProps = {
     stageRef: any,
     selectedId: string | null,
     setSelectedId: React.Dispatch<React.SetStateAction<string | null>>,
-    selectedSide: sideType,
+    selectedSide: circleSide | rectSide | null,
     image: string | null,
     // objects:any,
     currentObjects: RootObject[]
@@ -177,7 +181,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
     // const  = useAppSelector(state => state.objects)
     const shapeRef = React.useRef(currentObjects.map(() => React.createRef()));
     const trRef = React.useRef();
-    const { x, y, width, height, radius, type } = selectedSide
+    const { x, y, width, height, radius, type } = selectedSide as any
     const dispatch = useDispatch()
     const deselect = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
         const clickedOnEmpty = e.target === e.target.getStage() || e.target.attrs.id === 'outerLayer'
@@ -192,18 +196,17 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
             className='relative'
         >
             <div
-                className='absolute'
+                className='absolute z-0'
                 style={{
-                    zIndex: 0,
-                    left: 'calc(50% - 225px)',
+                    left: 'calc(50% - 250px)',
                 }}
             >
                 {/* {image && <img src={image} style={{ width: 500 }} alt="img" />} */}
-                {image && <ProgressiveImg src={image} alt="img" style={{ width: 500 }} />}
+                {image && <ProgressiveImg src={image} alt="img" style={{ width: 500 }} skeletonDimension={{width:500, height:500}} />}
             </div>
             <div
-                className='relative'
-                style={{ zIndex: 10, height: 520 }}
+                className='relative z-10'
+                style={{ height: 520 }}
             >
 
                 <Stage
@@ -301,8 +304,8 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                         // image:url,
                                         width: 20,
                                         height: 20,
-                                        x: selectedSide.width ? selectedSide.x + 25 : selectedSide.x,
-                                        y: selectedSide.height ? selectedSide.y + selectedSide.height - 25 : selectedSide.y + selectedSide.radius - 25,
+                                        x: width ? x + 25 : x,
+                                        y: height ? y + height - 25 : y + radius - 25,
                                         id: 'logo',
                                         keepRatio: true
                                     },
@@ -317,7 +320,6 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                 enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
                                 rotationSnaps={[90, 45, 180, 135, 0, -45, -90, -135]}
                                 boundBoxFunc={(oldBox, newBox) => {
-                                    // limit resize
                                     if (newBox.width < 5 || newBox.height < 5) {
                                         return oldBox;
                                     }

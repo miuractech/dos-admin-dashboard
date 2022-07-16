@@ -3,11 +3,13 @@ import React, { useState } from 'react'
 import SimpleModal from './modal'
 import Accept from '../components/uploadComponent'
 import { Clear } from '@mui/icons-material'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addObject } from '../store/objects'
 import { v4 as uuidv4 } from 'uuid';
 import { MiuracImage } from '@miurac/image-upload'
 import { app } from '../../../config/firebase'
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { RootState } from 'apps/reseller/src/redux-tool/store'
 type Props = {
     open: boolean
     onClose : (event?: Record<string, unknown>, reason?: "backdropClick" | "escapeKeyDown") => void | undefined,
@@ -16,9 +18,9 @@ type Props = {
 }
 
 export default function ImageUpload({open,onClose,setLoading}: Props) {
-    const [image, setImage] = useState< string | null>(null)
     const [agree, setAgree] = useState(false)
     const dispatch = useDispatch()
+    const { selectedSide } = useSelector((state:RootState)=>state.designer)
     return (
         <SimpleModal
         open={open} 
@@ -29,7 +31,7 @@ export default function ImageUpload({open,onClose,setLoading}: Props) {
                     <br />
                     <br />
                     <Typography>
-                        <Checkbox disabled={agree} onChange={(e)=>setAgree(e.target.checked)} />
+                        <Checkbox checked={agree} onChange={(e)=>setAgree(e.target.checked)} />
                         By clicking "Upload", you agree to the terms and conditions
                     </Typography>
                     <br />
@@ -51,29 +53,36 @@ export default function ImageUpload({open,onClose,setLoading}: Props) {
                                     setLoading(true)
                                     const img = new Image();
                                     img.onload = function(){
+                                        const centerX = selectedSide.type ==='rect'?(selectedSide.x+selectedSide.width/2):selectedSide.x
+                                        const centerY = selectedSide.type ==='rect'?(selectedSide.y+selectedSide.height/2):selectedSide.y
+                                        const sideWidth = selectedSide.type ==='rect'?selectedSide.width-20:(selectedSide.radius*1.4)-20
+                                        const sideHeight = selectedSide.type ==='rect'?selectedSide.height-20:(selectedSide.radius*1.4)-20
+
+                                        const majorSide = (sideWidth>=sideHeight)?sideHeight:sideWidth
                                         const { height, width } = img;
                                         const aspect = width/height
-                                        const x = aspect>1?300:(300*aspect)
-                                        const y = (aspect<=1)?(300):(300/aspect)
+                                        const x = aspect>1?majorSide:(majorSide*aspect)
+                                        const y = (aspect<=1)?(majorSide):(majorSide/aspect)
                                         dispatch(addObject({
                                             type:'img',
                                             image:url,
                                             width:x,
                                             height:y,
-                                            x:100,
-                                            y:100,
+                                            x:centerX-(majorSide/2),
+                                            y:centerY-(majorSide/2),
                                             id:uuidv4(),
                                             keepRatio:true
                                         }))
-                                        setImage(null)
                                         setTimeout(() => {
                                             setLoading(false)
+                                            setAgree(false)
                                           }, 150);;
                                           onClose()
                                         // code here to use the dimensions
                                       }
                                       img.src = url
-                                }} 
+                                }
+                            } 
                             app={app} 
                             updateFirestore={false} 
                             editConfig={null}

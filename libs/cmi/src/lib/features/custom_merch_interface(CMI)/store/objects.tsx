@@ -1,7 +1,8 @@
-import { createSlice, current } from '@reduxjs/toolkit';
+import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 // import { productSideType, productType, productVariantType } from '../components/selectProduct';
 import { v4 as uuidv4 } from 'uuid';
+import { sideNameType } from './designerSlice';
 export interface DesignerState {
   // currentSide: 'left' | 'right' | 'top' | 'bottom' | 'front' | 'back';
   currentObjects: Array<any>;
@@ -69,14 +70,10 @@ export const ObjectSlice = createSlice({
         state.history = [...current(state.history),currentObjects]
       }
     },
-    changeSide:(state,action) =>{
+    changeSide:(state,action:PayloadAction<{current:sideNameType,to:sideNameType}>) =>{
       const currentObjs = current(state.currentObjects)
       const sides = {...state.sides}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       sides[action.payload.current] = currentObjs
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       state.currentObjects = sides[action.payload.to]
       state.sides = sides
       state.history = [[]]
@@ -90,10 +87,10 @@ export const ObjectSlice = createSlice({
     copyObject:(state,action) => {
       state.history = lastN(10,[...current(state.history), current(state.currentObjects)]).getAll()
       state.forward = [[]]
-      const copiedObj = state.currentObjects.filter(obj=>obj.id === action.payload)[0]
-      state.currentObjects = [...state.currentObjects, {...copiedObj, id:uuidv4(), x:copiedObj.x+5,y:copiedObj.y+5}];
+      const copiedObj = {...current(state.currentObjects).find(obj=>obj.id === action.payload)}
+      state.currentObjects = [...current(state.currentObjects), {...copiedObj, id:uuidv4(), x:copiedObj.x+5,y:copiedObj.y+5}];
     },
-    startExport:(state)=>{
+    startExport:(state)=>{  
       state.isExporting = true
     },
     endExport:(state)=>{
