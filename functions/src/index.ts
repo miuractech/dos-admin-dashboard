@@ -1,12 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-// import { publicIpv4 } from 'public-ip';
-// import fetch from "node-fetch"
-const cfSdk = require('cashfree-sdk');
-// import * as crosModule from "cors"
-admin.initializeApp();
+const cfsdk = require("cashfree-sdk");
+const fetch = require('node-fetch');
 
-// const cros = crosModule({ origin: true })
+admin.initializeApp()
 
 export const docCreation = functions.region("asia-south1")
   .auth.user().onCreate(async (user) => {
@@ -45,9 +42,7 @@ export const createDocstorage = functions.region("asia-south1")
   });
 
 export const bank = functions.https.onCall(async (data, context) => {
-  console.log("data");
-  // console.log(await publicIpv4());
-  const { Payouts } = cfSdk;
+  const { Payouts } = cfsdk;
   const { Validation } = Payouts;
   const config = {
     Payouts: {
@@ -56,22 +51,37 @@ export const bank = functions.https.onCall(async (data, context) => {
       ENV: "TEST",
     }
   };
-  Payouts.Init(config.Payouts);
-  //bank validation
+  Payouts.Init(config.Payouts)
   try {
     const response = await Validation.ValidateBankDetails({
-      // name: "",
-      // phone: "",
-      bankAccount: "026291800001191",
-      ifsc: "YESB0000262"
+      name: data.name,
+      phone: data.mobileNumber,
+      bankAccount: data.accountNumber,
+      ifsc: data.ifscCode
     });
-    console.log("bank validation response");
-    console.log(response);
     return response
   }
   catch (err) {
-    console.log("err caught in bank validation");
-    console.log(err);
     return err
+  }
+})
+
+export const pan = functions.https.onCall(async (data, context) => {
+  const url = '	https://sandbox.cashfree.com/verification/pan'
+  const options = {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'x-client-id': 'CF182083CB7T3VT6LA0396U1BP90',
+      'x-client-secret': 'a186e2ecb92a9b038ef2b168f697e362e0ba2067',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ pan: data.panNumber, name: data.name })
+  };
+  try {
+    const result = await fetch(url, options)
+    return result.json()
+  } catch (error) {
+    return error
   }
 })

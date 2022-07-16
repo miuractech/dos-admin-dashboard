@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { multiFactor, onAuthStateChanged } from 'firebase/auth';
 import { setUser, auth, submit, setNotification } from '../redux-tool/auth';
-import { Alert, CircularProgress, Snackbar } from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
 import Home from './Auth/regHomePage/home';
 import Registration from './Auth/registration/registration';
@@ -29,14 +29,14 @@ import { Payment } from './Payment/Payment';
 import { Settings } from './Settings/Settings';
 import { Support } from './Support/Support';
 import { BankVerification } from './verification/BankVerification';
-// import { Cart } from './cart/Cart';
+import { PanVerification } from './verification/PanVerification';
+import { BankStatement } from './verification/BankStatement';
 
 export function App() {
   const dispatch = useDispatch()
-  const { User, notification } = useSelector((state: RootState) => state.User)
+  const { User, notification, backDrop } = useSelector((state: RootState) => state.User)
   const { loading } = useSelector((state: RootState) => state.User)
   const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
-  // signOut(getAuth(app))
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
@@ -120,6 +120,8 @@ export function App() {
             <Route path='/settings' element={<Settings />} />
             <Route path='/support' element={<Support />} />
             <Route path='/bankverification' element={<BankVerification />} />
+            <Route path='/panverification' element={<PanVerification />} />
+            <Route path='/bankstatement' element={<BankStatement />} />
             <Route path='/' element={<SalesView />} />
             <Route path='*' element={<Navigate to='/' replace />} />
           </Routes>
@@ -128,6 +130,12 @@ export function App() {
         <Snackbar open={Boolean(notification)} autoHideDuration={5000} onClose={() => dispatch(setNotification(null))}>
           <Alert severity='success'>{notification}</Alert>
         </Snackbar>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={backDrop}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </>
     );
   }

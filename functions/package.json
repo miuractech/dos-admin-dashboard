@@ -19,8 +19,7 @@
     "axios": "^0.27.2",
     "cashfree-sdk": "^0.1.1",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.22.0",
-    "public-ip": "^6.0.1"
+    "firebase-functions": "^3.22.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.12.0",

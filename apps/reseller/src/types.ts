@@ -16,5 +16,6 @@ export interface UserDetailState {
     error: null | FirebaseError
     User: User | null | undefined
     notification: null | string
+    backDrop: boolean
 
 }
