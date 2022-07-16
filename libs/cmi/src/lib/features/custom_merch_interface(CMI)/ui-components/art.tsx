@@ -3,12 +3,14 @@ import React, { useEffect, useState } from 'react'
 import SimpleModal from './modal'
 import Accept from '../components/uploadComponent'
 import { Clear } from '@mui/icons-material'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addObject } from '../store/objects'
 // import { v4 as uuidv4 } from 'uuid';
 import { useLeftState } from '../states/states'
 import { collection, doc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { db } from '../../../config/firebase'
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { RootState } from 'apps/reseller/src/redux-tool/store'
 
 const artRef = collection(db, "Arts");
 type Props = {
@@ -23,6 +25,7 @@ export default function ArtInsert({ open, onClose, setLoading, loading }: Props)
     const dispatch = useDispatch()
     const [arts, setArts] = useState<any>([])
     const [error, setError] = useState<{ type: null | string, message: null | string }>({ type: null, message: null })
+    const { selectedSide } = useSelector((state:RootState)=>state.designer)
     useEffect(() => {
         const fetchArts = async () => {
             try {
@@ -73,18 +76,37 @@ export default function ArtInsert({ open, onClose, setLoading, loading }: Props)
                                     elevation={3}
                                     onClick={() => {
                                         setLoading(true)
-                                        dispatch(addObject({
-                                            type: 'img',
-                                            image: art.url,
-                                            width: 100,
-                                            height: 100,
-                                            x: 125,
-                                            y: 125,
-                                            id: art.id,
-                                        }))
-                                        setTimeout(() => {
-                                            setLoading(false)
-                                        }, 100);
+                                        const img = new Image();
+                                        img.onload = function(){
+                                            const centerX = selectedSide.type ==='rect'?(selectedSide.x+selectedSide.width/2):selectedSide.x
+                                            const centerY = selectedSide.type ==='rect'?(selectedSide.y+selectedSide.height/2):selectedSide.y
+                                            const sideWidth = selectedSide.type ==='rect'?selectedSide.width-20:(selectedSide.radius*1.4)-20
+                                            const sideHeight = selectedSide.type ==='rect'?selectedSide.height-20:(selectedSide.radius*1.4)-20
+    
+                                            const majorSide = (sideWidth>=sideHeight)?sideHeight:sideWidth
+                                            const { height, width } = img;
+                                            const aspect = width/height
+                                            const x = aspect>1?majorSide:(majorSide*aspect)
+                                            const y = (aspect<=1)?(majorSide):(majorSide/aspect)
+                                            dispatch(addObject({
+                                                type:'img',
+                                                image:art.url,
+                                                width:x,
+                                                height:y,
+                                                x:centerX-(majorSide/2),
+                                                y:centerY-(majorSide/2),
+                                                id:art.id,
+                                                keepRatio:true
+                                            }))
+                                            setTimeout(() => {
+                                                setLoading(false)
+                                              }, 50);;
+                                              onClose()
+                                            // code here to use the dimensions
+                                          }
+                                          img.src = art.url
+
+                                        setLoading(true)
                                         onClose()
                                     }}
 

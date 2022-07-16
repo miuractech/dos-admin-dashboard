@@ -14,7 +14,6 @@ import { useLeftState } from "../states/states";
 import ImageUpload from "../ui-components/imageUpload";
 import { useEffect } from "react";
 import { updateObject } from "../store/objects";
-import { useAppSelector } from "../../../app/hooks";
 import { useDispatch, useSelector } from "react-redux";
 import useId from "@mui/material/utils/useId";
 import { v4 as uuidv4 } from 'uuid';
@@ -22,7 +21,7 @@ import ArtInsert from "../ui-components/art";
 import Qr from "../ui-components/qr";
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { RootState } from "apps/reseller/src/redux-tool/store";
-import { Button } from "@mui/material";
+import { Button, useMediaQuery, useTheme } from "@mui/material";
 
 type leftProps = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
@@ -44,10 +43,11 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
         setArtModal,
         artModal
     } = useLeftState()
-    const objects = useAppSelector(state => state.objects)
+    const objects = useSelector((state:RootState) => state.objects)
     const dispatch = useDispatch()
     const { selectedSide } = useSelector((state:RootState)=>state.designer)
-
+    const theme = useTheme()
+    const media = useMediaQuery(theme.breakpoints.up('md'))
     const leftPanel = [
         {
             name: 'product',
@@ -66,27 +66,29 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
             icon: <TextFields />,
             text: 'Add Text',
             onClick: () => {
-                setLoading(true)
-                // eslint-disable-next-line no-unsafe-optional-chaining
-                dispatch(updateObject([...objects?.currentObjects, {
-                    x: selectedSide.x+10,
-                    y: selectedSide.x+25,
-                    text: 'Simple Text',
-                    fontFamily: 'Calibri',
-                    fill: '#00ff00',
-                    fontSize: 25,
-                    align: 'center',
-                    stroke:'#fff',
-                    rotation:0,
-                    strokeWidth:0,
-                    keepRatio:true,
-                    // eslint-disable-next-line react-hooks/rules-of-hooks
-                    id: uuidv4(),
-                    type: 'text'
-                }]))
-                setTimeout(() => {
-                    setLoading(false)
-                }, 50);;
+                if(objects.currentObjects){
+                    const centerX = selectedSide.type ==='rect'?(selectedSide.x+selectedSide.width/2):selectedSide.x
+                    const centerY = selectedSide.type ==='rect'?(selectedSide.y+selectedSide.height/2):selectedSide.y
+                    setLoading(true)
+                    dispatch(updateObject([...objects.currentObjects, {
+                        x: centerX-50,
+                        y: centerY-10,
+                        text: 'Simple Text',
+                        fontFamily: 'Calibri',
+                        fill: '#00ff00',
+                        fontSize: 25,
+                        align: 'center',
+                        stroke:'#fff',
+                        rotation:0,
+                        strokeWidth:0,
+                        keepRatio:true,
+                        id: uuidv4(),
+                        type: 'text'
+                    }]))
+                    setTimeout(() => {
+                        setLoading(false)
+                    }, 50);;
+                }
 
             }
 
@@ -97,19 +99,19 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
             text: 'Add Art',
             onClick: () => setArtModal(true)
         },
-        // {
-        //     name: 'shape',
-        //     icon: <Interests />,
-        //     text: 'Add Shape',
-        //     onClick: () => console.log('shape')
+        {
+            name: 'shape',
+            icon: <Interests />,
+            text: 'Add Shape',
+            onClick: () => console.log('shape')
 
-        // },
-        // {
-        //     name: 'Jersy',
-        //     icon: <SportsBasketball />,
-        //     text: 'Jersy',
-        //     onClick: () => setJersyModal(true)
-        // },
+        },
+        {
+            name: 'Jersy',
+            icon: <SportsBasketball />,
+            text: 'Jersy',
+            onClick: () => setJersyModal(true)
+        },
         {
             name: 'QR',
             icon: <QrCode />,
@@ -127,7 +129,7 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
     return (
         <div
             className="flex vertical-center justify-center"
-            style={{ maxWidth: 300, margin: 'auto', flexDirection:'column' }}
+            style={{ maxWidth:media? 300:'100%', margin: 'auto', flexDirection:'column' }}
             >
                 <div
                 className="flex full-width margin1"
@@ -151,10 +153,12 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
                     </Button>
                 </div>
             <div
-                className="grey-bg full-width"
+                className={media?"grey-bg full-width":"flex full-width"}
+                style={{justifyContent:'space-evenly'}}
                 >
 
-                {leftPanel.map(({ text, icon, onClick }) => (
+                {media?
+                leftPanel.map(({ text, icon, onClick }) => (
                     <div
                         key={text}
                         onClick={onClick}
@@ -170,7 +174,23 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
                             {text}
                         </div>
                     </div>
-                ))}
+                ))
+                :
+                leftPanel.map(({ text, icon, onClick }) => (
+                    <div
+                        key={text}
+                        onClick={onClick}
+                        // className="white-bg margin1 flex vertical-center pointer-cursor paddingp5"
+                        // style={{ height: 40, borderRadius: 6, paddingLeft: 30 }}
+                    >
+                        <div
+                            className="marginp1 "
+                        >
+                            {icon}
+                        </div>
+                    </div>
+                ))
+            }
             </div>
 
             <SelectProduct open={productModal} onClose={() => setproductModal(false)} setSelectedId={setSelectedId} />

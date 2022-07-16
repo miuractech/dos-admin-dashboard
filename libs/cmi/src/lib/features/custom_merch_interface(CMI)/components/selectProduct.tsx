@@ -30,7 +30,7 @@ import CardMedia from '@mui/material/CardMedia'
 // import hoodieBlackBackImg from '../img/hoodie-black-back.png';
 // import { } from '@mui/material'
 import { useAppDispatch } from '../../../app/hooks'
-import { setProducts, setProduct } from '../store/designerSlice'
+import { setProducts, setProduct, sideNameType } from '../store/designerSlice'
 import { db } from '../../../config/firebase'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { resetObjects } from '../store/objects'
@@ -45,6 +45,7 @@ export interface CreatedAt {
 export interface baseSides {
     // previewScreen: string;
     imgUrl: string;
+    rotation:number;
     // strokeWidth: number;
     // stroke: string;
     // dash: number[];
@@ -64,12 +65,12 @@ export interface circleSide extends baseSides {
     radius: number;
 }
 
-export type side = {
-    [sideName in 'Front' | 'Back' | "Right" | "Left" | "Top" | "Bottom"]: circleSide | rectSide
+export type sideType = {
+    [sideName in sideNameType]: circleSide | rectSide
 }
 
 export interface SideImage {
-    [color: string]: side;
+    [color: string]: sideType;
 }
 
 export interface size {

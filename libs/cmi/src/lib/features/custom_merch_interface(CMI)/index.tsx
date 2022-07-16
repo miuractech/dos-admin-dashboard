@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './styles/index.css';
 import './styles/font.css'
 import './styles/designer.css'
@@ -7,6 +7,9 @@ import { LeftPanelControls } from './components/leftPanel'
 import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import Center from './components/center';
 import RightPanel from './components/rightPanel';
+import { useDispatch } from 'react-redux';
+import { resetDesigner } from './store/designerSlice';
+import { resetObjects } from './store/objects';
 
 const theme = createTheme({
     palette: {
@@ -41,18 +44,26 @@ export default function CustomMerchInterface() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [previews, setPreviews] = useState<boolean>(false)
     const media = useMediaQuery(theme.breakpoints.up('md'))
+    const dispatch = useDispatch()
+    useEffect(() => {
+      return () => {
+        dispatch(resetDesigner())
+        dispatch(resetObjects())
+      }
+    }, [])
+    
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth={false} >
                 <Grid container spacing={0}>
-                    {media && <Grid item md={3}>
+                    <Grid item md={3} xs={12}>
                         <LeftPanelControls
                             setLoading={setLoading}
                             selectedId={selectedId}
                             setSelectedId={setSelectedId}
                         />
-                    </Grid>}
-                    <Grid item xs={12} md={6} style={{ height: 700, paddingTop: 50 }} >
+                    </Grid>
+                    <Grid item xs={12} md={6} style={{ height: 700, paddingTop: media?50:10 }} >
                         {loading ?
                             <CircularProgress />
                             :
