@@ -1,12 +1,15 @@
-import { Grid, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Badge, Grid, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React from 'react'
 import logo from "../../components/images/logo.svg"
 import InputField from "../../../UI/input-field/input-field"
 import { FavoriteBorderOutlined, PersonOutlineOutlined, Search, ShoppingCartOutlined } from '@mui/icons-material'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../store/store'
 
 export const Header = () => {
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("md"))
+    const { cartProductList } = useSelector((state: RootState) => state.cart)
     return (
         <div style={{ display: "grid", gridTemplateColumns: media ? "3fr 3fr 6fr" : "3fr 6fr", height: "10%", alignItems: "center", padding: "10px", gap: "10px" }}>
             <div>
@@ -27,11 +30,12 @@ export const Header = () => {
             <div className='flex vertical-center justify-around'>
                 <InputField iconend={<Search />} size='small' placeholder='Find designs or products' style={{ maxWidth: "65%", flex: "3" }} />
                 <div className='flex vertical-center' >
-                    <IconButton><PersonOutlineOutlined /></IconButton>
-                    <Typography>Login</Typography>
+                    <PersonOutlineOutlined className='cursor-pointer' />
                 </div>
-                <IconButton ><ShoppingCartOutlined /></IconButton>
-                <IconButton ><FavoriteBorderOutlined /></IconButton>
+                <Badge className='cursor-pointer' color="secondary" badgeContent={cartProductList.length}>
+                    <ShoppingCartOutlined className='cursor-pointer' />
+                </Badge>
+                <FavoriteBorderOutlined className='cursor-pointer' />
             </div>
         </div >
     )

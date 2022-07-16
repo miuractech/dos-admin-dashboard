@@ -4,6 +4,16 @@ body{
     margin:0px
 }
 
+.size{
+border: 1px solid #E5E5E5;
+width: 4vw;
+height: 5vh;
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+}
+
 #circle {
     width: 100px;
     height: 100px;

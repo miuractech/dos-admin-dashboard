@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
 
-export const MobilePriceComponent = () => {
+export const MobilePriceComponent = ({ setSize }: { setSize: React.Dispatch<React.SetStateAction<string | null>> }) => {
     const { product } = useSelector((state: RootState) => state.product)
     const theme = useTheme()
     return (
@@ -20,8 +20,8 @@ export const MobilePriceComponent = () => {
                 overflowX: "auto",
                 maxWidth: "250px"
             }}>
-                {product.sizeAvailable.map(size => <div style={{ minWidth: "20px", padding: "0px 5px" }}>
-                    <Typography>{size}</Typography>
+                {product.sizeAvailable.map((size, index) => <div className='cursor-pointer' onClick={() => setSize(size)} key={index} style={{ minWidth: "20px", padding: "5px 5px", textAlign: "center", border: "1px solid #E5E5E5" }}>
+                    <Typography variant='subtitle2'>{size}</Typography>
                 </div>)}
             </div>
             <Typography style={{ fontFamily: "'Average Sans', sans-serif" }} justifySelf="center" variant='h6' fontWeight={400} color="white">₹{product.price}</Typography>

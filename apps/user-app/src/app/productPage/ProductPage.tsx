@@ -1,5 +1,5 @@
 import { Typography, useMediaQuery, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { Header } from './header/Header'
 import { HeaderTop } from '../components/HeaderTop'
 import { MobileContent } from '../components/MobileContent'
@@ -11,31 +11,58 @@ import { ImageContant } from '../components/ImageContant'
 import { ProductDetails } from '../components/ProductDetails'
 import { Ratings } from '../components/Ratings'
 import { RootState } from '../../store/store'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import ProductsCard from '../components/ProductsCard'
 import { MobileAddCart } from '../components/MobileAddCart'
+import { setCartProducts, setLocatCart } from '../../store/cartSlice'
+import { useNavigate } from 'react-router-dom'
+import { setNotification, setWarning } from '../../store/alertslice'
+
+type cartProduct = {
+    productId: string
+    size: string
+}
 
 const ProductPage = () => {
+    const [size, setSize] = useState<string | null>(null)
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("sm"))
     const { productsList } = useSelector((state: RootState) => state.storeFront)
     const medium = useMediaQuery(theme.breakpoints.up("md"))
+    const { product } = useSelector((state: RootState) => state.product)
 
     const AddToCard = () => {
-        console.log("added")
+        if (!product) return
+        if (size) {
+            const localCart = {
+                productID: product.productId,
+                size: size
+            }
+            dispatch(setCartProducts({
+                product: product,
+                size: size
+            }))
+            dispatch(setLocatCart(localCart))
+            dispatch(setNotification("Item added to cart"))
+            navigate("/cart")
+        } else {
+            dispatch(setWarning("Please select a Size to proceed"))
+        }
     }
 
     return (
         <div>
             {media ?
                 (
-                    <ImageContant AddToCard={AddToCard} />
+                    <ImageContant AddToCard={AddToCard} setSize={setSize} />
                 )
                 :
                 (
                     <>
                         <MobileProductImages />
-                        <MobilePriceComponent />
+                        <MobilePriceComponent setSize={setSize} />
                         <MobileContent />
                         <MobileAddCart AddToCard={AddToCard} />
                     </>
@@ -49,7 +76,7 @@ const ProductPage = () => {
                 productsList && <div className={medium ? 'grid grid-cols-4 mx-20 gap-8' : 'grid gap-8'}>
                     {productsList.map(item => {
                         return (
-                            <ProductsCard comparedPrice={item.comparePrice} images={item.sideImages} price={item.price} productName={item.productName} sizeArray={item.sizeAvailable} />
+                            <ProductsCard key={item.productId} comparedPrice={item.comparePrice} images={item.sideImages} price={item.price} productName={item.productName} sizeArray={item.sizeAvailable} />
                         )
                     })}
                 </div>
