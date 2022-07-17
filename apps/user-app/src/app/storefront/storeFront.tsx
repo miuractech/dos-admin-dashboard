@@ -11,6 +11,7 @@ import ProgressiveImg from '../../UI/input-field/ProgressiveImg'
 import { ErrorBoundary } from 'react-error-boundary'
 import InputField from '../../UI/input-field/input-field'
 import { ErrorFallback } from '../components/ErrorFallback'
+import { setProduct } from '../../store/product'
 const ProductsCard = React.lazy(() => import('../components/ProductsCard'));
 const StoreFront = () => {
 
@@ -74,15 +75,17 @@ const StoreFront = () => {
                 {productsList && <Grid container spacing={4}>
                     {productsList.length > 0 ? (
                         productsList?.map(item =>
-                            <Grid key={item.productId} item xs={12} sm={6} md={4} lg={4}>
-                                <Link to={`/shops/${resellerid}/products/${item.productId}`}>
-                                    <ErrorBoundary FallbackComponent={ErrorFallback}>
-                                        <Suspense fallback={() => <div>loading...</div>}>
-                                            <ProductsCard productName={item.productName} images={item.sideImages} sizeArray={item.sizeAvailable} comparedPrice={item.comparePrice} price={item.price} />
-                                        </Suspense>
-                                    </ErrorBoundary>
-                                </Link>
-                            </Grid>
+                            <div onClick={() => dispatch(setProduct(item))}>
+                                <Grid key={item.productId} item xs={12} sm={6} md={4} lg={4}>
+                                    <Link to={`/shops/${resellerid}/products/${item.productId}`}>
+                                        <ErrorBoundary FallbackComponent={ErrorFallback}>
+                                            <Suspense fallback={() => <div>loading...</div>}>
+                                                <ProductsCard productName={item.productName} images={item.sideImages} sizeArray={item.sizeAvailable} comparedPrice={item.comparePrice} price={item.price} />
+                                            </Suspense>
+                                        </ErrorBoundary>
+                                    </Link>
+                                </Grid>
+                            </div>
                         )
                     ) : (<>no products</>)}
                 </Grid>}

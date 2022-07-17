@@ -38,7 +38,8 @@ const ProductPage = () => {
         if (size) {
             const localCart = {
                 productID: product.productId,
-                size: size
+                size: size,
+                count: 1
             }
             dispatch(setCartProducts({
                 product: product,

@@ -1,22 +1,26 @@
 import { Typography } from '@mui/material'
 import { ProductCardCart } from './ProductCardCart'
 import { RootState } from '../../../store/store'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 export const Cart = () => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
-    console.log(cartProductList);
+    const [cart, setcart] = useState<string | null>(null)
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(localCart))
-    }, [localCart])
+        const obj = localStorage.getItem('cart')
+        setcart(obj)
+        if (!cart) return
+        // console.log(JSON.parse(cart))
+    }, [cart, localCart])
     return (
-        <div style={{ backgroundColor: "#f9f9f9" }} className='m-4 grid md:mx-14 md:grid-cols-3 md:gap-6'>
-            <div className='col-span-2'>
+        <div className='p-5 md:grid grid-cols-3 gap-5'>
+            <div className='space-y-5 md:col-span-2'>
                 <Typography fontWeight={600} variant='h6'>My Bag</Typography>
-                <ProductCardCart />
+                {cartProductList.map(item => <ProductCardCart img={item.product.sideImages[0].url} productName={item.product.productName} productSize={item.size} productPrice={item.product.price} productCompPrice={item.product.comparePrice} count={0} />)}
             </div>
-            <div className=''>
+            <div className='space-y-5'>
                 <Typography fontWeight={500} variant='h6'>Order Summary</Typography>
             </div>
         </div>

@@ -29,6 +29,8 @@ export const CartSlice = createSlice({
             state.cartProductList.push(action.payload)
         },
         setLocatCart: (state, action) => {
+            const product = state.localCart.find(pro => pro.productID === action.payload.productID)
+            console.log(product);
             state.localCart.push(action.payload)
         }
     },
