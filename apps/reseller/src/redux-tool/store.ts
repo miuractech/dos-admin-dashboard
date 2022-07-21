@@ -13,7 +13,6 @@ export const store = configureStore({
     objects: ObjectReducer,
     condition: conditionSlice,
     listings: ListingsSlice
-
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false

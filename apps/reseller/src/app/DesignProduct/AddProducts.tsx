@@ -95,7 +95,7 @@ export const AddProduct = () => {
             console.log(error);
         }
     }
-    console.log(product)
+    console.log(designPreviewImages, product, selectedColor)
     return (
         product &&
         <form onSubmit={handleSubmit(onsubmit)}>
