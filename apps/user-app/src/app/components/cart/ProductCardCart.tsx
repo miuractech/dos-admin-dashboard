@@ -2,7 +2,7 @@ import { Card, Divider, IconButton, Typography, useMediaQuery, useTheme } from '
 import { RootState } from '../../../store/store'
 import { useSelector } from 'react-redux'
 import { AddCircleOutline, ArchiveOutlined, DeleteOutlineOutlined, RemoveCircleOutline } from '@mui/icons-material'
-import right from './right.svg'
+import right from './assets/right.svg'
 import { useNavigate } from 'react-router-dom'
 
 type CardProductType = {

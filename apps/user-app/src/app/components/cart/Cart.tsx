@@ -9,9 +9,19 @@ import { OrderSummary } from './OrderSummary'
 import { setNotification } from '../../../store/alertslice'
 import SimpleModal from '@dropout-store/simple-modal'
 import Lottie from "lottie-react";
-import emptyBox from "./emptyBox.json"
+import emptyBox from "./assets/emptyBox.json"
 import { Link } from 'react-router-dom'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import InputField from '../../../UI/input-field/input-field'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup';
+import usePhoneAuth from '../../../features/auth/phoneAuthHook'
+import { app } from '../../../configs/firebaseConfig'
+
+const schema = yup.object().shape({
+    phone: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(6000000000, 'enter valid phone number').max(9999999999, 'enter valid phone number').required('phone number is required')
+})
 
 export const Cart = () => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
@@ -19,7 +29,7 @@ export const Cart = () => {
     const dispatch = useDispatch()
     const [productDelete, setProductDelete] = useState<string | null>(null)
     const [userDrawer, setUserDrawer] = useState(false)
-
+    const { register, formState: { errors }, handleSubmit } = useForm({ resolver: yupResolver(schema) })
     const setCount = (id: string, productId: string, productSize: string) => {
         const copy = [...cartProductList]
         const productid = copy.filter(item => item.product.productId === productId)
@@ -77,6 +87,8 @@ export const Cart = () => {
         console.log(id)
     }
 
+    const { sendOtp } = usePhoneAuth(app)
+
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(localCart))
     }, [localCart])
@@ -126,7 +138,7 @@ export const Cart = () => {
                 <div className='p-5 gap-5 space-y-5 md:grid grid-cols-3 md:mx-20'>
                     <div className='space-y-5 md:col-span-2'>
                         <Typography fontWeight={600} variant='h6'>My Bag</Typography>
-                        {cartProductList.map(item => <ProductCardCart
+                        {cartProductList.map((item: cartProduct) => <ProductCardCart
                             key={item.id}
                             id={item.id}
                             img={item.product.sideImages[0].url}
@@ -156,7 +168,10 @@ export const Cart = () => {
                 </div>
                 <Drawer anchor='left' open={userDrawer} onClose={() => setUserDrawer(false)}>
                     <div className='w-96'>
-                        <img src='' alt='img' />
+                        <form onSubmit={handleSubmit(data => sendOtp(`+91${data['phone']}`))} >
+                            <InputField placeholder="phonenumber" forminput={{ ...register('phone') }} />
+                            <Button type="submit" variant='contained'>get otp</Button>
+                        </form>
                     </div>
                 </Drawer>
             </>
