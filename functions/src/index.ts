@@ -1,10 +1,28 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as cfsdk from "cashfree-sdk";
 import fetch from "node-fetch";
+import {Payouts} from "@cashfreepayments/cashfree-sdk";
 
 admin.initializeApp();
+const config = {
+  payoutsConfig: {
+    ClientID: "CF182083CB7T3VT6LA0396U1BP90",
+    ClientSecret: "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
+    ENV: "TEST",
+    publicKey: `-----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwMQ2ToWo+Vy4V2fOxr6W
+    /cCDVEI7xKZFxgdtJp5327WGszhOvUKbXFvE+dhjkVV2jTTRM7ovuaKMFiYHlTVS
+    9um84/HgAnKVFukKtSvVbQfyIsRkEJ4nL5wql710H84ruKaHy++4Et61NXu1OTix
+    yiBOVXsFLmTcdGnOe+c8SHIKE0AyBAlkYmOD4LgSkgMGbQfT+hEcXDIqns82RLnV
+    W+qbJPACI3L2565u9e4iGRTYM81G6ghhyTK7BZjql0Liwa9rqxb5Mnt4nfmtFQ2l
+    xC49CqVWQXmajBqHU/qAEP1n+Qrd2dv76kXFFqDaqhjOx4rJNwWVuDOLJPGapmcO
+    rQIDAQAB
+    -----END PUBLIC KEY-----`,
+  },
+};
+const payouts = new Payouts(config.payoutsConfig);
 
+const {validation} = payouts;
 export const docCreation = functions.region("asia-south1")
     .auth.user().onCreate(async (user) => {
       if (!user.disabled && user.email) {
@@ -29,7 +47,6 @@ export const createDocstorage = functions.region("asia-south1")
         await bucket.file(object.name).makePublic();
         const [metadata] = await bucket.file(object.name).getMetadata();
         const url = metadata.mediaLink;
-        console.log("object", object.name, object.metadata);
         return admin.firestore().doc(`uploads/${uid}/images/${fileName}`).set({
           createdAt: object.timeCreated,
           path: object.name,
@@ -40,24 +57,13 @@ export const createDocstorage = functions.region("asia-south1")
       return;
     });
 
-export const bank = functions.region("asia-south1").https.onCall(async (data) => {
-  const {Payouts} = cfsdk;
-  const {Validation} = Payouts;
-  const config = {
-    Payouts: {
-      ClientID: "CF182083CB7T3VT6LA0396U1BP90",
-      ClientSecret: "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
-      ENV: "TEST",
-      PathToPublicKey: "./publickey/key.pem",
-    },
-  };
-  Payouts.Init(config.Payouts);
+export const bank = functions.region("asia-south1").https.onCall(async () => {
   try {
-    const response = await Validation.ValidateBankDetails({
-      name: data.name,
-      phone: data.mobileNumber,
-      bankAccount: data.accountNumber,
-      ifsc: data.ifscCode,
+    const response = await validation.validateBankDetails({
+      name: "JOHN",
+      phone: "9908712345",
+      bankAccount: "026291800001191",
+      ifsc: "YESB0000262",
     });
     return response;
   } catch (err) {
