@@ -50,6 +50,7 @@ export default function useUpdateFamily(mounted: boolean) {
   ) {
     setLoadingFlag(true);
     setCompleted(false);
+    
     const obs$ = from(updateFamilyNameAsyncWrapper(payload, docId));
     const sub = obs$.subscribe((res) => {
       if (res instanceof ApplicationErrorHandler)

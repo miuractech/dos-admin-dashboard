@@ -39,7 +39,6 @@ export const imageValidation = yup
           return true
         }
         else if (['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(val[0].type) && val[0].size < 512000) {
-          console.log('val', val[0]);
           return true;
         }
         else return false;

@@ -30,7 +30,6 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
       dispatch(setMetaProductTypeEditError(null));
     }
   }
-  console.log(item);
 
   return (
     <React.Fragment>
@@ -39,8 +38,8 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
           <img
             src={item.displayImage}
             alt="display_image_item"
-            height={56}
-            width={45}
+            height={50}
+            width={50}
           />
           <h3>{item.name}</h3>
         </div>
@@ -50,12 +49,6 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
             clickAction={() => {
               const itemCopy = {...item}
               setModifiedItem(itemCopy)
-              console.log(itemCopy);
-              
-              //
-              
-
-              // setEditedFormShow(true);
             }}
           >
             Edit
@@ -94,7 +87,6 @@ const Item: React.FC<{ item: TMetaProductType }> = ({ item }) => {
       <SimpleModal open={Boolean(modifiedItem)} onClose={() => setModifiedItem(null)}>
         <AddProductTypeForm item={
           modifiedItem
-          // { ...item, sideImages: item.color_options, displayImage: item.display_image }
           } onClose={() =>setModifiedItem(null)} />
         {/* <EditFormModal item={item} modalAction={setterEditedFormShow} /> */}
       </SimpleModal>

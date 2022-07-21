@@ -61,6 +61,7 @@ import InventoryManagement from './inventoryManagement';
 import { app, firestore } from '../../../../config/firebase.config';
 import { productTypeRepo } from '../../../../Midl/meta-products/hooks/product-type/helpers';
 import { MiuracImage } from '@miurac/image-upload';
+import { RichTextEditor } from '@mantine/rte';
 
 const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors }, setError, getValues, unregister, clearErrors } = useForm<TAddFormSchema>({
@@ -72,18 +73,16 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
   });
   useSubject(showProductAddForm$);
   const dispatch = useDispatch();
+  const { user } = useSelector((state:RootState)=>state.adminUser)
   const [tab, setTab] = useState(0)
   const containerRef = React.useRef(null);
   const [basicInfo, setbasicInfo] = useState<any>({})
-  const [imagesInfo, setImagesInfo] = useState<any>({})
-  const [inventoryInfo, setInventoryInfo] = useState<any>({})
   const [loading, setLoading] = useState(false)
   const { asyncWrapper, } = useAsyncCall(
     addProductType,
     Boolean(showProductAddForm$.value),
     (res) => {
       if (res instanceof ApplicationErrorHandler) {
-        console.log("res", res)
         dispatch(setMetaProductTypeAddError(res.errorObject));
       }
       else {
@@ -122,36 +121,11 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
     }
 
 
-    // const colorObj: any = {}
-    // for (const color of Object.keys(sideImages)) {
-    //   const sideData: any = {}
-    //   const colorValues = sideImages[color]
-    //   for (const side of Object.keys(colorValues)) {
-    //     const sideValues = colorValues[side]
-    //     if (!_.isEmpty(sideValues)) {
-    //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //       //@ts-ignore
-    //       const url = sideValues.image ? [sideValues.image] : await uploadArrayOfFiles([[sideValues.imageFile]])
-    //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //       //@ts-ignore
-    // const sideObj = { ...sideValues }
-    //       delete sideObj['imageFile']
-    // delete sideObj['icons']
-    //       // console.log(sideObj);
-    // sideData[side] = sideObj
-    //   }
-    // }
-    // colorObj[color] = sideData
-    // let sideData = {}
-    // }
-    // console.log(data);
     if (!item) {
       asyncWrapper({
         id,
         form: data,
-        createdBy: 'Somnath',
-        // counter:item?item.count:null,
-        // editMode:Boolean(item)
+        createdBy:user?.displayName??'' ,
       })
     }
     else {
@@ -161,9 +135,10 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
         ...item, 
         ...data, 
         displayImage: data.displayImage, 
+        sizeChart: data.sizeChart, 
         sideImages: sideImages 
       }, item.id)
-      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: data.displayImage, sideImages: sideImages }));
+      dispatch(setEditedMetaProductType({ ...item, ...data, displayImage: data.displayImage, sizeChart:data.sizeChart, sideImages: sideImages }));
       dispatch(setMetaProductTypeAddError(null))
       setLoading(false)
       onClose()
@@ -174,7 +149,6 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
   const navigateAwayFromImages = (data: any) => {
    
     const { sideImages, color: allcolor } = data
-    console.log(allcolor.map((c: any) => c.colorName), sideImages);
 
     let errorExist = false
 
@@ -231,7 +205,10 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
 
           >
             <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
-            <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
+            <ProductDescriptionField 
+            setValue={setValue}
+            watch={watch}
+            />
             <ProductMetaFields register={register} watch={watch} errors={errors} getValue={getValues} />
             <ProductDisplayImage
               register={register}
@@ -242,7 +219,24 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
               setError={setError}
               getValues={getValues}
               clearErrors={clearErrors}
+              aspectRatio = {{ aspectX: 1, aspectY: 1 }}
+              name={'displayImage'}
+              label={'Display Name'}
             />
+            <ProductDisplayImage
+              register={register}
+              setValue={setValue}
+              watch={watch}
+              errors={errors}
+              showLable={true}
+              setError={setError}
+              getValues={getValues}
+              clearErrors={clearErrors}
+              
+              name={'sizeChart'}
+              label={'Size Chart'}
+            />
+            
             <ProductSizeField
               initial={getValues('size')}
               setValue={setValue}
@@ -313,7 +307,6 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
                 // variant="contained"
                 // color='secondary'
                 onClick={handleSubmit((data) => {
-                  console.log(data);
                   switch (tab) {
                     case 0:
                       if (data.color.length === 0) return
@@ -396,14 +389,14 @@ export const ProductNameField: React.FC<{
   );
 };
 
-export const ProductDescriptionField: React.FC<{ register: TRegister, error: { message?: string } }> = ({
-  register, error
+export const ProductDescriptionField: React.FC<{ watch:any,setValue:any }> = ({
+   setValue, watch
 }) => {
   return (
     <div className={styles['field-container']}>
       <label>Description:</label>
       <div>
-        <DOSInput
+        {/* <DOSInput
           fullWidth
           multiline
           minRows={3}
@@ -412,6 +405,16 @@ export const ProductDescriptionField: React.FC<{ register: TRegister, error: { m
           forminput={{ ...register('description') }}
           error={Boolean(error.message)}
           helperText={error.message}
+        /> */}
+        <RichTextEditor 
+        style={{maxWidth:450, borderRadius:12}}
+        value={watch('description')} 
+        onChange={value=>setValue('description',value)} 
+        controls={[
+          ['bold', 'italic', 'underline', 'link', 'image'],
+          ['unorderedList', 'h1', 'h2', 'h3'],
+          ['alignLeft', 'alignCenter', 'alignRight'],
+        ]}
         />
       </div>
     </div>
@@ -510,38 +513,23 @@ const ProductDisplayImage: React.FC<{
   setError: any
   getValues: any
   clearErrors: any
-}> = ({ register, getValues, setValue, watch, errors, showLable, side, setError, clearErrors }) => {
+  name:string
+  label:string
+  aspectRatio?:{ aspectX: number, aspectY: number }
+}> = ({ register, getValues, setValue, watch, errors, showLable, side, setError, clearErrors, name, label, aspectRatio }) => {
 
   const [preview, setPreview] = useState<string | null>(null)
   useEffect(() => {
-    // if (watch('displayImage') === "" && watch('displayImage')?.length > 0 && !['image/jpeg', 'image/png', 'image/jpg', 'image/svg'].includes(watch('displayImage')[0].type)) {
-    //   setError('displayImage', { type: 'type', message: 'must be a jpeg/png fileee' })
-    //   // setValue('displayImage',undefined)
-    // } else {
-    //   // clearErrors('displayImage')
-    // }
-    // // 
-    if (watch('displayImage')) {
-      setPreview(watch('displayImage'))
+    if (watch(name)) {
+      setPreview(watch(name))
     }
-  }, [watch('displayImage')])
-  console.log(watch('displayImage'));
-
-
-  // const getPreview = usePreviewImage(watch('displayImage'));
-
-  // const preview = typeof (getValue('displayImage')) === 'string' ? watch('displayImage') : getPreview.preview
-
-
-  // const imageFieldRef = React.useRef<HTMLInputElement | null>();
-
-  console.log(getValues("displayImage"));
-
+  }, [watch(name)])
+  
 
   return (
     <div>
       <div className={styles['field-container']}>
-        {showLable && <label>Display Image:</label>}
+        {showLable && <label>{label}:</label>}
         <div>
           {preview ? (
             <div style={{ position: "relative", maxHeight: "200px", maxWidth: "200px" }}>
@@ -553,7 +541,7 @@ const ProductDisplayImage: React.FC<{
                   position: "absolute",
                   right: "0px"
                 }}
-                onClick={() => { setValue('displayImage', null); setPreview(null) }}
+                onClick={() => { setValue(name, null); setPreview(null) }}
               >
                 <Clear />
               </IconButton>
@@ -566,30 +554,15 @@ const ProductDisplayImage: React.FC<{
               />
             </div>
           ) : (
-            // <div style={{ height: 100, width: 100 }}>
-            //   <input
-            //     type="file"
-            //     accept="image/jpeg,image/png,image/jpg"
-            //     style={{ display: 'none' }}
-            //     {...register('displayImage')}
-            //     ref={(e) => {
-            //       register('displayImage').ref(e);
-            //       imageFieldRef.current = e;
-            //     }}
-            //   />
-            //   <UploadButton
-            //     dimension={{ height: '100%', width: '100%' }}
-            //     clickAction={() => {
-            //       imageFieldRef.current?.click();
-            //     }}
-            //   >
-            //     <UploadIcon />
-            //   </UploadButton>
-            // </div>
-            <MiuracImage app={app} updateFirestore={false} editConfig={{ aspectX: 1, aspectY: 1 }} setUrlFunc={(url) => { setValue("displayImage", url); setPreview(url) }}
+            <MiuracImage 
+              app={app} 
+              updateFirestore={false} 
+              editConfig={aspectRatio?{ aspectX: 1, aspectY: 1 }:null} 
+              setUrlFunc={(url) => { setValue(name, url); setPreview(url) }}
               buttonComponent={
                 <div style={{ height: 100, width: 100 }}>
-                  <UploadButton clickAction={() => console.log("upload")
+                  <UploadButton 
+                  clickAction={() => console.log("")
                   }
                     dimension={{ height: '100%', width: '100%' }}
                   >
@@ -602,8 +575,8 @@ const ProductDisplayImage: React.FC<{
         </div>
       </div>
       {
-        errors.displayImage && <Typography gutterBottom width="55%" fontSize={12} variant='subtitle1' color='error' textAlign="right" margin="0 auto 10px">
-          {errors.displayImage?.message}
+        errors[name] && <Typography gutterBottom width="55%" fontSize={12} variant='subtitle1' color='error' textAlign="right" margin="0 auto 10px">
+          {errors[name]?.message}
         </Typography>
       }
       {!showLable && <div style={{ marginTop: "15px", textAlign: "center" }}>{side}</div>}

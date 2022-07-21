@@ -56,8 +56,8 @@ const ImagesByColor: React.FC<{ item: TMetaProductType }> = ({ item }) => {
   const { asyncWrapper, loading } = useAsyncCall(
     addImagesByColor,
     true,
-    (res) => {
-      console.log(res);
+    () => {
+      // console.log(res);
     }
   );
 

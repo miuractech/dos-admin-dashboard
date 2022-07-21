@@ -200,7 +200,6 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
     const strFrontCode = filterText.slice(0, strlength - 1);
     const strEndCode = filterText.slice(strlength - 1, filterText.length);
     const endcode = strFrontCode + String.fromCharCode(strEndCode.charCodeAt(0) + 1);
-    console.log(strFrontCode, strEndCode, endcode);
 
     useDidMountEffect(() => {
         const q = query(fontsCollectionRef, where("fontName", ">=", filterText), where("fontName", "<", endcode), limit(10));

@@ -55,8 +55,6 @@ export default function UserImages({ app, getUrl, setUrl, editMode }: Props) {
             style={{ cursor: "pointer" }}
             onClick={() => {
               if (editMode) {
-                console.log('edit mode');
-
                 setUrl({ url: item.url, fileName: item.name })
               } else {
                 getUrl(item.url)

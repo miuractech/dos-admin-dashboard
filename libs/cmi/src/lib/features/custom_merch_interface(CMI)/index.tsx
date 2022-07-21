@@ -4,7 +4,7 @@ import './styles/font.css'
 import './styles/designer.css'
 import { CircularProgress, Container, Grid, useMediaQuery } from '@mui/material'
 import { LeftPanelControls } from './components/leftPanel'
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Center from './components/center';
 import RightPanel from './components/rightPanel';
 import { useDispatch } from 'react-redux';
@@ -46,10 +46,8 @@ export default function CustomMerchInterface() {
     const media = useMediaQuery(theme.breakpoints.up('md'))
     const dispatch = useDispatch()
     useEffect(() => {
-      return () => {
         dispatch(resetDesigner())
         dispatch(resetObjects())
-      }
     }, [])
     
     return (

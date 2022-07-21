@@ -12,7 +12,7 @@ import {
 import SelectProduct from "./selectProduct";
 import { useLeftState } from "../states/states";
 import ImageUpload from "../ui-components/imageUpload";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { updateObject } from "../store/objects";
 import { useDispatch, useSelector } from "react-redux";
 import useId from "@mui/material/utils/useId";
@@ -21,7 +21,8 @@ import ArtInsert from "../ui-components/art";
 import Qr from "../ui-components/qr";
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { RootState } from "apps/reseller/src/redux-tool/store";
-import { Button, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Divider, Typography, useMediaQuery, useTheme } from "@mui/material";
+import SimpleModal from "../ui-components/modal";
 
 type leftProps = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
@@ -45,7 +46,9 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
     } = useLeftState()
     const objects = useSelector((state:RootState) => state.objects)
     const dispatch = useDispatch()
-    const { selectedSide } = useSelector((state:RootState)=>state.designer)
+    const { selectedSide, product } = useSelector((state:RootState)=>state.designer)
+    const [descriptionOpen, setDescriptionOpen] = useState(false)
+    const [sizeChartOpen, setSizeChartOpen] = useState(false)
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up('md'))
     const leftPanel = [
@@ -138,6 +141,7 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
                     <Button
                     disableElevation
                     sx={{fontWeight:300}}
+                    onClick={()=>setDescriptionOpen(true)}
                     color='secondary'
                     variant="contained"
                     >
@@ -145,6 +149,7 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
                     </Button>
                     <Button
                     // sx={{fontWeight:300}}
+                    onClick={()=>setSizeChartOpen(true)}
                     color='inherit'
                     disableElevation
                     variant="contained"
@@ -180,8 +185,6 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
                     <div
                         key={text}
                         onClick={onClick}
-                        // className="white-bg margin1 flex vertical-center pointer-cursor paddingp5"
-                        // style={{ height: 40, borderRadius: 6, paddingLeft: 30 }}
                     >
                         <div
                             className="marginp1 "
@@ -197,6 +200,42 @@ export const LeftPanelControls = ({ setLoading, setSelectedId }: leftProps) => {
             <ImageUpload open={imageModal} onClose={() => setImageModal(false)} setLoading={setLoading} loading={false} />
             <ArtInsert open={artModal} onClose={() => setArtModal(false)} setLoading={setLoading} loading={false} />
             <Qr open={qrModal} onClose={() => setQrModal(false)} setLoading={setLoading} loading={false} />
+            <SimpleModal 
+            open={descriptionOpen} 
+            onClose={()=>setDescriptionOpen(false)} 
+            >
+                <div className="padding6 text-left" >
+                    <Typography 
+                    align="center"
+                    variant='h5'
+                    fontWeight={600}
+                    >
+                        Product Info
+                    </Typography>
+                    <br />
+                    <Divider/>
+                    { product?.description && <div dangerouslySetInnerHTML={{ __html: product?.description }} />}
+                </div>
+            </SimpleModal>
+            <SimpleModal 
+            open={sizeChartOpen} 
+            onClose={()=>setSizeChartOpen(false)} 
+            >
+                <div className="padding6 text-left" >
+                    <Typography 
+                    align="center"
+                    variant='h5'
+                    fontWeight={600}
+                    >
+                        Size Chart
+                    </Typography>
+                    <br />
+                    <Divider/>
+                    { product?.sizeChart && 
+                    <img src={product?.sizeChart} style={{maxWidth:600, maxHeight:600, width:'100%', height:'100%', display:'block', margin:'auto'}} alt="" />
+                    }
+                </div>
+            </SimpleModal>
         </div>
     )
 }

@@ -35,7 +35,7 @@ interface IFormShape {
 }
 
 const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
-  const { register, setValue, handleSubmit, formState: { errors }, unregister } = useForm<IFormShape>({
+  const { register, setValue, watch, handleSubmit, formState: { errors }, unregister } = useForm<IFormShape>({
     resolver: yupResolver(schema),
   });
 
@@ -61,7 +61,10 @@ const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
         className={styles['add-form-body']}
       >
         <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
-        <ProductDescriptionField register={register} error={errors?.description ? errors?.description : {}} />
+        <ProductDescriptionField 
+         setValue={setValue}
+         watch={watch}
+          />
         <ReadOnlyField label="FamilyId" val={item.familyId} />
         <ReadOnlyField label="CategoryId" val={item.categoryId} />
         <ReadOnlyField label="SubCategoryId" val={item.subcategoryId} />

@@ -2,14 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "firebase/auth";
 
 interface TState {
-  user: User | null;
+  user: User | null | undefined;
   userLoading: boolean;
   error: string;
   signOutMessage: string;
 }
 
 const state: TState = {
-  user: null,
+  user: undefined,
   userLoading: true,
   error: "",
   signOutMessage: "",

@@ -31,20 +31,18 @@ type Props = {
 
 
 export default function Center({ selectedId, setSelectedId, previews, setPreviews }: Props) {
-    // const selectedProduct: RootObject = useSelector((state:RootState) => state.designer.product)
     const { sides, selectedSide, image, selectedSideName, sideNames } = useSelector((state: RootState) => state.designer)
     const [previewImages, setPreviewImages] = useState<string[]>([])
-    // const products: RootObject[] = useAppSelector(state => state.designer.products)
     const [createProductConsent, setCreateProductConsent] = useState(false)
     const objects = useSelector((state: RootState) => state.objects)
     const dispatch = useDispatch()
     const stageRef = useRef<any>(null)
-    const frontRef = useRef()
-    const backRef = useRef()
-    const leftRef = useRef()
-    const rightRef = useRef()
-    const topRef = useRef()
-    const bottomRef = useRef()
+    const frontRef = useRef<any>()
+    const backRef = useRef<any>()
+    const leftRef = useRef<any>()
+    const rightRef = useRef<any>()
+    const topRef = useRef<any>()
+    const bottomRef = useRef<any>()
     const allRefs = [frontRef, backRef, rightRef, topRef, bottomRef, leftRef]
     const navigate = useNavigate()
     const theme = useTheme()
@@ -133,16 +131,15 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                             onClick={() => {
                                 setPreviewImages([])
                                 setTimeout(() => {
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    //@ts-ignore
-                                    const allImg = sideNames.map((s, index) => ({ sideName: s, backgroundUrl: sides[s].imgUrl, photoUrl: allRefs[index]?.current?.toDataURL() }))
-
-                                    for (const pre in allImg) {
-                                        getPreviewImg(allImg[pre], setPreviewImages)
-                                        if (parseInt(pre) === allImg.length - 1) {
-                                            setTimeout(() => {
-                                                setCreateProductConsent(true)
-                                            }, 100);
+                                    if(sides){
+                                        const allImg = sideNames.map((s, index) => ({ sideName: s, backgroundUrl: sides[s].imgUrl, photoUrl: allRefs[index]?.current?.toDataURL() }))
+                                        for (const pre in allImg) {
+                                            getPreviewImg(allImg[pre], setPreviewImages)
+                                            if (parseInt(pre) === allImg.length - 1) {
+                                                setTimeout(() => {
+                                                    setCreateProductConsent(true)
+                                                }, 100);
+                                            }
                                         }
                                     }
                                 }, 100);
@@ -156,11 +153,13 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
             <AreYouSure open={createProductConsent} onClose={() => {
                 setCreateProductConsent(false)
             }} discard={() => {
-
                 dispatch(setPreviewImagesToRedux(previewImages))
+                // console.log(previewImages);
                 setCreateProductConsent(false)
                 navigate("/designproduct/addproducts")
-            }} text={'add this product?'} />
+            }} 
+            text={'add this product?'}
+            />
         </div >
     )
 }
@@ -178,7 +177,6 @@ type CMIstageProps = {
 
 
 const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, selectedSide, image, currentObjects }: CMIstageProps) => {
-    // const  = useAppSelector(state => state.objects)
     const shapeRef = React.useRef(currentObjects.map(() => React.createRef()));
     const trRef = React.useRef();
     const { x, y, width, height, radius, type } = selectedSide as any
@@ -250,6 +248,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                             id={'outerLayer'}
                                             strokeWidth={2}
                                             stroke={stroke}
+                                            key={stroke}
                                             width={width + (2 * index)}
                                             height={height + (2 * index)}
                                             dash={[10, 5]}
@@ -370,9 +369,4 @@ const getPreviewImg = async ({ backgroundUrl, photoUrl, sideName }: { background
     background.onload = photo.onload = counter;
     background.src = backgroundUrl;
     photo.src = photoUrl
-
-    /// common loader keeping track if loads
-
-
-
 }

@@ -54,7 +54,6 @@ import { Image } from "react-konva";
             const width = node.width()
             const height = node.height()
             const rotation = Math.trunc(node.rotation());
-            console.log(scaleX,scaleY,width,height);
             node.scaleX(1);
             node.scaleY(1);
             onChange({

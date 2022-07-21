@@ -17,14 +17,19 @@ import produce from 'immer';
 import { batchCommitTypes } from '../../../../Midl/meta-products/hooks/product-type/helpers';
 import { Typography } from '@mui/material';
 import SimpleModal from '../../../global/simpleModal/modal';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { TMetaProductType } from 'apps/admin-dashboard/src/Midl/meta-products/types';
 
 const ProductType: React.FC = () => {
   useSubject(showProductAddForm$);
   const types = useSelector((state: RootState) => state.metaProductType);
+  const { user } = useSelector((state: RootState) => state.adminUser);
   const dispatch = useDispatch();
   const dndInit =
     types.dndInit === 'initialize' || types.dndInit === 'continue';
-
+    const productTypes = useSelector(
+      (state: RootState) => state.metaProductType.metaProductTypes
+    );
   return (
     <div className={metaStyles['root-content']}>
       <div className={metaStyles['heading']}>
@@ -60,8 +65,8 @@ const ProductType: React.FC = () => {
               <ApplicationButton
                 variant="enable"
                 clickAction={() => {
-                  produce(types.metaProductTypes, (data) =>
-                    batchCommitTypes(data, 'Somnath')
+                  produce(types.metaProductTypes, (data: TMetaProductType[]) =>
+                    batchCommitTypes(data, user?.displayName??'')
                   );
                   dispatch(setDndType('default'));
                 }}
@@ -77,7 +82,7 @@ const ProductType: React.FC = () => {
         <AddProductTypeForm onClose={() => showProductAddForm$.next(false)}  />
       </SimpleModal>
       
-      <ListItems />
+      <ListItems productTypes={productTypes} />
     </div>
   );
 };

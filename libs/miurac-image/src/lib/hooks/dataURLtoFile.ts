@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export const dataURLtoFile = (dataURL: string | null | undefined, fileName?:string) => {
-  console.log('dataURL',dataURL);
   
     return new Promise((resolve,reject)=>{
         if (!dataURL) resolve(null)

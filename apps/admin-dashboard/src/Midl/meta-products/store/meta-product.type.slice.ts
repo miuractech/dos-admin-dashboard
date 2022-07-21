@@ -83,11 +83,13 @@ const metaProductTypeSlice = createSlice({
       state: TState,
       action: PayloadAction<{ source: number; destination: number }>
     ) => {
+      
       const reordered = reorder(
         state.metaProductTypes,
         action.payload.destination,
         action.payload.source
       );
+      
 
       if (!(reordered instanceof ApplicationErrorHandler)) {
         state.metaProductTypes = reordered;

@@ -10,7 +10,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import CustomFonts from './customFonts'
-import { Add, FormatAlignCenter, FormatAlignLeft, FormatAlignRight, Remove } from '@mui/icons-material'
+import { Add, ChevronLeft, ChevronRight, FormatAlignCenter, FormatAlignLeft, FormatAlignRight, KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp, Remove } from '@mui/icons-material'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { RootState } from '../../../../../../../apps/reseller/src/redux-tool/store';
 import { Box } from '@mui/system'
@@ -106,6 +106,31 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
 
           <div className="white-bg r5" style={{ ...topBarStyle, }}   >
             <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <div 
+                className="padding1 r5 text-center" 
+                style={{ alignSelf: 'flex-start', width:140, margin:'auto' }} 
+                >
+                  <IconButton 
+                  style={{width:40}} 
+                  className="auto-margin"
+                  onMouseDown={() => handelChange(selectedObject.y-1, "y")}
+                  >
+                    <KeyboardArrowUp />
+                  </IconButton>
+                  <div className="flex" style={{justifyContent:'space-between'}} >
+                    <IconButton>
+                      <KeyboardArrowLeft />
+                    </IconButton>
+                    <IconButton>
+                      <KeyboardArrowRight />
+                    </IconButton>
+                  </div>
+                  <IconButton style={{width:40}} className="auto-margin" >
+                    <KeyboardArrowDown />
+                  </IconButton>
+                </div>
+              </Grid>
               {selectedObject?.type === 'text' ?
                 <>
                   <Grid item xs={12}>
@@ -240,11 +265,11 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
                   <div
                   >
                     <input
-                      value={selectedObject?.x}
                       type="number"
                       name="X"
                       id="x"
                       className='stylebar-input'
+                      value={selectedObject?.x}
                       onChange={(event) => handelChange(Number(event.target.value), "x")}
                     />
                   </div>

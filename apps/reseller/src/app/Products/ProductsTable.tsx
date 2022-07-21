@@ -9,7 +9,6 @@ import { RootState } from '../../redux-tool/store';
 
 export const ProductsTable = ({ filteredData }: { filteredData: ProductsObject[] | null }) => {
     const { queriedListings } = useSelector((state: RootState) => state.listings)
-    console.log("query", queriedListings);
 
     const columns = [
         {

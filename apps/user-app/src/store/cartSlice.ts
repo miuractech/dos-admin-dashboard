@@ -30,7 +30,6 @@ export const CartSlice = createSlice({
         },
         setLocatCart: (state, action) => {
             const product = state.localCart.find(pro => pro.productID === action.payload.productID)
-            console.log(product);
             state.localCart.push(action.payload)
         }
     },

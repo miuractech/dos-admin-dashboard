@@ -29,8 +29,6 @@ export const createDocstorage = functions.region("asia-south1")
       await bucket.file(object.name).makePublic();
       const [metadata] = await bucket.file(object.name).getMetadata();
       const url = metadata.mediaLink;
-      console.log(url);
-      console.log("object", object.name, object.metadata);
       return admin.firestore().doc(`uploads/${uid}/images/${fileName}`).set({
         createdAt: object.timeCreated,
         path: object.name,

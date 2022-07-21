@@ -87,7 +87,6 @@ export const DesignerSlice = createSlice({
       // state.bgImage = action.payload;
     },
     setProducts: (state, action) => {
-      console.log(action.payload);
       const { payload } = action
       const { sideImages } = payload[0]
       const sideNames = orderedSides.filter((side: string) => sideImages[payload[0].color[0].colorName][side])
@@ -128,7 +127,6 @@ export const DesignerSlice = createSlice({
     },
     setSelectedColor: (state, action:PayloadAction<Color>) => {
       const payload = action.payload 
-      console.log(payload);
       
       const product = current(state.product) as RootObject
       if (product) {
