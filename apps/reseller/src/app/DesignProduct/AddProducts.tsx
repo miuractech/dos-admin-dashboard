@@ -40,11 +40,10 @@ export const AddProduct = () => {
     const storage = getStorage();
     useEffect(() => {
         if (designPreviewImages.length === 0) {
-            navigate(-1) 
+            navigate(-1)
         }
     }, [])
-    console.log('designPreviewImages', designPreviewImages);
-    
+
     const dataURLtoBlob = (dataURL: string, img: any, productId: string) => {
         return new Promise((resolve, reject) => {
             return fetch(dataURL)
@@ -97,7 +96,7 @@ export const AddProduct = () => {
             console.log(error);
         }
     }
-    console.log(product)
+    console.log(designPreviewImages, product, selectedColor)
     return (
         product &&
         <form onSubmit={handleSubmit(onsubmit)}>
@@ -190,7 +189,7 @@ export const AddProduct = () => {
                         <CircularProgress color="inherit" />
                     </Backdrop>
                 </Card>
-                </div >
-            </form>
+            </div >
+        </form>
     )
 }

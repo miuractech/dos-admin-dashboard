@@ -52,15 +52,15 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
             <div
             // className=''
             >
-                <div className="flex justify-center m-auto" style={{ boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, width:'min-content' }}>
+                <div className="flex justify-center m-auto" style={{ boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, width: 'min-content' }}>
                     {sideNames.map((side) => {
                         // if (selectedSide?.imgUrl) {
                         return (
                             <div key={side}>
                                 <Button
-                                    sx={{ py: media?1.5:1, px: media?3:0, width: media?100:80, }}
+                                    sx={{ py: media ? 1.5 : 1, px: media ? 3 : 0, width: media ? 100 : 80, }}
                                     onClick={() => {
-                                        if(selectedSideName){
+                                        if (selectedSideName) {
                                             dispatch(setSelectedSide(side))
                                             dispatch(changeSide({ current: selectedSideName, to: side }))
                                             setSelectedId(null)
@@ -107,8 +107,8 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                                 stageRef={allRefs[index]}
                                 selectedId={selectedId}
                                 setSelectedId={setSelectedId}
-                                selectedSide={sides?sides[sideName]:null}
-                                image={sides?sides[sideName].imgUrl:''}
+                                selectedSide={sides ? sides[sideName] : null}
+                                image={sides ? sides[sideName].imgUrl : ''}
                                 currentObjects={current}
                             />
                         </div>
@@ -200,7 +200,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                 }}
             >
                 {/* {image && <img src={image} style={{ width: 500 }} alt="img" />} */}
-                {image && <ProgressiveImg src={image} alt="img" style={{ width: 500 }} skeletonDimension={{width:500, height:500}} />}
+                {image && <ProgressiveImg src={image} alt="img" style={{ width: 500 }} skeletonDimension={{ width: 500, height: 500 }} />}
             </div>
             <div
                 className='relative z-10'

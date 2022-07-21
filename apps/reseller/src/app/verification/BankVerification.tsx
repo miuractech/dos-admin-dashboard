@@ -4,7 +4,7 @@ import InputField from '../../UI/input-field/input-field'
 import { 
     httpsCallable, 
     getFunctions, 
-    // connectFunctionsEmulator 
+    connectFunctionsEmulator 
 } from 'firebase/functions';
 import { app } from '../../firebaseConfig/config';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -46,7 +46,7 @@ export const BankVerification = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const functions = getFunctions(app, 'asia-south1')
-    // connectFunctionsEmulator(functions, "localhost", 5001);
+    connectFunctionsEmulator(functions, "localhost", 5001);
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     })
@@ -59,7 +59,7 @@ export const BankVerification = () => {
             dispatch(setBackDrop(false))
             setValidData(true)
         } catch (error) {
-            console.log(error)
+            console.log('err', error)
             dispatch(setBackDrop(false))
         }
     }

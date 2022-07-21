@@ -1,4 +1,4 @@
-import { Button, Typography } from '@mui/material'
+import { Breadcrumbs, Button, Drawer, Typography } from '@mui/material'
 import { ProductCardCart } from './ProductCardCart'
 import { RootState } from '../../../store/store'
 import React, { useEffect, useState } from 'react'
@@ -10,11 +10,15 @@ import { setNotification } from '../../../store/alertslice'
 import SimpleModal from '@dropout-store/simple-modal'
 import Lottie from "lottie-react";
 import emptyBox from "./emptyBox.json"
+import { Link } from 'react-router-dom'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 export const Cart = () => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
+    const { user } = useSelector((state: RootState) => state.User)
     const dispatch = useDispatch()
     const [productDelete, setProductDelete] = useState<string | null>(null)
+    const [userDrawer, setUserDrawer] = useState(false)
 
     const setCount = (id: string, productId: string, productSize: string) => {
         const copy = [...cartProductList]
@@ -77,9 +81,38 @@ export const Cart = () => {
         localStorage.setItem("cart", JSON.stringify(localCart))
     }, [localCart])
 
+    const breadcrumbs = [
+        <Link
+            key="1"
+            to=''
+        >
+            <Typography className='hover:underline text-blue-700' fontWeight={500} color="text.primary">
+                Cart
+            </Typography>
+        </Link>,
+        <Link
+            key="2"
+            to=''
+        >
+            <Typography className='hover:underline' fontWeight={500} color="text.primary">
+                Shipping Method
+            </Typography>
+        </Link>,
+        <Link to='' key="3">
+            <Typography className='hover:underline' fontWeight={500} color="text.primary">
+                Payment Method
+            </Typography>
+        </Link>
+    ];
+
     return (
         cartProductList.length >= 1 ? (
             <>
+                <div className='py-5 md:mx-24' >
+                    <Breadcrumbs separator={<ChevronRightIcon color='primary' />} aria-label="breadcrumb">
+                        {breadcrumbs}
+                    </Breadcrumbs>
+                </div>
                 <SimpleModal open={Boolean(productDelete)} onClose={() => setProductDelete(null)}>
                     <div className='flex flex-col gap-5 w-56 mt-5 md:w-96'>
                         <Typography textAlign="left" variant='h6'>Remove Item</Typography>
@@ -112,9 +145,20 @@ export const Cart = () => {
                     <div className=''>
                         <Typography fontWeight={500} variant='h6'>Order Summary</Typography>
                         <OrderSummary />
-                        <Button variant='contained' fullWidth>Proceed to payment</Button>
+                        <Button variant='contained' fullWidth onClick={() => {
+                            if (user) {
+                                console.log("add adress");
+                            } else {
+                                setUserDrawer(true)
+                            }
+                        }}>ADD ADDRESS</Button>
                     </div>
                 </div>
+                <Drawer anchor='left' open={userDrawer} onClose={() => setUserDrawer(false)}>
+                    <div className='w-96'>
+                        <img src='' alt='img' />
+                    </div>
+                </Drawer>
             </>
         ) : (
             <div className='text-center mt-20'>
