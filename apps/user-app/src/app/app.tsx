@@ -8,7 +8,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { setUser } from '../features/auth/authSlice';
 import { Alert, CircularProgress, Snackbar, useMediaQuery, useTheme } from '@mui/material';
 import { setError, setNotification, setWarning } from '../store/alertslice';
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { setFamily } from '../store/product';
 import { ContactUs } from './components/contactUs/ContactUs';
 import { Header } from './productPage/header/Header';
@@ -16,6 +16,8 @@ import { NavBar } from './components/NavBar';
 import { MobileHeader } from './components/MobileHeader';
 import { HeaderTop } from './components/HeaderTop';
 import { Cart } from './components/cart/Cart';
+import { addCartProducts, localCart, setLocalCart } from '../store/cartSlice';
+import { v4 as uuidv4 } from 'uuid';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -32,9 +34,24 @@ export function App() {
       const querySnapshot = await getDocs(q)
       dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
     })
+    const data = localStorage.getItem('cart')
+    if (data) {
+      const cartData: localCart[] = JSON.parse(data)
+      dispatch(setLocalCart(cartData))
+      cartData.forEach(async (element: localCart) => {
+        const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
+        const docSnap = await getDoc(docRef)
+        dispatch(addCartProducts({
+          product: docSnap.data(),
+          size: element.size,
+          count: element.count,
+          id: element.id
+        }))
+      })
+    }
     return () => Unsubscribe()
+  }, [dispatch])
 
-  }, [])
   const theme = useTheme()
   const media = useMediaQuery(theme.breakpoints.up("sm"))
   if (loading) return <CircularProgress />

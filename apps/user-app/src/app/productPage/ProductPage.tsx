@@ -14,9 +14,10 @@ import { RootState } from '../../store/store'
 import { useDispatch, useSelector } from 'react-redux'
 import ProductsCard from '../components/ProductsCard'
 import { MobileAddCart } from '../components/MobileAddCart'
-import { setCartProducts, setLocatCart } from '../../store/cartSlice'
+import { addCartProducts, addLocalCart } from '../../store/cartSlice'
 import { useNavigate } from 'react-router-dom'
 import { setNotification, setWarning } from '../../store/alertslice'
+import { v4 as uuidv4 } from 'uuid';
 
 type cartProduct = {
     productId: string
@@ -32,24 +33,37 @@ const ProductPage = () => {
     const { productsList } = useSelector((state: RootState) => state.storeFront)
     const medium = useMediaQuery(theme.breakpoints.up("md"))
     const { product } = useSelector((state: RootState) => state.product)
+    const { cartProductList } = useSelector((state: RootState) => state.cart)
 
     const AddToCard = () => {
         if (!product) return
-        if (size) {
-            const localCart = {
-                productID: product.productId,
-                size: size,
-                count: 1
-            }
-            dispatch(setCartProducts({
-                product: product,
-                size: size
-            }))
-            dispatch(setLocatCart(localCart))
-            dispatch(setNotification("Item added to cart"))
+        const productid = cartProductList.filter(item => item.product.productId === product.productId)
+        const productSize = productid.filter(item => item.size === size)
+        if (productid.length > 0 && productSize.length > 0) {
             navigate("/cart")
+            dispatch(setNotification("Item already exists in cart"))
         } else {
-            dispatch(setWarning("Please select a Size to proceed"))
+            if (size) {
+                const id = uuidv4()
+                const localCart = {
+                    productID: product.productId,
+                    size: size,
+                    count: 1,
+                    resellerId: product.resellerId,
+                    id: id
+                }
+                dispatch(addCartProducts({
+                    product: product,
+                    size: size,
+                    count: 1,
+                    id: id
+                }))
+                dispatch(addLocalCart(localCart))
+                dispatch(setNotification("Item added to cart"))
+                navigate("/cart")
+            } else {
+                dispatch(setWarning("Please select a Size to proceed"))
+            }
         }
     }
 

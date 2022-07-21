@@ -52,7 +52,7 @@ export const ImageContant = ({ AddToCard, setSize }: {
                 <div className='p-1'>
                     <Typography fontWeight={500}>Choose a size :</Typography>
                     <div className='flex gap-4'>
-                        {product.sizeAvailable.map((size, index) => <div onClick={() => setSize(size)} className='size'><Typography variant='subtitle2' key={index}>{size}</Typography></div>)}
+                        {product.sizeAvailable.map((size, index) => <div key={index} onClick={() => setSize(size)} className='size'><Typography variant='subtitle2'>{size}</Typography></div>)}
                     </div>
                 </div>
                 <div className='p-1 gap-4' style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr" }}>

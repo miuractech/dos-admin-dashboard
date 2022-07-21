@@ -1,9 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-const cfsdk = require("cashfree-sdk");
-const fetch = require('node-fetch');
+import cfsdk from "cashfree-sdk";
+import fetch from "node-fetch";
 
-admin.initializeApp()
+admin.initializeApp();
 
 export const docCreation = functions.region("asia-south1")
   .auth.user().onCreate(async (user) => {
@@ -29,7 +29,6 @@ export const createDocstorage = functions.region("asia-south1")
       await bucket.file(object.name).makePublic();
       const [metadata] = await bucket.file(object.name).getMetadata();
       const url = metadata.mediaLink;
-      console.log(url);
       console.log("object", object.name, object.metadata);
       return admin.firestore().doc(`uploads/${uid}/images/${fileName}`).set({
         createdAt: object.timeCreated,
@@ -41,47 +40,47 @@ export const createDocstorage = functions.region("asia-south1")
     return;
   });
 
-export const bank = functions.https.onCall(async (data, context) => {
-  const { Payouts } = cfsdk;
-  const { Validation } = Payouts;
+export const bank = functions.region("asia-south1").https.onCall(async (data) => {
+  const payouts = cfsdk.Payouts;
+  const validation = payouts.Validation;
   const config = {
     Payouts: {
       ClientID: "CF182083CB7T3VT6LA0396U1BP90",
       ClientSecret: "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
       ENV: "TEST",
-    }
+      PathToPublicKey: "./publickey/key.pem",
+    },
   };
-  Payouts.Init(config.Payouts)
+  payouts.Init(config.Payouts);
   try {
-    const response = await Validation.ValidateBankDetails({
+    const response = await validation.ValidateBankDetails({
       name: data.name,
       phone: data.mobileNumber,
       bankAccount: data.accountNumber,
-      ifsc: data.ifscCode
+      ifsc: data.ifscCode,
     });
-    return response
+    return response;
+  } catch (err) {
+    return err;
   }
-  catch (err) {
-    return err
-  }
-})
+});
 
-export const pan = functions.https.onCall(async (data, context) => {
-  const url = '	https://sandbox.cashfree.com/verification/pan'
+export const pan = functions.region("asia-south1").https.onCall(async (data) => {
+  const url = "https://sandbox.cashfree.com/verification";
   const options = {
-    method: 'POST',
+    method: "POST",
     headers: {
-      Accept: 'application/json',
-      'x-client-id': 'CF182083CB7T3VT6LA0396U1BP90',
-      'x-client-secret': 'a186e2ecb92a9b038ef2b168f697e362e0ba2067',
-      'Content-Type': 'application/json'
+      "Accept": "application/json",
+      "x-client-id": "CF182083CB7T3VT6LA0396U1BP90",
+      "x-client-secret": "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ pan: data.panNumber, name: data.name })
+    body: JSON.stringify({ pan: data.panNumber, name: data.name }),
   };
   try {
-    const result = await fetch(url, options)
-    return result.json()
+    const result = await fetch(url, options);
+    return result.json();
   } catch (error) {
-    return error
+    return error;
   }
-})
+});

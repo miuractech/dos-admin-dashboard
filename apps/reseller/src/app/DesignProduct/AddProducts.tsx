@@ -73,7 +73,7 @@ export const AddProduct = () => {
                 const targetImage = await dataURLtoBlob(img.url, img, productId)
                 sideImages.push(targetImage)
             }
-            const docRef = await setDoc(doc(db, "reSellers", User.uid, "products", productId), {
+            await setDoc(doc(db, "reSellers", User.uid, "products", productId), {
                 ...data,
                 productId: productId,
                 color: selectedColor.colorName,
@@ -95,9 +95,10 @@ export const AddProduct = () => {
             console.log(error);
         }
     }
-
+    console.log(product)
     return (
-        product && <form onSubmit={handleSubmit(onsubmit)}>
+        product &&
+        <form onSubmit={handleSubmit(onsubmit)}>
             <div style={{ width: "90%", margin: "auto" }}>
                 <Grid container justifyContent="space-between" paddingBottom={2}>
                     <Grid item> <Typography fontWeight={600} variant='h5'>Products</Typography></Grid>

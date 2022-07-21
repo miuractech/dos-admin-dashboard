@@ -286,8 +286,7 @@ a{
     transform: translate(-50%, -55%);
     overflow-y: auto;
     border-radius: 8px;
-    /* height: 80%; */
-    min-height: 300px;
+    min-height: 150px;
     padding: 32px;
     max-height: 70%;
 }

@@ -26,7 +26,7 @@ const schema = yup.object({
         )
         .matches(
             /^[A-Z]{4}[a-zA-Z0-9]{7}$/,
-            "First 4 characters must be alphabets and last 7 characters must be numbers"
+            "First 4 characters must be alphabets and last 7 characters must be number"
         ),
 })
 
