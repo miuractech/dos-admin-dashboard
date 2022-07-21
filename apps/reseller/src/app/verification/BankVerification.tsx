@@ -1,7 +1,11 @@
 import { Box, Button, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import InputField from '../../UI/input-field/input-field'
-import { httpsCallable, getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { 
+    httpsCallable, 
+    getFunctions, 
+    connectFunctionsEmulator 
+} from 'firebase/functions';
 import { app } from '../../firebaseConfig/config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
