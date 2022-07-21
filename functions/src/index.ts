@@ -1,48 +1,48 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import cfsdk from "cashfree-sdk";
+import * as cfsdk from "cashfree-sdk";
 import fetch from "node-fetch";
 
 admin.initializeApp();
 
 export const docCreation = functions.region("asia-south1")
-  .auth.user().onCreate(async (user) => {
-    if (!user.disabled && user.email) {
-      await admin.auth().generateEmailVerificationLink(user?.email);
-      return admin.firestore().doc(`reSellers/${user.uid}`).set({
-        email: user.email,
-        accountCreation: user.metadata.creationTime,
-      });
-    }
-    return;
-  });
+    .auth.user().onCreate(async (user) => {
+      if (!user.disabled && user.email) {
+        await admin.auth().generateEmailVerificationLink(user?.email);
+        return admin.firestore().doc(`reSellers/${user.uid}`).set({
+          email: user.email,
+          accountCreation: user.metadata.creationTime,
+        });
+      }
+      return;
+    });
 
 export const createDocstorage = functions.region("asia-south1")
-  .storage
-  .object().onFinalize(async (object) => {
-    const uid = object.name?.split("/")[1];
-    const fileName = object.name?.split("/").pop();
-    const bucket = admin.storage().bucket(object.bucket);
-    if (!object.name) return;
-    const path = object.name.split("/");
-    if (path[0] === "uploads") {
-      await bucket.file(object.name).makePublic();
-      const [metadata] = await bucket.file(object.name).getMetadata();
-      const url = metadata.mediaLink;
-      console.log("object", object.name, object.metadata);
-      return admin.firestore().doc(`uploads/${uid}/images/${fileName}`).set({
-        createdAt: object.timeCreated,
-        path: object.name,
-        size: object.size,
-        url,
-      });
-    }
-    return;
-  });
+    .storage
+    .object().onFinalize(async (object) => {
+      const uid = object.name?.split("/")[1];
+      const fileName = object.name?.split("/").pop();
+      const bucket = admin.storage().bucket(object.bucket);
+      if (!object.name) return;
+      const path = object.name.split("/");
+      if (path[0] === "uploads") {
+        await bucket.file(object.name).makePublic();
+        const [metadata] = await bucket.file(object.name).getMetadata();
+        const url = metadata.mediaLink;
+        console.log("object", object.name, object.metadata);
+        return admin.firestore().doc(`uploads/${uid}/images/${fileName}`).set({
+          createdAt: object.timeCreated,
+          path: object.name,
+          size: object.size,
+          url,
+        });
+      }
+      return;
+    });
 
 export const bank = functions.region("asia-south1").https.onCall(async (data) => {
-  const payouts = cfsdk.Payouts;
-  const validation = payouts.Validation;
+  const {Payouts} = cfsdk;
+  const {Validation} = Payouts;
   const config = {
     Payouts: {
       ClientID: "CF182083CB7T3VT6LA0396U1BP90",
@@ -51,9 +51,9 @@ export const bank = functions.region("asia-south1").https.onCall(async (data) =>
       PathToPublicKey: "./publickey/key.pem",
     },
   };
-  payouts.Init(config.Payouts);
+  Payouts.Init(config.Payouts);
   try {
-    const response = await validation.ValidateBankDetails({
+    const response = await Validation.ValidateBankDetails({
       name: data.name,
       phone: data.mobileNumber,
       bankAccount: data.accountNumber,
@@ -75,7 +75,7 @@ export const pan = functions.region("asia-south1").https.onCall(async (data) => 
       "x-client-secret": "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ pan: data.panNumber, name: data.name }),
+    body: JSON.stringify({pan: data.panNumber, name: data.name}),
   };
   try {
     const result = await fetch(url, options);
