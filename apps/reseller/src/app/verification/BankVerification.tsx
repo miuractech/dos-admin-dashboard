@@ -1,7 +1,11 @@
 import { Box, Button, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import InputField from '../../UI/input-field/input-field'
-import { httpsCallable, getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { 
+    httpsCallable, 
+    getFunctions, 
+    // connectFunctionsEmulator 
+} from 'firebase/functions';
 import { app } from '../../firebaseConfig/config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -41,8 +45,8 @@ export const BankVerification = () => {
     const [validData, setValidData] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const functions = getFunctions(app)
-    connectFunctionsEmulator(functions, "localhost", 5001);
+    const functions = getFunctions(app, 'asia-south1')
+    // connectFunctionsEmulator(functions, "localhost", 5001);
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     })

@@ -1,5 +1,5 @@
 import { Backdrop, Button, Card, CardMedia, CircularProgress, Grid, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -8,9 +8,9 @@ import InputField from '../../UI/input-field/input-field'
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { v4 as uuidv4 } from 'uuid';
-import useStorage from './hooks/useStorage'
+// import useStorage from './hooks/useStorage'
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
 import { db } from '../../firebaseConfig/config'
 import { setNotification } from '../../redux-tool/auth'
 
