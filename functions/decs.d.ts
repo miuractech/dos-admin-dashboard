@@ -1,1 +1,1 @@
-declare module "cashfree-sdk"
+declare module "@cashfreepayments/cashfree-sdk"
