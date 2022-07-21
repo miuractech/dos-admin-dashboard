@@ -81,6 +81,7 @@ export const AddProduct = () => {
                 resellerId: User.uid,
                 sizeAvailable: product.size,
                 sku: product.sku[selectedColor.colorName],
+                description:product.description,
                 resellerDescription: "",
                 subCategoryId: product.subcategoryId,
                 categoryId: product.categoryId,
@@ -111,25 +112,6 @@ export const AddProduct = () => {
                     marginBottom: "30px"
                 }}>
                     <Typography fontWeight={500}>Media</Typography>
-                    <Grid container gap={2} margin={1}>
-                        {designPreviewImages.map(img => <Grid key={img.sideName} xs={12} m={1.8} lg={1.8}>
-                            <Card >
-                                <img
-                                    src={img.url}
-                                    placeholder="side images"
-                                    width="100%"
-                                    alt=''
-                                />
-                                <Typography fontWeight={500} align="center">{img.sideName}</Typography>
-                            </Card>
-                        </Grid>)}
-                    </Grid>
-                    <Card style={{
-                        borderRadius: "15px",
-                        padding: "30px 20px",
-                        marginBottom: "30px"
-                    }}>
-                        <Typography fontWeight={500}>Media</Typography>
                         <Grid container gap={2} margin={1}>
                             {designPreviewImages.map(img => <Grid key={img.sideName} item xs={12} m={1.8} lg={1.8}>
                                 <Card >
@@ -143,7 +125,6 @@ export const AddProduct = () => {
                                 </Card>
                             </Grid>)}
                         </Grid>
-                    </Card >
                     <Card style={{
                         borderRadius: "15px",
                         padding: "30px 20px",

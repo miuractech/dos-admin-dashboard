@@ -74,6 +74,7 @@ export interface produstsType {
     status: string;
     sideImages: SideImageType[];
     resellerDescription: string;
+    description: string;
     subCategoryId: string;
     comparePrice: number;
     sku: Sku;

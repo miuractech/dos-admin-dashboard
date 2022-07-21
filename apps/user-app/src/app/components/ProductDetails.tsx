@@ -10,7 +10,7 @@ export const ProductDetails = () => {
         product &&
         <div>
             <SimpleAccordion heading="Product Details">
-                <Typography>{product.resellerDescription}</Typography>
+                <Typography>{ product.description ? <div dangerouslySetInnerHTML={{ __html: product.description }} />:'No Description found'}</Typography>
             </SimpleAccordion>
         </div>
     )
