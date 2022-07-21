@@ -20,16 +20,20 @@ import usePhoneAuth from '../../../features/auth/phoneAuthHook'
 import { app } from '../../../configs/firebaseConfig'
 
 const schema = yup.object().shape({
-    phone: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(6000000000, 'enter valid phone number').max(9999999999, 'enter valid phone number').required('phone number is required')
+    phone: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(6000000000, 'enter valid phone number').max(9999999999, 'enter valid phone number').required('phone number is required'),
+})
+
+const schema2 = yup.object().shape({
+    otp: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(0, 'enter valid otp').max(999999, 'enter valid otp').required('otp is required')
 })
 
 export const Cart = () => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
-    const { user } = useSelector((state: RootState) => state.User)
+    const { user, step } = useSelector((state: RootState) => state.User)
     const dispatch = useDispatch()
     const [productDelete, setProductDelete] = useState<string | null>(null)
     const [userDrawer, setUserDrawer] = useState(false)
-    const { register, formState: { errors }, handleSubmit } = useForm({ resolver: yupResolver(schema) })
+    const { register, formState: { errors }, handleSubmit } = useForm({ resolver: yupResolver(step === "phone" ? schema : schema2) })
     const setCount = (id: string, productId: string, productSize: string) => {
         const copy = [...cartProductList]
         const productid = copy.filter(item => item.product.productId === productId)
@@ -87,7 +91,7 @@ export const Cart = () => {
         console.log(id)
     }
 
-    const { sendOtp } = usePhoneAuth(app)
+    const { sendOtp, verifyOtp } = usePhoneAuth(app)
 
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(localCart))
@@ -167,12 +171,18 @@ export const Cart = () => {
                     </div>
                 </div>
                 <Drawer anchor='left' open={userDrawer} onClose={() => setUserDrawer(false)}>
-                    <div className='w-96'>
+                    {step === 'phone' ? (<div className='w-96'>
                         <form onSubmit={handleSubmit(data => sendOtp(`+91${data['phone']}`))} >
                             <InputField placeholder="phonenumber" forminput={{ ...register('phone') }} />
                             <Button type="submit" variant='contained'>get otp</Button>
                         </form>
-                    </div>
+                    </div>) :
+                        (<div className='w-96'>
+                            <form onSubmit={handleSubmit(data => verifyOtp(data['otp']))} >
+                                <InputField placeholder="OTP" forminput={{ ...register('otp') }} />
+                                <Button type="submit" variant='contained'>otp</Button>
+                            </form>
+                        </div>)}
                 </Drawer>
             </>
         ) : (
