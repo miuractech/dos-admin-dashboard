@@ -113,9 +113,6 @@ const ProductDisplayImage: React.FC<{
 
   const dimensions = getValues(`sideImages.${color}.${side}`)
   // console.log(dimensions);
-
-
-  console.log('watcjh', `sideImages.${color}.${side}.imgUrl`, watch(`sideImages.${color}.${side}.imgUrl`))
   return (
     <div>
       {previewScreen && ''}

@@ -1,8 +1,8 @@
-export const DefaultErrorMessage: string =
+export const DefaultErrorMessage =
   "Something Has Gone Wrong Maybe! Sorry For the Inconvenience.";
 
-export const MetaProductFamilyLimit: number = 4;
+export const MetaProductFamilyLimit = 4;
 
-export const MetaProductCategoryLimit: number = 10;
+export const MetaProductCategoryLimit = 10;
 
-export const MetaProductSubCategoryLimit: number = 10;
+export const MetaProductSubCategoryLimit = 10;

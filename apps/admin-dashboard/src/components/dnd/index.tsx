@@ -50,6 +50,8 @@ const DndWrapper: React.FC = (props) => {
         result.source.droppableId === PRODUCT_TYPE_DND_ID &&
         result.destination.droppableId === PRODUCT_TYPE_DND_ID
       ) {
+
+        
         dispatch(setPreserveType());
         dispatch(
           setReorderType({

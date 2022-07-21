@@ -33,7 +33,6 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
     const sendOtp = async (phone: string) => {
         try {
             dispatch(setUserLoading())
-            console.log('otp func', phone);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             const appVerifier = window.recaptchaVerifier;

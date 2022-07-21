@@ -76,8 +76,6 @@ export function UploadModal({ app, setEditModal, setImageurl }: UploadModalProps
       file,
       path,
       onsuccess: (url: string) => {
-        console.log('url', url);
-
         setLoading(false)
         setImageurl(url)
         // getRecentlyUploaded()

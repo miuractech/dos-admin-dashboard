@@ -65,7 +65,7 @@ export function MiuracImage({ app, authComponent, updateFirestore, editConfig, s
 
     </div>
   } else {
-    return authComponent ?? <></>
+    return authComponent ?? <>You're not authenticated</>
   }
 
 

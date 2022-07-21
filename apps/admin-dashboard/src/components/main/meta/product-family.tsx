@@ -32,7 +32,7 @@ import { batchCommitFamily } from '../../../Midl/meta-products/hooks/family/help
 import { TApplicationErrorObject, useSubject } from 'rxf-rewrite/dist';
 import SimpleModal from '../../global/simpleModal/modal';
 import DOSInput from '../../../UI/dosinput/dosinput';
-import { Typography } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 
 const showAddForm$ = new BehaviorSubject(false);
 
@@ -53,7 +53,9 @@ const ProductFamily: React.FC = () => {
     (state: RootState) => state.metaProductFamily.addError
   );
   const dispatch = useDispatch();
-
+  const { user } = useSelector(
+    (state: RootState) => state.adminUser
+  );
   React.useEffect(() => {
     families.metaProductFamilies.length === 0 &&
       getFamilies([orderBy('index')]);
@@ -93,7 +95,7 @@ const ProductFamily: React.FC = () => {
                 variant="enable"
                 clickAction={() => {
                   produce(families, (draft) =>
-                    batchCommitFamily(draft.metaProductFamilies, 'Somnath')
+                    batchCommitFamily(draft.metaProductFamilies, user?.displayName??'')
                   );
                   dispatch(setDndFamily('default'));
                 }}
@@ -141,7 +143,7 @@ const ProductFamily: React.FC = () => {
           onCompleteText={'Product Family Has been Successfully Created!'}
           unmountFunc={() => showAddForm$.next(false)}
           submitFormFunc={(name: string) => {
-            addFamily({ name: name, createdBy: 'Somnath' }, uuidv4());
+            addFamily({ name: name, createdBy:  user?.displayName??''}, uuidv4());
           }}
           loadingFlag={loadingFlag}
           completed={completed}
@@ -157,6 +159,9 @@ const List: React.FC<{
   const [showEditForm, setShowEditForm] = React.useState(false);
   const dbError = useSelector(
     (state: RootState) => state.metaProductFamily.editError
+  );
+  const { user } = useSelector(
+    (state: RootState) => state.adminUser
   );
   const {
     updateFamilyName,
@@ -211,9 +216,9 @@ const List: React.FC<{
           dbError={dbError}
           onCompleteText={'Changes Have Been Saved Successfully!'}
           unmountFunc={() => setShowEditForm(false)}
-          submitFormFunc={(name: string) =>
-            updateFamilyName({ name: name, updatedBy: 'Somnath' }, family.id)
-          }
+          submitFormFunc={(name: string) =>{            
+            updateFamilyName({ name: name, updatedBy: user?.displayName??'' }, family.id)
+          }}
           completed={completed}
           productFamilyNameDefaultValue={family.name}
           loadingFlag={loadingFlag}
@@ -246,7 +251,7 @@ const Form: React.FC<{
       formState: { errors },
     } = useForm<{ name: string }>({ resolver: yupResolver(validationSchema) });
 
-    function submit(data: { name: string }) {
+    function submit(data: { name: string }) {      
       submitFormFunc(data.name);
     }
 
@@ -260,6 +265,9 @@ const Form: React.FC<{
               <DOSInput
                 defaultValue={productFamilyNameDefaultValue}
                 fullWidth
+                helperText={errors.name?.message}
+                error={Boolean(errors.name)}
+                forminput={{...register('name')}}
               />
             </div>
           </div>
@@ -273,14 +281,13 @@ const Form: React.FC<{
                 : styles['form-button-container']
             }
           >
-            {loadingFlag ? (
-              <ApplicationSpinner />
-            ) : (
+            
               <div style={{ display: "flex", justifyContent: "space-evenly", margin: "40px auto", width: "400px" }}>
                 <div style={{ height: 40, width: 100 }}>
                   <ApplicationButton
                     variant="cancel"
                     clickAction={() => unmountFunc()}
+                    disabled={loadingFlag}
                     dimension={{ height: '100%', width: '100%' }}
                   >
                     Cancel
@@ -290,13 +297,14 @@ const Form: React.FC<{
                   <ApplicationButton
                     variant="default-not-padding"
                     clickAction={handleSubmit(submit)}
+                    disabled={loadingFlag}
                     dimension={{ height: '100%', width: '100%' }}
                   >
-                    Save
+                    {loadingFlag?<CircularProgress size={20} />:'Save'}
                   </ApplicationButton>
                 </div>
               </div>
-            )}
+
           </div>
         </form>
         {

@@ -164,6 +164,10 @@
   .margin10{
     margin:80px
   }
+
+  .auto-margin{
+    margin:auto
+  }
   
   .full-width{
     width: 100%;

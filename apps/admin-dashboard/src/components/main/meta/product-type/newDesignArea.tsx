@@ -65,7 +65,6 @@ export default function NewDesignArea({ setImgUrl, close, imgUrl, setValue, colo
             clickAction={() => {
               setSelected(false)
               setTimeout(() => {
-                console.log('selectedObject', selectedObject);
                 const copyOfSelectedObject = { ...selectedObject }
                 delete copyOfSelectedObject['icons']
                 setValue(`sideImages.${color}.${side}`, {

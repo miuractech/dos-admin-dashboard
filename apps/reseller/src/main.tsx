@@ -69,8 +69,7 @@ export const theme = createTheme({
 });
 
 ReactDOM.render(
-  <StrictMode>
-    <Provider store={store}>
+  <Provider store={store}>
       <StyledEngineProvider injectFirst >
         <ThemeProvider theme={theme} >
           <BrowserRouter>
@@ -78,7 +77,6 @@ ReactDOM.render(
           </BrowserRouter>
         </ThemeProvider>
       </StyledEngineProvider>
-    </Provider>
-  </StrictMode>,
+    </Provider>,
   document.getElementById('root')
 );

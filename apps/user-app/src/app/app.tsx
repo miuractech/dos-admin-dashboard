@@ -30,7 +30,7 @@ export function App() {
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
-      const q = query(collection(db, "meta", "products", "family"), orderBy("index", "asc"));
+      const q = query(collection(db, "meta", "products", "family"), where('status', '==', 'published'), orderBy("index", "asc"));
       const querySnapshot = await getDocs(q)
       dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
     })

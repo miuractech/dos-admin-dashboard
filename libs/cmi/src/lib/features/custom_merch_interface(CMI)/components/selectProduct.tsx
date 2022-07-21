@@ -111,6 +111,7 @@ export interface RootObject {
     name: string;
     size: string[];
     updatedBy: string;
+    sizeChart:string;
 }
 
 

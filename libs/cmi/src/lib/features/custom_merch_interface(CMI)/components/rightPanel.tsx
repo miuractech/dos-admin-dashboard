@@ -20,7 +20,6 @@ type Props = {
 export default function RightPanel({ selectedId, setSelectedId, setLoading, previews, setPreviews }: Props) {
   const dispatch = useDispatch()
   const { currentObjects, history } = useSelector((state: RootState) => state.objects)
-  console.log({ currentObjects, history });
 
   return (
     <div

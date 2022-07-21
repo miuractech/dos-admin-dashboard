@@ -31,8 +31,6 @@ export function Auth(props: AuthProps) {
     }
   }
 
-  console.log('user', user);
-
   return (
     <div>
       {loading ?

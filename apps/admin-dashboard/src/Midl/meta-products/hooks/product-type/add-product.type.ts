@@ -10,7 +10,8 @@ export interface TAddFormSchema {
   familyId: string;
   categoryId: string;
   subcategoryId: string;
-  displayImage: FileList | undefined;
+  displayImage: string | undefined;
+  sizeChart:string | undefined; 
   size: Array<string>;
   color: Array<{ colorName: string; colorCode: string }>;
   basePrice: number;
@@ -40,6 +41,7 @@ export default async function addProductType(param: {
           categoryId: form.categoryId,
           subcategoryId: form.subcategoryId,
           displayImage: form.displayImage,
+          sizeChart: form.sizeChart,
           size: form.size,
           color: form.color,
           sideImages: form.sideImages,
@@ -48,19 +50,16 @@ export default async function addProductType(param: {
           updatedBy: createdBy,
           status: 'published',
           sku: form.sku,
-          // sideImages:
         };
-        console.log('writeable', writeable);
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const sides = Object.keys(form.sku).map((color: string) => {
-          const colorData = form.sku[color]
-          const side = Object.keys(colorData).map(async (size: string) => {
-            const skuId = colorData[size]
-            const query = doc(firestore, "inventory", skuId);
-            await setDoc(query, { sku: skuId, inventory: 0, color, size, name: form.name, id });
-          })
-        })
+        // const sides = Object.keys(form.sku).map((color: string) => {
+        //   const colorData = form.sku[color]
+        //   const side = Object.keys(colorData).map(async (size: string) => {
+        //     const skuId = colorData[size]
+        //     const query = doc(firestore, "inventory", skuId);
+        //     await setDoc(query, { sku: skuId, inventory: 0, color, size, name: form.name, id });
+        //   })
+        // })
         await countRepo.updateOne({ product_type: count.product_type + 1 }, "count")
 
         return await productTypeRepo.createOne(writeable, id);

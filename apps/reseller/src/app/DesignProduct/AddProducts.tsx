@@ -33,17 +33,18 @@ export const AddProduct = () => {
     const navigate = useNavigate()
     const [price, setPrice] = useState<null | number>(null)
     const [loading, setLoading] = useState(false)
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>({
+    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     });
     const dispatch = useDispatch()
     const storage = getStorage();
     useEffect(() => {
         if (designPreviewImages.length === 0) {
-            navigate(-1)
+            navigate(-1) 
         }
     }, [])
-
+    console.log('designPreviewImages', designPreviewImages);
+    
     const dataURLtoBlob = (dataURL: string, img: any, productId: string) => {
         return new Promise((resolve, reject) => {
             return fetch(dataURL)
@@ -123,72 +124,92 @@ export const AddProduct = () => {
                             </Card>
                         </Grid>)}
                     </Grid>
-                </Card >
-                <Card style={{
-                    borderRadius: "15px",
-                    padding: "30px 20px",
-                    marginBottom: "30px"
-                }}>
-                    <Typography fontWeight={500}>Product name</Typography>
-                    <InputField
-                        placeholder="Product name"
-                        fullWidth
-                        style={{ marginBottom: '10px' }}
-                        forminput={{ ...register("productName") }}
-                        error={Boolean(errors['productName'])}
-                        helperText={errors['productName']?.message}
-                    />
-                    <Grid container spacing={2}>
-                        <Grid xs={12} lg={6} item>
-                            <Typography fontWeight={500}>Price</Typography>
-                            <InputField
-                                type="number"
-                                placeholder="Price"
-                                fullWidth
-                                onChange={(e) => setPrice(Number(e.target.value))}
-                                forminput={{ ...register("price") }}
-                                error={Boolean(errors['price'])}
-                                helperText={errors['price']?.message}
-                            />
+                    <Card style={{
+                        borderRadius: "15px",
+                        padding: "30px 20px",
+                        marginBottom: "30px"
+                    }}>
+                        <Typography fontWeight={500}>Media</Typography>
+                        <Grid container gap={2} margin={1}>
+                            {designPreviewImages.map(img => <Grid key={img.sideName} item xs={12} m={1.8} lg={1.8}>
+                                <Card >
+                                    <img
+                                        src={img.url}
+                                        placeholder="side images"
+                                        width="100%"
+                                        alt=''
+                                    />
+                                    <Typography fontWeight={500} align="center">{img.sideName}</Typography>
+                                </Card>
+                            </Grid>)}
                         </Grid>
-                        <Grid xs={12} lg={6} item>
-                            <Typography fontWeight={500}>Compare at Price</Typography>
-                            <InputField
-                                type="number"
-                                placeholder="Price"
-                                fullWidth
-                                forminput={{ ...register("comparePrice") }}
-                                error={Boolean(errors['comparePrice'])}
-                                helperText={errors['comparePrice']?.message}
-                            />
-                        </Grid>
-                        <Grid xs={12} lg={6} item>
-                            <Typography fontWeight={500}>Cost per item</Typography>
-                            <InputField disabled placeholder="Price" fullWidth value={product.basePrice} />
-                        </Grid>
-                        <Grid container xs={12} lg={6} item spacing={2}>
-                            <Grid item xs={12} lg={6}>
-                                <Typography fontWeight={500}>Margin</Typography>
-                                <InputField disabled placeholder="Price" fullWidth value={`${price && ((((price - product.basePrice) / price) * 10000) / 100).toFixed(2)}% `} />
+                    </Card >
+                    <Card style={{
+                        borderRadius: "15px",
+                        padding: "30px 20px",
+                        marginBottom: "30px"
+                    }}>
+                        <Typography fontWeight={500}>Product name</Typography>
+                        <InputField
+                            placeholder="Product name"
+                            fullWidth
+                            style={{ marginBottom: '10px' }}
+                            forminput={{ ...register("productName") }}
+                            error={Boolean(errors['productName'])}
+                            helperText={errors['productName']?.message}
+                        />
+                        <Grid container spacing={2}>
+                            <Grid xs={12} lg={6} item>
+                                <Typography fontWeight={500}>Price</Typography>
+                                <InputField
+                                    type="number"
+                                    placeholder="Price"
+                                    fullWidth
+                                    onChange={(e) => setPrice(Number(e.target.value))}
+                                    forminput={{ ...register("price") }}
+                                    error={Boolean(errors['price'])}
+                                    helperText={errors['price']?.message}
+                                />
                             </Grid>
-                            <Grid item xs={12} lg={6}>
-                                <Typography fontWeight={500}>Profit</Typography>
-                                <InputField disabled placeholder="Price" fullWidth value={price && price - product.basePrice} />
+                            <Grid xs={12} lg={6} item>
+                                <Typography fontWeight={500}>Compare at Price</Typography>
+                                <InputField
+                                    type="number"
+                                    placeholder="Price"
+                                    fullWidth
+                                    forminput={{ ...register("comparePrice") }}
+                                    error={Boolean(errors['comparePrice'])}
+                                    helperText={errors['comparePrice']?.message}
+                                />
+                            </Grid>
+                            <Grid xs={12} lg={6} item>
+                                <Typography fontWeight={500}>Cost per item</Typography>
+                                <InputField disabled placeholder="Price" fullWidth value={product.basePrice} />
+                            </Grid>
+                            <Grid container xs={12} lg={6} item spacing={2}>
+                                <Grid item xs={12} lg={6}>
+                                    <Typography fontWeight={500}>Margin</Typography>
+                                    <InputField disabled placeholder="Price" fullWidth value={`${price && ((((price - product.basePrice) / price) * 10000) / 100).toFixed(2)}% `} />
+                                </Grid>
+                                <Grid item xs={12} lg={6}>
+                                    <Typography fontWeight={500}>Profit</Typography>
+                                    <InputField disabled placeholder="Price" fullWidth value={price && price - product.basePrice} />
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Card>
+                    <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "50px" }}>
+                        <Button variant='outlined'>Cancel</Button>
+                        <Button type='submit' variant='contained' disabled={loading}>Save</Button>
+                    </div>
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={loading}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                 </Card>
-                <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "50px" }}>
-                    <Button variant='outlined'>Cancel</Button>
-                    <Button type='submit' variant='contained' disabled={loading}>Save</Button>
-                </div>
-                <Backdrop
-                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                    open={loading}
-                >
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-            </div >
-        </form>
+                </div >
+            </form>
     )
 }
