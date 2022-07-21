@@ -41,7 +41,7 @@ export const BankVerification = () => {
     const [validData, setValidData] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const functions = getFunctions(app)
+    const functions = getFunctions(app, 'asia-south1')
     connectFunctionsEmulator(functions, "localhost", 5001);
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
@@ -55,7 +55,7 @@ export const BankVerification = () => {
             dispatch(setBackDrop(false))
             setValidData(true)
         } catch (error) {
-            console.log(error)
+            console.log('err', error)
             dispatch(setBackDrop(false))
         }
     }
