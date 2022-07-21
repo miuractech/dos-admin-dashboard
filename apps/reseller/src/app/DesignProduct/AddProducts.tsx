@@ -74,36 +74,55 @@ export const AddProduct = () => {
                 const targetImage = await dataURLtoBlob(img.url, img, productId)
                 sideImages.push(targetImage)
             }
-            // const docRef = await setDoc(doc(db, "reSellers", User.uid, "products", productId), {
-            //     ...data,
-            //     productId: productId,
-            //     color: selectedColor.colorName,
-            //     resellerId: User.uid,
-            //     sizeAvailable: product.size,
-            //     sku: product.sku[selectedColor.colorName],
-            //     resellerDescription: "",
-            //     subCategoryId: product.subcategoryId,
-            //     categoryId: product.categoryId,
-            //     basePrice: product.basePrice,
-            //     sideImages: sideImages,
-            //     familyId: product.familyId,
-            //     status: "inactive",
-            //     productTypeName: product.name
-            // });
+            await setDoc(doc(db, "reSellers", User.uid, "products", productId), {
+                ...data,
+                productId: productId,
+                color: selectedColor.colorName,
+                resellerId: User.uid,
+                sizeAvailable: product.size,
+                sku: product.sku[selectedColor.colorName],
+                resellerDescription: "",
+                subCategoryId: product.subcategoryId,
+                categoryId: product.categoryId,
+                basePrice: product.basePrice,
+                sideImages: sideImages,
+                familyId: product.familyId,
+                status: "inactive",
+                productTypeName: product.name
+            });
             setLoading(false)
             dispatch(setNotification("Product added successfully"))
         } catch (error) {
             console.log(error);
         }
     }
-
+    console.log(product)
     return (
-        <div>
-            {(designPreviewImages.length>0) && product && <form onSubmit={handleSubmit(onsubmit)}>
-                <div style={{ width: "90%", margin: "auto" }}>
-                    <Grid container justifyContent="space-between" paddingBottom={2}>
-                        <Grid item> <Typography fontWeight={600} variant='h5'>Products</Typography></Grid>
-                        <Grid item><Button variant='contained' color='error'>Add Products</Button></Grid>
+        product &&
+        <form onSubmit={handleSubmit(onsubmit)}>
+            <div style={{ width: "90%", margin: "auto" }}>
+                <Grid container justifyContent="space-between" paddingBottom={2}>
+                    <Grid item> <Typography fontWeight={600} variant='h5'>Products</Typography></Grid>
+                    <Grid item><Button variant='contained' color='error'>Add Products</Button></Grid>
+                </Grid>
+                <Card style={{
+                    borderRadius: "15px",
+                    padding: "30px 20px",
+                    marginBottom: "30px"
+                }}>
+                    <Typography fontWeight={500}>Media</Typography>
+                    <Grid container gap={2} margin={1}>
+                        {designPreviewImages.map(img => <Grid key={img.sideName} xs={12} m={1.8} lg={1.8}>
+                            <Card >
+                                <img
+                                    src={img.url}
+                                    placeholder="side images"
+                                    width="100%"
+                                    alt=''
+                                />
+                                <Typography fontWeight={500} align="center">{img.sideName}</Typography>
+                            </Card>
+                        </Grid>)}
                     </Grid>
                     <Card style={{
                         borderRadius: "15px",
@@ -189,8 +208,8 @@ export const AddProduct = () => {
                     >
                         <CircularProgress color="inherit" />
                     </Backdrop>
+                </Card>
                 </div >
-            </form>}
-        </div>
+            </form>
     )
 }
