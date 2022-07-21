@@ -30,5 +30,6 @@ module.exports = {
     "import/no-unresolved": 0,
     "new-cap": 0,
     "max-len": "off",
+    "linebreak-style": 0,
   },
 };
