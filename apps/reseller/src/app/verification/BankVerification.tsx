@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import InputField from '../../UI/input-field/input-field'
 import { 
     httpsCallable, 
-    getFunctions, 
+    getFunctions,
+    connectFunctionsEmulator, 
     // connectFunctionsEmulator 
 } from 'firebase/functions';
 import { app } from '../../firebaseConfig/config';
@@ -59,7 +60,7 @@ export const BankVerification = () => {
             dispatch(setBackDrop(false))
             setValidData(true)
         } catch (error) {
-            console.log(error)
+            console.log("err",error)
             dispatch(setBackDrop(false))
         }
     }
