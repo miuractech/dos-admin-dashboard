@@ -10,22 +10,9 @@ import { setNotification } from '../../../store/alertslice'
 import SimpleModal from '@dropout-store/simple-modal'
 import Lottie from "lottie-react";
 import emptyBox from "./assets/emptyBox.json"
-import { Link } from 'react-router-dom'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import InputField from '../../../UI/input-field/input-field'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useForm } from 'react-hook-form'
-import * as yup from 'yup';
-import usePhoneAuth from '../../../features/auth/phoneAuthHook'
-import { app } from '../../../configs/firebaseConfig'
-
-const schema = yup.object().shape({
-    phone: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(6000000000, 'enter valid phone number').max(9999999999, 'enter valid phone number').required('phone number is required'),
-})
-
-const schema2 = yup.object().shape({
-    otp: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(0, 'enter valid otp').max(999999, 'enter valid otp').required('otp is required')
-})
+import { GetPhoneNumber } from './GetPhoneNumber'
+import { GetOTP } from './GetOTP'
+import { useNavigate } from 'react-router-dom'
 
 export const Cart = () => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
@@ -33,7 +20,7 @@ export const Cart = () => {
     const dispatch = useDispatch()
     const [productDelete, setProductDelete] = useState<string | null>(null)
     const [userDrawer, setUserDrawer] = useState(false)
-    const { register, formState: { errors }, handleSubmit } = useForm({ resolver: yupResolver(step === "phone" ? schema : schema2) })
+    const navigate = useNavigate()
     const setCount = (id: string, productId: string, productSize: string) => {
         const copy = [...cartProductList]
         const productid = copy.filter(item => item.product.productId === productId)
@@ -91,44 +78,13 @@ export const Cart = () => {
         console.log(id)
     }
 
-    const { sendOtp, verifyOtp } = usePhoneAuth(app)
-
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(localCart))
     }, [localCart])
 
-    const breadcrumbs = [
-        <Link
-            key="1"
-            to=''
-        >
-            <Typography className='hover:underline text-blue-700' fontWeight={500} color="text.primary">
-                Cart
-            </Typography>
-        </Link>,
-        <Link
-            key="2"
-            to=''
-        >
-            <Typography className='hover:underline' fontWeight={500} color="text.primary">
-                Shipping Method
-            </Typography>
-        </Link>,
-        <Link to='' key="3">
-            <Typography className='hover:underline' fontWeight={500} color="text.primary">
-                Payment Method
-            </Typography>
-        </Link>
-    ];
-
     return (
         cartProductList.length >= 1 ? (
             <>
-                <div className='py-5 md:mx-24' >
-                    <Breadcrumbs separator={<ChevronRightIcon color='primary' />} aria-label="breadcrumb">
-                        {breadcrumbs}
-                    </Breadcrumbs>
-                </div>
                 <SimpleModal open={Boolean(productDelete)} onClose={() => setProductDelete(null)}>
                     <div className='flex flex-col gap-5 w-56 mt-5 md:w-96'>
                         <Typography textAlign="left" variant='h6'>Remove Item</Typography>
@@ -163,7 +119,7 @@ export const Cart = () => {
                         <OrderSummary />
                         <Button variant='contained' fullWidth onClick={() => {
                             if (user) {
-                                console.log("add adress");
+                                navigate('/cart/shippingmethod')
                             } else {
                                 setUserDrawer(true)
                             }
@@ -171,18 +127,7 @@ export const Cart = () => {
                     </div>
                 </div>
                 <Drawer anchor='left' open={userDrawer} onClose={() => setUserDrawer(false)}>
-                    {step === 'phone' ? (<div className='w-96'>
-                        <form onSubmit={handleSubmit(data => sendOtp(`+91${data['phone']}`))} >
-                            <InputField placeholder="phonenumber" forminput={{ ...register('phone') }} />
-                            <Button type="submit" variant='contained'>get otp</Button>
-                        </form>
-                    </div>) :
-                        (<div className='w-96'>
-                            <form onSubmit={handleSubmit(data => verifyOtp(data['otp']))} >
-                                <InputField placeholder="OTP" forminput={{ ...register('otp') }} />
-                                <Button type="submit" variant='contained'>otp</Button>
-                            </form>
-                        </div>)}
+                    {step === 'phone' ? (<GetPhoneNumber />) : (<GetOTP />)}
                 </Drawer>
             </>
         ) : (

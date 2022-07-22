@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import './app.css';
 import { Route, Link, Routes, useLocation } from 'react-router-dom';
 import { app, auth, db } from '../configs/firebaseConfig';
@@ -18,13 +19,15 @@ import { HeaderTop } from './components/HeaderTop';
 import { Cart } from './components/cart/Cart';
 import { addCartProducts, localCart, setLocalCart } from '../store/cartSlice';
 import { v4 as uuidv4 } from 'uuid';
+import { ShippingMethod } from './components/shippingMethod/ShippingMethod';
+import { Cardbredcrum } from './components/cart/Cardbredcrum';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
 const ProductPage = lazy(() => import('./productPage/ProductPage'));
 export function App() {
   const dispatch = useDispatch()
-  const { loading } = useSelector((state: RootState) => state.User)
+  const { loading, user } = useSelector((state: RootState) => state.User)
   const { error, notification, warning } = useSelector((state: RootState) => state.alerts)
   const location = useLocation();
   useEffect(() => {
@@ -63,7 +66,7 @@ export function App() {
           {media ? (
             <>
               <Header />
-              {location.pathname === "/cart" ? null : <NavBar />}
+              {location.pathname === "/cart" || "/shippingmethod" ? null : <NavBar />}
             </>
           ) : (
             <MobileHeader />
@@ -72,7 +75,13 @@ export function App() {
             <Route path='/auth' element={<Auth />} />
             <Route path='/logout' element={<Logout />} />
             <Route path='/shops' element={<>shops</>} />
-            <Route path='/cart' element={<Cart />} />
+            <Route path='/cart' element={<Cardbredcrum />}>
+              <Route index element={<Cart />} />
+              <Route path='cartt' element={<Cart />} />
+              {user && (
+                <Route path='shippingmethod' element={<ShippingMethod />} />
+              )}
+            </Route>
             <Route path='/' element={<>home</>} />
             <Route path='/shops/:resellerid' element={<StoreFront />} />
             <Route path='/shops/:resellerid/products/:productid' element={<ProductPage />} />

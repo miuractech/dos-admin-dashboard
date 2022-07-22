@@ -51,7 +51,7 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
 
     }
     const verifyOtp = (code: string) => {
-        dispatch(setUserLoading())
+        // dispatch(setUserLoading())
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         window.confirmationResult.confirm(code).then((result) => {

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { SummaryCard } from './SummaryCard'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { cartProduct } from '../../../store/cartSlice'
 
 export const OrderSummary = () => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
@@ -34,7 +35,7 @@ export const OrderSummary = () => {
         <div>
             <Card className='my-5 p-3'>
                 <Typography fontWeight={600} gutterBottom className='mb-5'>Shipping</Typography>
-                {cartProductList.map(item => <SummaryCard productName={item.product.productName} size={item.size} price={item.product.price} count={item.count} />)}
+                {cartProductList.map((item: cartProduct, index: number) => <SummaryCard key={index} productName={item.product.productName} size={item.size} price={item.product.price} count={item.count} />)}
                 <div className='flex justify-between py-4 cursor-pointer'>
                     <div className='flex gap-4'>
                         <LocalOfferIcon />
