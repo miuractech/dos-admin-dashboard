@@ -1,7 +1,10 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as cfsdk from "cashfree-sdk";
-import fetch from "node-fetch";
+import axios = require("axios");
+import crypto = require("crypto");
+import fs = require("fs");
+// import * as timestam from "unix-timestamp";
 
 admin.initializeApp();
 
@@ -45,10 +48,9 @@ export const bank = functions.region("asia-south1").https.onCall(async (data) =>
   const {Validation} = Payouts;
   const config = {
     Payouts: {
-      ClientID: "CF182083CB7T3VT6LA0396U1BP90",
-      ClientSecret: "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
+      ClientID: "CF182083CBEPHHUJ5FIO1RSL5HCG",
+      ClientSecret: "9d8a0a1e9181949c939d09368885394710b54bb3",
       ENV: "TEST",
-      PathToPublicKey: "./publickey/key.pem",
     },
   };
   Payouts.Init(config.Payouts);
@@ -66,21 +68,50 @@ export const bank = functions.region("asia-south1").https.onCall(async (data) =>
 });
 
 export const pan = functions.region("asia-south1").https.onCall(async (data) => {
-  const url = "https://sandbox.cashfree.com/verification";
+  const publickey = fs.readFileSync(`${__dirname}\\key.pem`, "utf-8");
+  // console.log(publickey);
+
+
+  const signature = generateCertificate(publickey, "CF182083CBEPHHUJ5FIO1RSL5HCG");
+  console.log(signature);
+
   const options = {
     method: "POST",
+    url: "https://sandbox.cashfree.com/verification/pan",
     headers: {
-      "Accept": "application/json",
-      "x-client-id": "CF182083CB7T3VT6LA0396U1BP90",
-      "x-client-secret": "a186e2ecb92a9b038ef2b168f697e362e0ba2067",
+      // "Accept": "application/json",
+      "X-Client-Id": "CF182083CBEPHHUJ5FIO1RSL5HCG",
+      "X-Client-Secret": "9d8a0a1e9181949c939d09368885394710b54bb3",
+      "X-Cf-Signature": signature,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({pan: data.panNumber, name: data.name}),
+    data: {pan: "ABCPV1234D"},
   };
   try {
-    const result = await fetch(url, options);
-    return result.json();
-  } catch (error) {
+    const response = await axios.default.request(options);
+    console.log("success");
+    console.log(response);
+    return response;
+  } catch (error:any) {
+    console.error("error", error.response.data);
     return error;
   }
 });
+
+const getCurrentTimeInSecs = () => Math.floor(Date.now() /1000);
+
+const generateCertificate = (publickey: string, clientId: string) => {
+  const curTimeStamp = getCurrentTimeInSecs();
+  // console.log(timestam.now());
+  const plainText = `$${curTimeStamp}.${clientId}`;
+  const buffer = Buffer.from(plainText);
+
+  const encrypted = crypto.publicEncrypt(
+      {
+        key: publickey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      },
+      buffer,
+  );
+  return encrypted.toString("base64");
+};
