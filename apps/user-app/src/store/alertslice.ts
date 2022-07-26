@@ -4,12 +4,14 @@ type alertsType = {
     error: null | string
     notification: null | string
     warning: null | string
+    backDrop: boolean
 }
 
 const initialState: alertsType = {
     error: null,
     notification: null,
-    warning: null
+    warning: null,
+    backDrop:false
 }
 
 export const AlertSlice = createSlice({
@@ -25,10 +27,12 @@ export const AlertSlice = createSlice({
         setWarning: (state, action) => {
             state.warning = action.payload
         },
-
+        setBackDrop: (state, action) => {
+            state.backDrop = action.payload
+        }
     },
 })
 
-export const { setError, setNotification, setWarning } = AlertSlice.actions
+export const { setError, setNotification, setWarning, setBackDrop } = AlertSlice.actions
 
 export default AlertSlice.reducer

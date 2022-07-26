@@ -37,7 +37,7 @@ export const PanVerification = () => {
     const [validData, setValidData] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const functions = getFunctions(app)
+    const functions = getFunctions(app,"asia-south1")
     connectFunctionsEmulator(functions, "localhost", 5001);
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
@@ -48,10 +48,10 @@ export const PanVerification = () => {
             const verifiyPan = httpsCallable(functions, "pan")
             const result = await verifiyPan(data)
             console.log(result);
+            //  setValidData(true)
             dispatch(setBackDrop(false))
-            setValidData(true)
         } catch (error) {
-            console.log(error);
+            console.log(error)
             dispatch(setBackDrop(false))
         }
     }

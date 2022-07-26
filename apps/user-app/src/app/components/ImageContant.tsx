@@ -1,15 +1,17 @@
 import { CurrencyRupee, LocationOnOutlined, Loop, Share } from '@mui/icons-material'
-import { Button, Card, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React from 'react'
+import { Button, Card, makeStyles, Typography, useMediaQuery, useTheme } from '@mui/material'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
 import InputField from '../../UI/input-field/input-field'
 import reviews from "../components/images/reviews.svg"
+import { Pincode } from './Pincode'
 import { MobileProductImages } from './ProductImages'
 
-export const ImageContant = ({ AddToCard, setSize }: {
+export const ImageContant = ({ AddToCard, setSize, size }: {
     AddToCard: () => void,
     setSize: React.Dispatch<React.SetStateAction<string | null>>
+    size: string | null
 }) => {
     const { product } = useSelector((state: RootState) => state.product)
     const theme = useTheme()
@@ -49,10 +51,16 @@ export const ImageContant = ({ AddToCard, setSize }: {
                     <Typography variant='h4' fontWeight={600}>₹{product.price}</Typography>
                     <Typography variant='caption'>Plus shipping</Typography>
                 </div>
-                <div className='p-1'>
+                <div className='p-1 space-y-2'>
                     <Typography fontWeight={500}>Choose a size :</Typography>
                     <div className='flex gap-4'>
-                        {product.sizeAvailable.map((size, index) => <div key={index} onClick={() => setSize(size)} className='size'><Typography variant='subtitle2'>{size}</Typography></div>)}
+                            {product.sizeAvailable.map((sizee, index) => <Button
+                                variant={sizee === size ? 'contained' : "outlined"}
+                                onClick={() => setSize(sizee)}
+                            key={index}
+                            >
+                            {sizee}
+                        </Button>)}
                     </div>
                 </div>
                 <div className='p-1 gap-4' style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr" }}>
@@ -66,7 +74,7 @@ export const ImageContant = ({ AddToCard, setSize }: {
                     </div>
                     <div className='flex gap-2 flex-wrap'>
                         <div>
-                            <InputField placeholder='Enter your pincode' />
+                                <Pincode/>
                         </div>
                         <div>
                             <div className='flex'><Loop fontSize='small' /><Typography display="block" variant='caption'>14 Days Return Policy</Typography></div>

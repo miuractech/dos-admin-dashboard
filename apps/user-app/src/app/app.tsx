@@ -7,7 +7,7 @@ import { RootState } from '../store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { setUser } from '../features/auth/authSlice';
-import { Alert, CircularProgress, Snackbar, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Snackbar, useMediaQuery, useTheme } from '@mui/material';
 import { setError, setNotification, setWarning } from '../store/alertslice';
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { setFamily } from '../store/product';
@@ -21,6 +21,7 @@ import { addCartProducts, localCart, setLocalCart } from '../store/cartSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { ShippingMethod } from './components/shippingMethod/ShippingMethod';
 import { Cardbredcrum } from './components/cart/Cardbredcrum';
+import { MyAccount } from './MyAccount/MyAccount';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -28,7 +29,7 @@ const ProductPage = lazy(() => import('./productPage/ProductPage'));
 export function App() {
   const dispatch = useDispatch()
   const { loading, user } = useSelector((state: RootState) => state.User)
-  const { error, notification, warning } = useSelector((state: RootState) => state.alerts)
+  const { error, notification, warning,backDrop } = useSelector((state: RootState) => state.alerts)
   const location = useLocation();
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
@@ -86,6 +87,7 @@ export function App() {
             <Route path='/shops/:resellerid' element={<StoreFront />} />
             <Route path='/shops/:resellerid/products/:productid' element={<ProductPage />} />
             <Route path="/contact" element={<ContactUs />} />
+            {user &&<Route path='myprofile' element={<MyAccount />} />}
             <Route path='*' element={<>not found</>} />
           </Routes>
         </Suspense>
@@ -99,6 +101,12 @@ export function App() {
       <Snackbar open={Boolean(warning)} autoHideDuration={5000} onClose={() => dispatch(setWarning(null))}>
         <Alert severity='warning'>{warning}</Alert>
       </Snackbar>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 10 }}
+        open={backDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

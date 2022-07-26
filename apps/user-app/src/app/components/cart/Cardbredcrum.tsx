@@ -15,18 +15,18 @@ export const Cardbredcrum = () => {
             key="2"
             style={{ color: location.pathname === '/cart/shippingmethod' ? "#1579F9" : "" }}
             fontWeight={500} color="text.primary">
-            Shipping Method
+            Shipping
         </Typography>,
         <Typography
             key="3"
             style={{ color: location.pathname === '/cart/paymentmethod' ? "#1579F9" : "" }}
             fontWeight={500} color="text.primary">
-            Payment Method
+            Payment
         </Typography>
     ];
     return (
         <>
-            <div className='py-5 md:mx-24' >
+            <div className='py-5 mx-5 md:mx-24' >
                 <Breadcrumbs separator={<ChevronRightIcon color='primary' />} aria-label="breadcrumb">
                     {breadcrumbs}
                 </Breadcrumbs>

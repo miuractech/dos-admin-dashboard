@@ -82,6 +82,7 @@ export const Cart = () => {
         localStorage.setItem("cart", JSON.stringify(localCart))
     }, [localCart])
 
+    console.log(user)
     return (
         cartProductList.length >= 1 ? (
             <>
@@ -95,7 +96,7 @@ export const Cart = () => {
                         </div>
                     </div>
                 </SimpleModal>
-                <div className='p-5 gap-5 space-y-5 md:grid grid-cols-3 md:mx-20'>
+                <div className='p-5 gap-5 md:grid grid-cols-3 md:mx-20'>
                     <div className='space-y-5 md:col-span-2'>
                         <Typography fontWeight={600} variant='h6'>My Bag</Typography>
                         {cartProductList.map((item: cartProduct) => <ProductCardCart

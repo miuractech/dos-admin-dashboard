@@ -57,7 +57,7 @@ export const BankVerification = () => {
             const result = await verifyBank(data)
             console.log(result)
             dispatch(setBackDrop(false))
-            setValidData(true)
+            // setValidData(true)
         } catch (error) {
             console.log('err', error)
             dispatch(setBackDrop(false))

@@ -21,7 +21,6 @@ export const productSlice = createSlice({
         setFamily: (state, action) => {
             state.Family = action.payload
         },
-
     },
 })
 

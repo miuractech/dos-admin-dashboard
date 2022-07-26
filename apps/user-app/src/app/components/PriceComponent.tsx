@@ -1,9 +1,9 @@
-import { Card, Paper, Typography, useTheme } from '@mui/material'
+import { Button, Card, Paper, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
 
-export const MobilePriceComponent = ({ setSize }: { setSize: React.Dispatch<React.SetStateAction<string | null>> }) => {
+export const MobilePriceComponent = ({ setSize, size }: { setSize: React.Dispatch<React.SetStateAction<string | null>>, size:string|null }) => {
     const { product } = useSelector((state: RootState) => state.product)
     const theme = useTheme()
     return (
@@ -20,9 +20,14 @@ export const MobilePriceComponent = ({ setSize }: { setSize: React.Dispatch<Reac
                 overflowX: "auto",
                 maxWidth: "250px"
             }}>
-                {product.sizeAvailable.map((size, index) => <div className='cursor-pointer' onClick={() => setSize(size)} key={index} style={{ minWidth: "20px", padding: "5px 5px", textAlign: "center", border: "1px solid #E5E5E5" }}>
-                    <Typography variant='subtitle2'>{size}</Typography>
-                </div>)}
+                {product.sizeAvailable.map((sizee, index) => <Button
+                    size='small'
+                    variant={sizee === size ? 'contained' : "outlined"}
+                    onClick={() => setSize(sizee)}
+                    key={index}
+                >
+                    {sizee}
+                </Button>)}
             </div>
             <Typography style={{ fontFamily: "'Average Sans', sans-serif" }} justifySelf="center" variant='h6' fontWeight={400} color="white">₹{product.price}</Typography>
         </div >

@@ -21,6 +21,7 @@
     "cashfree-sdk": "^0.1.1",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.22.0",
+    "node-rsa": "^1.1.1",
     "unix-timestamp": "^1.0.2"
   },
   "devDependencies": {

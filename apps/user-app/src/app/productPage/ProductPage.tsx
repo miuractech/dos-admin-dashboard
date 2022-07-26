@@ -1,5 +1,5 @@
 import { Typography, useMediaQuery, useTheme } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Header } from './header/Header'
 import { HeaderTop } from '../components/HeaderTop'
 import { MobileContent } from '../components/MobileContent'
@@ -15,9 +15,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import ProductsCard from '../components/ProductsCard'
 import { MobileAddCart } from '../components/MobileAddCart'
 import { addCartProducts, addLocalCart } from '../../store/cartSlice'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { setNotification, setWarning } from '../../store/alertslice'
 import { v4 as uuidv4 } from 'uuid';
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../../configs/firebaseConfig'
+import { setSellerProductsList } from '../../store/storeFrontslice'
 
 type cartProduct = {
     productId: string
@@ -28,6 +31,7 @@ const ProductPage = () => {
     const [size, setSize] = useState<string | null>(null)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { resellerid } = useParams()
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("sm"))
     const { productsList } = useSelector((state: RootState) => state.storeFront)
@@ -67,17 +71,29 @@ const ProductPage = () => {
         }
     }
 
+    useEffect(() => {
+        if (productsList) return
+        getSellersProducts()
+    }, [resellerid])
+
+    const getSellersProducts = async () => {
+        if (!resellerid) return
+        const docRef = collection(db, "reSellers", resellerid, "products")
+        const docSnap = await getDocs(docRef);
+        dispatch(setSellerProductsList(docSnap.docs.map(doc => ({ ...doc.data() }))))
+    }
+
     return (
         <div>
             {media ?
                 (
-                    <ImageContant AddToCard={AddToCard} setSize={setSize} />
+                    <ImageContant size={size} AddToCard={AddToCard} setSize={setSize} />
                 )
                 :
                 (
                     <>
                         <MobileProductImages />
-                        <MobilePriceComponent setSize={setSize} />
+                        <MobilePriceComponent size={size} setSize={setSize} />
                         <MobileContent />
                         <MobileAddCart AddToCard={AddToCard} />
                     </>
