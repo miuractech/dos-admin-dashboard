@@ -4,6 +4,7 @@ import storefrontreduser from "./storeFrontslice"
 import alertsReduser from "./alertslice"
 import productReduser from "./product"
 import cartReduser from "./cartSlice"
+import pincodeReduser from "./pincodeSlice"
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     storeFront: storefrontreduser,
     alerts: alertsReduser,
     product: productReduser,
-    cart: cartReduser
+    cart: cartReduser,
+    pincode: pincodeReduser
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false

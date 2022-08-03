@@ -11,7 +11,7 @@ import {
   sideNavToggled$,
 } from './shared';
 import SideNavBar from './sidenav';
-import { Orders } from '../Options/orders';
+import { Orders } from '../Options/orders/orders';
 import { Products } from '../Options/products';
 import { Merchants } from '../Options/merchents';
 import { Customers } from '../Options/coustomers';

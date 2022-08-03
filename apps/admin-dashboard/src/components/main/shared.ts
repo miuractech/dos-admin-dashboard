@@ -5,7 +5,7 @@ import { Coupons } from '../Options/c&g';
 import { Customers } from '../Options/coustomers';
 import { Logout } from '../Options/logout';
 import { Merchants } from '../Options/merchents';
-import { Orders } from '../Options/orders';
+import { Orders } from '../Options/orders/orders';
 import { Products } from '../Options/products';
 import { Location } from '../Options/Location/location';
 

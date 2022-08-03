@@ -13,7 +13,7 @@ const schema = yup.object().shape({
 
 export const GetOTP = () => {
     const { register, formState: { errors }, handleSubmit } = useForm({ resolver: yupResolver(schema) })
-    const { verifyOtp } = usePhoneAuth(app, '/cart/shippingmethod')
+    const { verifyOtp } = usePhoneAuth(app)
     return (
         <div className='w-96'>
             <form onSubmit={handleSubmit(data => verifyOtp(data['otp']))} >

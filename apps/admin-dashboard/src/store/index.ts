@@ -7,6 +7,7 @@ import adminUserReducers from '../Midl/auth/store/admin.user.slice';
 import metaProductTypeReducers from '../Midl/meta-products/store/meta-product.type.slice';
 import topbarReducer from '../components/Options/components/top-bar.slice'
 import locationReducer from "../components/Options/components/locationData"
+import ordersReduser from "./orderSlice"
 export const store = configureStore({
   reducer: {
     adminUser: adminUserReducers,
@@ -15,7 +16,8 @@ export const store = configureStore({
     metaProductSubCategory: metaProductSubCategoryReducers,
     metaProductType: metaProductTypeReducers,
     topbar: topbarReducer,
-    location: locationReducer
+    location: locationReducer,
+    orders:ordersReduser
   },
   middleware: (middleware) =>
     middleware({

@@ -6,16 +6,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setLocalCart, cartProduct, localCart, setCartProducts } from '../../../store/cartSlice'
 import { v4 as uuidv4 } from 'uuid';
 import { OrderSummary } from './OrderSummary'
-import { setNotification } from '../../../store/alertslice'
+import { setBackDrop, setError, setNotification } from '../../../store/alertslice'
 import SimpleModal from '@dropout-store/simple-modal'
 import Lottie from "lottie-react";
 import emptyBox from "./assets/emptyBox.json"
 import { GetPhoneNumber } from './GetPhoneNumber'
 import { GetOTP } from './GetOTP'
 import { useNavigate } from 'react-router-dom'
+import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../../../configs/firebaseConfig'
 
 export const Cart = () => {
-    const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
+    const { cartProductList, localCart, orderId, hash, orderDetails, selectedAddressfull } = useSelector((state: RootState) => state.cart)
     const { user, step } = useSelector((state: RootState) => state.User)
     const dispatch = useDispatch()
     const [productDelete, setProductDelete] = useState<string | null>(null)
@@ -64,25 +66,38 @@ export const Cart = () => {
         setProductDelete(id)
     }
 
-    const deleteItem = (id: string) => {
-        const copy1 = [...cartProductList]
-        const copy2 = [...localCart]
-        const result1 = copy1.filter(item => item.id !== id)
-        const result2 = copy2.filter(item => item.id !== id)
-        dispatch(setCartProducts(result1))
-        dispatch(setLocalCart(result2))
-        setProductDelete(null)
+    const deleteItem = async(id: string) => {
+        try {
+            dispatch(setBackDrop(true))
+            const copy1 = [...cartProductList]
+            const copy2 = [...localCart]
+            const result1 = copy1.filter(item => item.id !== id)
+            const result2 = copy2.filter(item => item.id !== id)
+            dispatch(setCartProducts(result1))
+            dispatch(setLocalCart(result2))
+            if (!user) {
+                dispatch(setBackDrop(false))
+                setProductDelete(null)
+            } else {
+                const deleteRef = doc(db, "cart", user.uid);
+                await updateDoc(deleteRef, {
+                    items: result2
+                });
+                setProductDelete(null)
+                dispatch(setBackDrop(false))
+            }
+     } catch (error) {
+            dispatch(setError("Error deleting item from product"))
+            dispatch(setBackDrop(false))
+     }
     }
 
     const saveLater = (id: string) => {
         console.log(id)
     }
-
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(localCart))
     }, [localCart])
-
-    console.log(user)
     return (
         cartProductList.length >= 1 ? (
             <>
@@ -118,11 +133,30 @@ export const Cart = () => {
                     <div className=''>
                         <Typography fontWeight={500} variant='h6'>Order Summary</Typography>
                         <OrderSummary />
-                        <Button variant='contained' fullWidth onClick={() => {
-                            if (user) {
-                                navigate('/cart/shippingmethod')
-                            } else {
-                                setUserDrawer(true)
+                        <Button variant='contained' fullWidth onClick={async() => {
+                            try {
+                                if (user) {
+                                    const local = localStorage.getItem("cart")
+                                    if (!local) return
+                                    const data: localCart[] = JSON.parse(local)
+                                        const ref = doc(db, "cart", user.uid)
+                                    if (orderId) {
+                                        await setDoc(ref, {
+                                            items: data,
+                                            orderid: orderId
+                                        })
+                                    } else {
+                                        await setDoc(ref, {
+                                            items: data,
+                                        })
+                                        }
+                                    navigate('/cart/shippingmethod')
+                                } else {
+                                    setUserDrawer(true)
+                                }
+                            } catch (error) {
+                                console.log(error)
+                                dispatch(setError("Error adding products"))
                             }
                         }}>ADD ADDRESS</Button>
                     </div>

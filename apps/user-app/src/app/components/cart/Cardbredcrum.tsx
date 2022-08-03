@@ -19,7 +19,7 @@ export const Cardbredcrum = () => {
         </Typography>,
         <Typography
             key="3"
-            style={{ color: location.pathname === '/cart/paymentmethod' ? "#1579F9" : "" }}
+            style={{ color: location.pathname === '/cart/orderconfirmation' ? "#1579F9" : "" }}
             fontWeight={500} color="text.primary">
             Payment
         </Typography>

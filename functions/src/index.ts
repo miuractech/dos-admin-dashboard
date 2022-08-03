@@ -4,6 +4,9 @@ import * as http from "http";
 import * as express from "express";
 import * as cors from "cors";
 import fetch from "node-fetch";
+import axios from "axios";
+import * as crypto from "crypto";
+import * as fs from "fs";
 const app = express();
 app.use(cors({origin: true}));
 admin.initializeApp();
@@ -52,19 +55,43 @@ export const createDocstorage = functions.region("asia-south1")
       return;
     });
 
-// /
-export const api = functions.region("us-central1").runWith(runTimeOption).https.onRequest(app);
-// export const checkIpaddress = functions.https.onRequest(async()) => {
-//   try {
-//     const address = await fetchUrl("api.ipify.org");
-//     console.log(address);
-//     return address;
-//   } catch (error) {
-//     console.log(error);
-//     return error;
-//   }
-// });
 
+export const orderCreate = functions.region("asia-south1").firestore.document("cart/{userId}").onCreate(async (snap, context) => {
+  const newValue = snap.data();
+  const res = await admin.firestore().collection("orders").add({
+    ...newValue,
+    userId: snap.id,
+    orderStatus: "created",
+  });
+  await admin.firestore().collection("orders").doc(res.id).update({
+    orderid: res.id,
+  });
+  await admin.firestore().collection("cart").doc(snap.id).update({
+    orderid: res.id,
+  });
+  return;
+});
+
+export const orderUpdate = functions.region("asia-south1").firestore.document("cart/{userId}").onUpdate(async (snap, context) => {
+  const after = snap.after.data();
+  const items = after.items;
+  let total = 0;
+  for (const item of items) {
+    const res= admin.firestore().collection("reSellers").doc(item.resellerId).collection("products").doc(item.productID);
+    const doc = await res.get();
+    const data = doc.data();
+    if (data) {
+      total = total + (item.count * data.price);
+    }
+  }
+  await admin.firestore().collection("orders").doc(after.orderid).update({
+    ...after,
+    total,
+  });
+  return;
+});
+
+export const api = functions.region("us-central1").runWith(runTimeOption).https.onRequest(app);
 
 const fetchUrl = async (url: string) => {
   return new Promise((resolve, reject) => {
@@ -96,23 +123,46 @@ app.get("/ipaddress", async (req, res) => {
   res.send({data: address});
 });
 
+app.post("/successTest", (req, res) => {
+  res.redirect("dos.com/payment/success/{}");
+  return;
+});
+
+
 app.post("/pan", async (req, res) => {
+  const unix = new Date().getTime();
+  const data = unix + "." + "CF182083CBIGGFQUF4T8G302KPQ0";
+  const publicKey = fs.readFileSync(`${__dirname}\\key.pem`, {encoding: "utf8"});
+  const encryptedData = crypto.publicEncrypt(
+      // {
+      publicKey,
+      // padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      // oaepHash: "sha256",
+      // },
+      Buffer.from(data)
+  );
+  const signature = encryptedData.toString("base64");
+  console.log("encypted data: ", encryptedData.toString("base64"));
+  console.log("unix: ", unix);
+  console.log("publicKey: ", publicKey);
+  console.log("data", data);
   const url = "https://sandbox.cashfree.com/verification/pan";
   const options = {
     method: "POST",
     headers: {
       "Accept": "application/json",
-      "x-client-id": "CF182083CBFEIHI4FIP7LR03HO8G",
-      "x-client-secret": "3a10249c0fcf35256007b960fa5abf8d03d9dc49",
+      "x-client-id": "CF182083CBIGGFQUF4T8G302KPQ0",
+      "x-client-secret": "13fe675c4e0db3d7f4d6a1d89a9a0d8a406a8594",
       "Content-Type": "application/json",
+      "x-cf-signature": signature,
     },
     body: JSON.stringify(req.body),
   };
-  console.log(req.body);
   fetch(url, options)
       .then((res) => res.json())
       .then((json) => {
         res.send({data: json});
+        console.log(JSON.parse(json));
       })
       .catch((err) => console.error("error:" + err));
 });
@@ -164,3 +214,61 @@ app.post("/bank", async (req, res) => {
     console.log(error);
   }
 });
+
+export const pincode = functions.region("asia-south1").https.onCall(async (data, context) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: "get",
+      url: `https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=560034&delivery_postcode=${data.pincode}&cod=1&weight=0.5`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI4NDQyMjgsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjU4ODYwMzM1LCJleHAiOjE2NTk3MjQzMzUsIm5iZiI6MTY1ODg2MDMzNSwianRpIjoiUnAzZDdkcTNQRExLcXkyWCJ9.7zGKyfFzxLblEgpbfXwz0TmDUAFgjisnlM8mkM4KHXU",
+      },
+    };
+    return axios(config)
+        .then(function(response) {
+          resolve(response.data);
+        })
+        .catch(function(error) {
+          reject(error);
+        });
+  });
+});
+
+app.post("/success", async (req, res) => {
+  const data = req.body;
+  const {status, mode, amount, txnid} = data;
+  await admin.firestore().collection("orders").doc(txnid).update({
+    orderStatus: "paymentCompleted",
+    paid: amount,
+    mode: mode,
+    status: status,
+  });
+  const result = await admin.firestore().collection("orders").doc(txnid).get();
+  const orderdata = result.data();
+  if (!orderdata) return;
+  admin.firestore().collection("cart").doc(orderdata.userId).delete();
+  const resellers = orderdata.items.map((order: { resellerId: string; }) => order.resellerId);
+  // resellers.foreach(async (seller: string) =>
+  for (const seller of resellers) {
+    const filterProducts = orderdata.items.filter((pro:any) => pro.resellerId === seller);
+    await admin.firestore().collection("reSellers").doc(seller).collection("orders").add({
+      ...orderdata,
+      items: filterProducts,
+    });
+  }
+  res.redirect("http://localhost:4200/success");
+});
+
+app.post("/failure", async (req, res) => {
+  const data = req.body;
+  const {status, mode, txnid} = data;
+  admin.firestore().collection("orders").doc(txnid).update({
+    orderStatus: "paymentFailed",
+    status: status,
+    mode: mode,
+  });
+  res.redirect("http://localhost:4200/failure");
+});
+
+

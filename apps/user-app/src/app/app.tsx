@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { setUser } from '../features/auth/authSlice';
 import { Alert, Backdrop, CircularProgress, Snackbar, useMediaQuery, useTheme } from '@mui/material';
-import { setError, setNotification, setWarning } from '../store/alertslice';
+import { setBackDrop, setError, setNotification, setWarning } from '../store/alertslice';
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { setFamily } from '../store/product';
 import { ContactUs } from './components/contactUs/ContactUs';
@@ -17,11 +17,14 @@ import { NavBar } from './components/NavBar';
 import { MobileHeader } from './components/MobileHeader';
 import { HeaderTop } from './components/HeaderTop';
 import { Cart } from './components/cart/Cart';
-import { addCartProducts, localCart, setLocalCart } from '../store/cartSlice';
+import { addCartProducts, localCart, setAddress, setLocalCart, setOrderId, setSelectedAddress, setSelectedAddressfull } from '../store/cartSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { ShippingMethod } from './components/shippingMethod/ShippingMethod';
 import { Cardbredcrum } from './components/cart/Cardbredcrum';
 import { MyAccount } from './MyAccount/MyAccount';
+import { OrderConfirmation } from './components/payment/OrderConfirmation';
+import { Paymentsuccess } from './components/payment/Paymentsuccess';
+import { Paymentfailuer } from './components/payment/Paymentfailuer';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -29,32 +32,99 @@ const ProductPage = lazy(() => import('./productPage/ProductPage'));
 export function App() {
   const dispatch = useDispatch()
   const { loading, user } = useSelector((state: RootState) => state.User)
+  const { localCart, addresses } = useSelector((state: RootState) => state.cart)
   const { error, notification, warning,backDrop } = useSelector((state: RootState) => state.alerts)
   const location = useLocation();
+
+  const getLocalData = () => {
+    const data = localStorage.getItem('cart')
+    if (!data) return
+    const cartData = JSON.parse(data)
+    dispatch(setLocalCart(cartData))
+    cartData.forEach(async (element: localCart) => {
+      const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
+      const docSnap = await getDoc(docRef)
+      dispatch(addCartProducts({
+        product: docSnap.data(),
+        size: element.size,
+        count: element.count,
+        id: element.id
+      }))
+    })
+  }
+
+  const getFamily = async() => {
+    const q = query(collection(db, "meta", "products", "family"), where('status', '==', 'published'), orderBy("index", "asc"));
+    const querySnapshot = await getDocs(q)
+    dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+ }
+
+  // const getDBData = async () => {
+  //   console.log("before");
+  //   if (!user) return
+  //   console.log( "after");
+  //   const docRef = doc(db, "cart", user.uid);
+  //   const querySnapshot = await getDoc(docRef)
+  //   if (querySnapshot.exists()) {
+  //     const data = querySnapshot.data()['items']
+  //     console.log(data, "data");
+  //     data.forEach(async (element: localCart) => {
+  //         const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
+  //         const docSnap = await getDoc(docRef)
+  //         dispatch(addCartProducts({
+  //           product: docSnap.data(),
+  //           size: element.size,
+  //           count: element.count,
+  //           id: element.id
+  //         }))
+  //       })
+  //   } else return
+  // }
+
+  useEffect(() => {
+    getorderid()
+  }, [user])
+
+  const getorderid = async () => {
+    if (!user) return 
+      dispatch(setBackDrop(true))
+      const docRef = doc(db, "cart", user.uid)
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data()
+        dispatch(setSelectedAddress(data['addressId']))
+        dispatch(setOrderId(data['orderid']))
+        dispatch(setSelectedAddressfull(data['address']))
+        dispatch(setBackDrop(false))
+      } else {
+        dispatch(setBackDrop(false))
+      }
+  }
+
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred))
-      const q = query(collection(db, "meta", "products", "family"), where('status', '==', 'published'), orderBy("index", "asc"));
-      const querySnapshot = await getDocs(q)
-      dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
     })
-    const data = localStorage.getItem('cart')
-    if (data) {
-      const cartData: localCart[] = JSON.parse(data)
-      dispatch(setLocalCart(cartData))
-      cartData.forEach(async (element: localCart) => {
-        const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
-        const docSnap = await getDoc(docRef)
-        dispatch(addCartProducts({
-          product: docSnap.data(),
-          size: element.size,
-          count: element.count,
-          id: element.id
-        }))
-      })
-    }
+    getLocalData()
+    getFamily()
     return () => Unsubscribe()
-  }, [dispatch])
+  }, [])
+
+  // useEffect(() => {
+  //   if(!user)return
+  //   // getDBData()
+  // }, [user])
+  
+
+  useEffect(() => {
+    if (!user) return
+    const getAddress = async () => {
+      const q = query(collection(db, "users", user.uid, "addresses"), orderBy("timeStamp", "asc"))
+      const querySnapshot = await getDocs(q)
+      dispatch(setAddress(querySnapshot.docs.map(a => ({ ...a.data(), id: a.id }))))
+    }
+    getAddress()
+  }, [dispatch, user])
 
   const theme = useTheme()
   const media = useMediaQuery(theme.breakpoints.up("sm"))
@@ -76,11 +146,16 @@ export function App() {
             <Route path='/auth' element={<Auth />} />
             <Route path='/logout' element={<Logout />} />
             <Route path='/shops' element={<>shops</>} />
+            <Route path='/success' element={<Paymentsuccess />} />
+            <Route path='/failure' element={<Paymentfailuer />} />
             <Route path='/cart' element={<Cardbredcrum />}>
               <Route index element={<Cart />} />
               <Route path='cartt' element={<Cart />} />
               {user && (
-                <Route path='shippingmethod' element={<ShippingMethod />} />
+                <>
+                  <Route path='shippingmethod' element={<ShippingMethod />} />
+                  <Route path='orderconfirmation' element={<OrderConfirmation />} />
+                </>
               )}
             </Route>
             <Route path='/' element={<>home</>} />

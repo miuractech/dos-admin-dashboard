@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Timestamp } from 'firebase/firestore'
+import { OrderDetails } from '../app/components/payment/OrderConfirmation'
 import { produstsType } from './storeFrontslice'
 
 export type cartProduct = {
@@ -28,18 +29,30 @@ export type localCart = {
     count: number,
     resellerId: string
     id: string
+    img:string
 }
 
 type cartType = {
     cartProductList: cartProduct[],
     localCart: localCart[]
     addresses: addressType[]
+    selectedAddress: string | null
+    orderId: string | null
+    hash: string | null
+    orderDetails: OrderDetails | null
+    selectedAddressfull: null | addressType
 }
 
 const initialState: cartType = {
     cartProductList: [],
     localCart: [],
-    addresses:[]
+    addresses: [],
+    selectedAddress: null,
+    orderId: null,
+    hash: null,
+    orderDetails: null,
+    selectedAddressfull:null
+    
 }
 
 export const CartSlice = createSlice({
@@ -64,9 +77,24 @@ export const CartSlice = createSlice({
         addAddress: (state, action) => {
             state.addresses.push(action.payload)
         },
+        setSelectedAddress: (state, action) => {
+            state.selectedAddress = action.payload
+        },
+        setOrderId: (state, action) => {
+            state.orderId = action.payload
+        },
+         setHash: (state, action) => {
+            state.hash = action.payload
+        },
+        setOrderDetails: (state, action) => {
+            state.orderDetails = action.payload
+        },
+        setSelectedAddressfull: (state, action) => {
+            state.selectedAddressfull = action.payload
+        }
     },
 })
 
-export const { addCartProducts, setLocalCart, setCartProducts, addLocalCart, setAddress, addAddress } = CartSlice.actions
+export const { setSelectedAddressfull,setOrderDetails,setHash,addCartProducts, setOrderId, setLocalCart, setCartProducts, addLocalCart, setAddress, addAddress, setSelectedAddress } = CartSlice.actions
 
 export default CartSlice.reducer

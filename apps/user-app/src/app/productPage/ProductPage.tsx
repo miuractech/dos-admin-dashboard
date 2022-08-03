@@ -48,13 +48,15 @@ const ProductPage = () => {
             dispatch(setNotification("Item already exists in cart"))
         } else {
             if (size) {
+                const target = product.sideImages.find((img) => img.sideName === "Front")
                 const id = uuidv4()
                 const localCart = {
                     productID: product.productId,
                     size: size,
                     count: 1,
                     resellerId: product.resellerId,
-                    id: id
+                    id: id,
+                    img: target?.url
                 }
                 dispatch(addCartProducts({
                     product: product,
@@ -66,7 +68,7 @@ const ProductPage = () => {
                 dispatch(setNotification("Item added to cart"))
                 navigate("/cart")
             } else {
-                dispatch(setWarning("Please select a Size to proceed"))
+                dispatch(setWarning("Please select a size to proceed"))
             }
         }
     }

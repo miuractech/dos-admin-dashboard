@@ -44,8 +44,10 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
             dispatch(removeUserLoading())
             dispatch(setStep("otp"))
             dispatch(setPhone(phone))
+            console.log("success");
         } catch (error) {
             dispatch(setUserError(error))
+            console.log("Error",error);
         }
 
 
