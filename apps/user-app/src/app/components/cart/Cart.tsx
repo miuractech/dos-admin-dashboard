@@ -66,7 +66,7 @@ export const Cart = () => {
         setProductDelete(id)
     }
 
-    const deleteItem = async(id: string) => {
+    const deleteItem = async (id: string) => {
         try {
             dispatch(setBackDrop(true))
             const copy1 = [...cartProductList]
@@ -86,10 +86,10 @@ export const Cart = () => {
                 setProductDelete(null)
                 dispatch(setBackDrop(false))
             }
-     } catch (error) {
+        } catch (error) {
             dispatch(setError("Error deleting item from product"))
             dispatch(setBackDrop(false))
-     }
+        }
     }
 
     const saveLater = (id: string) => {
@@ -133,13 +133,13 @@ export const Cart = () => {
                     <div className=''>
                         <Typography fontWeight={500} variant='h6'>Order Summary</Typography>
                         <OrderSummary />
-                        <Button variant='contained' fullWidth onClick={async() => {
+                        <Button variant='contained' fullWidth onClick={async () => {
                             try {
                                 if (user) {
                                     const local = localStorage.getItem("cart")
                                     if (!local) return
                                     const data: localCart[] = JSON.parse(local)
-                                        const ref = doc(db, "cart", user.uid)
+                                    const ref = doc(db, "cart", user.uid)
                                     if (orderId) {
                                         await setDoc(ref, {
                                             items: data,
@@ -149,7 +149,7 @@ export const Cart = () => {
                                         await setDoc(ref, {
                                             items: data,
                                         })
-                                        }
+                                    }
                                     navigate('/cart/shippingmethod')
                                 } else {
                                     setUserDrawer(true)

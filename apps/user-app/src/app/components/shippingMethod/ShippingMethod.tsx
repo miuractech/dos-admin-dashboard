@@ -105,30 +105,6 @@ export const ShippingMethod = () => {
             }
         }
     }
-
-    // useEffect(() => {
-    //     cartProducts()
-    // }, [])
-
-    // const cartProducts = async () => {
-    //     if(!user)return
-    //     const docRef = doc(db, "cart", user.uid);
-    //     const querySnapshot = await getDoc(docRef)
-    //     if (querySnapshot.exists()) {
-    //         const data = querySnapshot.data()['items']
-    //         data.forEach(async (element: localCart) => {
-    //             const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
-    //             const docSnap = await getDoc(docRef)
-    //             dispatch(addCartProducts({
-    //                 product: docSnap.data(),
-    //                 size: element.size,
-    //                 count: element.count,
-    //                 id: element.id
-    //             }))
-    //         })
-    //     }
-    // }
-    
     
     const deleteAddress = async(id:string) => {
         try {

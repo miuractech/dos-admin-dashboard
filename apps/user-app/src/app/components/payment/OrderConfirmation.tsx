@@ -64,7 +64,7 @@ export const OrderConfirmation = () => {
 
     useEffect(() => {
         const getSha = async () => {
-            if (!orderDetails)return
+            if (!orderDetails?.address)return
             dispatch(setBackDrop(true))
                 const res = await sha512(`gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||wia56q6O`)
             dispatch(setHash(res))
@@ -136,7 +136,7 @@ export const OrderConfirmation = () => {
                 <div>
                     <Typography variant='h6' fontWeight={500}>Order Summary</Typography>
                     <OrderSummary />
-                {orderDetails&&  <form action='https://test.payu.in/_payment' method='post'>
+                {orderDetails?.address &&  <form action='https://test.payu.in/_payment' method='post'>
                         <input type="hidden" name="key" value="gtKFFx" />
                         <input type="hidden" name="txnid" value={orderId ?? ""} />
                         <input type="hidden" name="productinfo" value="T-Shirt" />

@@ -12,16 +12,10 @@ export const OrderTable = () => {
     const { orders } = useSelector((state: RootState) => state.orders)
     const columns = [
         {
-            name: <Typography variant='h6'>Order id</Typography>,
             cell: (data: OrderDetailsType) => <div>
-                <img src={ data.items[0].img} alt="img" className='w-20'/>
+                <img src={ data.items[0].img} alt="img" className='w-16'/>
             </div>,
-        },
-        {
-            name: <Typography variant='h6'>Order id</Typography>,
-            cell: (data: OrderDetailsType) => <div>
-                <Typography>{data.orderid }</Typography>
-            </div>,
+            grow: 0.5
         },
         {
             name: <Typography variant='h6'>Amount</Typography>,
@@ -72,7 +66,8 @@ export const OrderTable = () => {
       <DataTable
           columns={columns}
           data={orders}
-          customStyles={customStyles}
+            customStyles={customStyles}
+        expandableRows
       />
   )
 }

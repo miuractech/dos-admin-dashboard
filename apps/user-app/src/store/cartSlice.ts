@@ -24,12 +24,13 @@ export interface addressType {
 }
 
 export type localCart = {
-    productID: string,
-    size: string,
-    count: number,
+    productID: string
+    size: string
+    count: number
     resellerId: string
     id: string
-    img:string
+    img: string
+    productName:string
 }
 
 type cartType = {

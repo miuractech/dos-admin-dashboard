@@ -22,11 +22,6 @@ import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../../configs/firebaseConfig'
 import { setSellerProductsList } from '../../store/storeFrontslice'
 
-type cartProduct = {
-    productId: string
-    size: string
-}
-
 const ProductPage = () => {
     const [size, setSize] = useState<string | null>(null)
     const dispatch = useDispatch()
@@ -49,16 +44,18 @@ const ProductPage = () => {
         } else {
             if (size) {
                 const target = product.sideImages.find((img) => img.sideName === "Front")
+                if(!target)return
                 const id = uuidv4()
                 const localCart = {
+                    productName:product.productName,
                     productID: product.productId,
                     size: size,
                     count: 1,
                     resellerId: product.resellerId,
                     id: id,
-                    img: target?.url
+                    img: target.url
                 }
-                dispatch(addCartProducts({
+                dispatch(addCartProducts({  
                     product: product,
                     size: size,
                     count: 1,
