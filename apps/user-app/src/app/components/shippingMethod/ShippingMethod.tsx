@@ -147,12 +147,14 @@ export const ShippingMethod = () => {
               const local = localStorage.getItem("cart")
               if (!local) return
               const data: localCart[] = JSON.parse(local)
+              const reSellers = data.map(item=>item.resellerId)
               const ref = doc(db, "cart", user.uid)
               await updateDoc(ref, {
                   timeStamp: serverTimestamp(),
                   address: address,
                   addressId: selectedAddress,
-                  items: data
+                  items: data,
+                  reSellers: reSellers
               })
               dispatch(setSelectedAddressfull(address))
               navigate("/cart/orderconfirmation")

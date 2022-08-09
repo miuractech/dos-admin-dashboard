@@ -4,9 +4,9 @@ import { OrderTable } from './OrderTable'
 
 export const Orders = () => {
     return (
-        <div className='max-w-6xl m-auto'>
+        <div className='max-w-7xl  mt-20'>
             <Typography variant='h4'>Orders</Typography>
-            <OrderTable/>
+            <div className='p-2 rounded-xl'><OrderTable /></div>
         </div>
     )
 }

@@ -30,7 +30,8 @@ export type localCart = {
     resellerId: string
     id: string
     img: string
-    productName:string
+    productName: string
+    price:string
 }
 
 type cartType = {

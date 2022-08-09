@@ -1,15 +1,16 @@
-import { OrderDetailsType, setOrderDetails } from '../../../store/orderSlice';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useEffect } from 'react'
 import DataTable, { ExpanderComponentProps } from "react-data-table-component"
 import { useDispatch, useSelector } from 'react-redux';
-import { firestore } from '../../../config/firebase.config';
-import { RootState } from '../../../store/index';
 import { Chip, Divider, Tooltip, Typography } from '@mui/material';
+import { db } from '../../firebaseConfig/config';
+import { RootState } from '../../redux-tool/store';
+import { OrderDetailsType, setOrderDetails } from '../../redux-tool/orderSlice';
 
-export const OrderTable = () => {
+export const SalesViewTable = () => {
     const dispatch = useDispatch()
     const { orders } = useSelector((state: RootState) => state.orders)
+    const { User } = useSelector((state: RootState) => state.User)
 
     const ExpandedComponent: React.FC<ExpanderComponentProps<OrderDetailsType>> = ({ data }) => {
         return <>
@@ -22,7 +23,7 @@ export const OrderTable = () => {
                         <div className='flex space-x-5'>
                             <div className='w-52 self-center'>
                                 <Tooltip title={item.productName} arrow>
-                                <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{item.productName}</Typography>
+                                    <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{item.productName}</Typography>
                                 </Tooltip>
                             </div>
                             <Typography className='self-center'>{item.size} / {item.count}</Typography>
@@ -35,9 +36,9 @@ export const OrderTable = () => {
     };
 
     useEffect(() => {
-        const ordersRef = collection(firestore, "orders");
+        if (!User)return
+        const ordersRef = collection(db, "reSellers",User.uid,"orders");
         const q = query(ordersRef, where("status", "==", "success"));
-
         const unsub = onSnapshot(q, (doc) => {
             const data = doc.docs.map(order => ({ ...order.data() }))
             console.log(data);
@@ -48,23 +49,23 @@ export const OrderTable = () => {
                 }
                 return { ...item, disabled }
             })
-        dispatch(setOrderDetails(newData));
+            dispatch(setOrderDetails(newData));
         });
         return () => unsub()
     }, [])
-    
+
 
     return (
-      <DataTable
-          columns={columns}
-          data={orders}
+        <DataTable
+            columns={columns}
+            data={orders}
             customStyles={customStyles}
             expandableRows
             expandableRowsComponent={ExpandedComponent}
             expandableRowDisabled={row => row.disabled}
-            pagination 
-      />
-  )
+            pagination
+        />
+    )
 }
 
 const customStyles = {
@@ -91,7 +92,7 @@ const columns = [
     {
         cell: (data: OrderDetailsType) => <div>
             <Tooltip title={data.orderid} arrow>
-            <img src={data.items[0].img} alt="img" className='w-16 cursor-pointer' />
+                <img src={data.items[0].img} alt="img" className='w-16 cursor-pointer' />
             </Tooltip>
         </div>,
         grow: 0.4
@@ -100,7 +101,7 @@ const columns = [
         name: <Typography variant='h6'>Product</Typography>,
         cell: (data: OrderDetailsType) => <div className='w-full'>
             <Tooltip title={data.items[0].productName} arrow>
-            <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{data.items[0].productName}</Typography>
+                <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{data.items[0].productName}</Typography>
             </Tooltip>
             {data.items.length > 1 && <Chip label={`+${data.items.length - 1}`} variant="outlined" size='small' />}
         </div>,
@@ -137,6 +138,6 @@ const columns = [
         cell: (data: any) => <div>
             <Typography>{data.timeStamp.toDate().toLocaleString()}</Typography>
         </div>,
-        grow:1.2
+        grow: 1.2
     }
 ]

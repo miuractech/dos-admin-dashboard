@@ -29,6 +29,8 @@ export interface Item {
 	size: string;
 	count: number;
 	resellerId: string;
+	productName: string;
+	price:string
 }
 
 export interface TimeStamp {
@@ -66,4 +68,5 @@ export interface OrderDetailsType {
 	orderStatus: string;
 	timeStamp: TimeStamp;
 	status: string;
+	disabled: boolean;
 }

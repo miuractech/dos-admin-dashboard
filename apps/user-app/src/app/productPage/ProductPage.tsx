@@ -53,7 +53,8 @@ const ProductPage = () => {
                     count: 1,
                     resellerId: product.resellerId,
                     id: id,
-                    img: target.url
+                    img: target.url,
+                    price:product.price
                 }
                 dispatch(addCartProducts({  
                     product: product,
