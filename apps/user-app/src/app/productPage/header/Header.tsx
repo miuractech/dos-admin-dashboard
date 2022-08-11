@@ -5,10 +5,12 @@ import InputField from "../../../UI/input-field/input-field"
 import { FavoriteBorderOutlined, PersonOutlineOutlined, Search, ShoppingCartOutlined } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/store'
+import { useNavigate } from 'react-router-dom'
 
 export const Header = () => {
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("md"))
+    const navigate = useNavigate()
     const { cartProductList } = useSelector((state: RootState) => state.cart)
     return (
         <div style={{ display: "grid", gridTemplateColumns: media ? "3fr 3fr 6fr" : "3fr 6fr", height: "10%", alignItems: "center", padding: "10px", gap: "10px" }}>
@@ -32,9 +34,11 @@ export const Header = () => {
                 <div className='flex vertical-center' >
                     <PersonOutlineOutlined className='cursor-pointer' />
                 </div>
-                <Badge className='cursor-pointer' color="secondary" badgeContent={cartProductList.length}>
-                    <ShoppingCartOutlined className='cursor-pointer' />
-                </Badge>
+                <div onClick={()=>navigate("/cart")}>
+                    <Badge className='cursor-pointer' color="secondary" badgeContent={cartProductList.length}>
+                        <ShoppingCartOutlined className='cursor-pointer' />
+                    </Badge>
+                </div>
                 <FavoriteBorderOutlined className='cursor-pointer' />
             </div>
         </div >
