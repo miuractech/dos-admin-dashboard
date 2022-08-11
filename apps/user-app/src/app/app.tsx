@@ -10,10 +10,10 @@ import { setUser } from '../features/auth/authSlice';
 import { Alert, Backdrop, CircularProgress, Snackbar, useMediaQuery, useTheme } from '@mui/material';
 import { setBackDrop, setError, setNotification, setWarning } from '../store/alertslice';
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { setFamily } from '../store/product';
+import { setCategory, setFamily, setSubCategory } from '../store/product';
 import { ContactUs } from './components/contactUs/ContactUs';
 import { Header } from './productPage/header/Header';
-import { NavBar } from './components/NavBar';
+import { NavBar } from './components/Navbar/NavBar';
 import { MobileHeader } from './components/MobileHeader';
 import { HeaderTop } from './components/HeaderTop';
 import { Cart } from './components/cart/Cart';
@@ -53,33 +53,21 @@ export function App() {
     })
   }
 
-  const getFamily = async() => {
-    const q = query(collection(db, "meta", "products", "family"), where('status', '==', 'published'), orderBy("index", "asc"));
-    const querySnapshot = await getDocs(q)
-    dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+  const getData = async() => {
+    try {
+      const q = query(collection(db, "meta", "products", "family"), where('status', '==', 'published'), orderBy("index", "asc"));
+      const querySnapshot = await getDocs(q)
+      dispatch(setFamily(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+      const q2 = query(collection(db, "meta", "products", "category"), where('status', '==', 'published'), orderBy("index", "asc"));
+      const querySnapshot2 = await getDocs(q2)
+      dispatch(setCategory(querySnapshot2.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+      const q3 = query(collection(db, "meta", "products", "sub_category"), where('status', '==', 'published'), orderBy("index", "asc"));
+      const querySnapshot3 = await getDocs(q3)
+      dispatch(setSubCategory(querySnapshot3.docs.map(doc => ({ ...doc.data(), id: doc.id }))))
+    } catch (error) {
+      dispatch(setError("Error getting data"))
+    }
  }
-
-  // const getDBData = async () => {
-  //   console.log("before");
-  //   if (!user) return
-  //   console.log( "after");
-  //   const docRef = doc(db, "cart", user.uid);
-  //   const querySnapshot = await getDoc(docRef)
-  //   if (querySnapshot.exists()) {
-  //     const data = querySnapshot.data()['items']
-  //     console.log(data, "data");
-  //     data.forEach(async (element: localCart) => {
-  //         const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
-  //         const docSnap = await getDoc(docRef)
-  //         dispatch(addCartProducts({
-  //           product: docSnap.data(),
-  //           size: element.size,
-  //           count: element.count,
-  //           id: element.id
-  //         }))
-  //       })
-  //   } else return
-  // }
 
   useEffect(() => {
     getorderid()
@@ -106,14 +94,9 @@ export function App() {
       dispatch(setUser(cred))
     })
     getLocalData()
-    getFamily()
+    getData()
     return () => Unsubscribe()
   }, [])
-
-  // useEffect(() => {
-  //   if(!user)return
-  //   // getDBData()
-  // }, [user])
   
 
   useEffect(() => {
@@ -137,7 +120,7 @@ export function App() {
           {media ? (
             <>
               <Header />
-              {location.pathname === "/cart" || "/shippingmethod" ? null : <NavBar />}
+              {location.pathname === "/cart" ? null : <NavBar />}
             </>
           ) : (
             <MobileHeader />

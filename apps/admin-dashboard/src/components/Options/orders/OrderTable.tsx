@@ -63,6 +63,8 @@ export const OrderTable = () => {
             expandableRowsComponent={ExpandedComponent}
             expandableRowDisabled={row => row.disabled}
             pagination 
+            highlightOnHover
+            pointerOnHover
       />
   )
 }

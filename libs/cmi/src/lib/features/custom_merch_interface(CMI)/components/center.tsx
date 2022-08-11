@@ -199,7 +199,6 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                     left: 'calc(50% - 250px)',
                 }}
             >
-                {/* {image && <img src={image} style={{ width: 500 }} alt="img" />} */}
                 {image && <ProgressiveImg src={image} alt="img" style={{ width: 500 }} skeletonDimension={{ width: 500, height: 500 }} />}
             </div>
             <div

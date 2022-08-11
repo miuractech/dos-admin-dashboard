@@ -222,7 +222,7 @@ export const pincode = functions.region("asia-south1").https.onCall(async (data,
       url: `https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=560034&delivery_postcode=${data.pincode}&cod=1&weight=0.5`,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI4NDQyMjgsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjU4ODYwMzM1LCJleHAiOjE2NTk3MjQzMzUsIm5iZiI6MTY1ODg2MDMzNSwianRpIjoiUnAzZDdkcTNQRExLcXkyWCJ9.7zGKyfFzxLblEgpbfXwz0TmDUAFgjisnlM8mkM4KHXU",
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI5MDI4NTcsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjYwMTk3MDU5LCJleHAiOjE2NjEwNjEwNTksIm5iZiI6MTY2MDE5NzA1OSwianRpIjoiNTU3UVFuODRvTGdCaGNkVCJ9.WAVgLcYjPFbm7rGv5Ur8sbJW3pqFd2jSNc_t0LIEzbA",
       },
     };
     return axios(config)

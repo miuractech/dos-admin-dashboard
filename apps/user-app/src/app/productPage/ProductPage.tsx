@@ -6,7 +6,7 @@ import { MobileContent } from '../components/MobileContent'
 import { MobileHeader } from '../components/MobileHeader'
 import { MobilePriceComponent } from '../components/PriceComponent'
 import { MobileProductImages } from '../components/ProductImages'
-import { NavBar } from '../components/NavBar'
+import { NavBar } from '../components/Navbar/NavBar'
 import { ImageContant } from '../components/ImageContant'
 import { ProductDetails } from '../components/ProductDetails'
 import { Ratings } from '../components/Ratings'
@@ -54,7 +54,7 @@ const ProductPage = () => {
                     resellerId: product.resellerId,
                     id: id,
                     img: target.url,
-                    price:product.price
+                    price: product.price
                 }
                 dispatch(addCartProducts({  
                     product: product,

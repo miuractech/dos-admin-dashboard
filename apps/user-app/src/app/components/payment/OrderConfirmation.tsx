@@ -33,7 +33,7 @@ export const OrderConfirmation = () => {
                 const result = data['address']
                 if (result) {
                     dispatch(setOrderDetails(data))
-                    dispatch(setBackDrop(false))
+                    // dispatch(setBackDrop(false))
                 }
             }
         });
@@ -57,7 +57,7 @@ export const OrderConfirmation = () => {
             if (docSnap.exists()) {
                 const data = docSnap.data()
                 dispatch(setOrderDetails(data))
-                dispatch(setBackDrop(false))
+                // dispatch(setBackDrop(false))
             }
     }
 
@@ -97,11 +97,11 @@ export const OrderConfirmation = () => {
             if (result.status === 200) {
                 dispatch(setcourierpartners(result))
                 dispatch(setDeliveryMessage(null))
-                dispatch(setBackDrop(false))
+                // dispatch(setBackDrop(false))
             } else {
                 dispatch(setDeliveryMessage("Currently out of stock in this area."))
                 dispatch(setDeliverydetails(null))
-                dispatch(setBackDrop(false))
+                // dispatch(setBackDrop(false))
             }
         } catch (error) {
             console.log(error)

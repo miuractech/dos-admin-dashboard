@@ -1,5 +1,5 @@
 import { Search } from '@mui/icons-material'
-import { CircularProgress, Container, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { CircularProgress, Container, Grid, Skeleton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import React, { Suspense, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -49,9 +49,9 @@ const StoreFront = () => {
     return (
         storeFrontDetails && <div>
             <div style={{ position: "relative" }}>
-                <ProgressiveImg src={storeFrontDetails.bannerUrl} alt="bannerImage" style={{ width: "100%" }} />
+                <ProgressiveImg loadingComponent={<Skeleton variant="rectangular" width="100%" />} src={storeFrontDetails.bannerUrl} alt="bannerImage" style={{ width: "100%" }} />
                 <div id='circle' style={{ position: "absolute", right: "calc(50% - 60px)", overflow: "hidden", bottom: "-90px" }}>
-                    <ProgressiveImg src={storeFrontDetails.profileUrl} alt="profileimage" style={{ width: "100%", height: "100%" }} />
+                    <ProgressiveImg src={storeFrontDetails.profileUrl} alt="profileimage" style={{ width: "100%", height: "100%" }} loadingComponent={<Skeleton variant="circular" width="100%" height="100%"/>} />
                 </div>
             </div>
             <div style={{ margin: "55px 55px 30px" }}>
@@ -64,7 +64,7 @@ const StoreFront = () => {
                     {storeFrontDetails.selectedTemplate.map((grid) => <div
                         style={{ borderRadius: "10px", overflow: "hidden", gridColumn: media ? grid.gridColumn : grid.gridColumnMobile, gridRow: media ? grid.gridRow : grid.gridRowMobile, width: '100%' }}
                     >
-                        <ProgressiveImg src={grid.img} alt="gridImage" style={{ width: "100%", height: "100%" }} />
+                        <ProgressiveImg src={grid.img} alt="gridImage" style={{ width: "100%", height: "100%" }} loadingComponent={<Skeleton variant="rectangular" width="100%" height="100%" /> } />
                     </div>)}
                 </div>
             </Container>
