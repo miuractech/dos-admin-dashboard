@@ -3,7 +3,6 @@ import { Button, Card, makeStyles, Typography, useMediaQuery, useTheme } from '@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
-import InputField from '../../UI/input-field/input-field'
 import reviews from "../components/images/reviews.svg"
 import { Pincode } from './Pincode'
 import { MobileProductImages } from './ProductImages'
@@ -28,7 +27,7 @@ export const ImageContant = ({ AddToCard, setSize, size }: {
                 }}>
                     {[...product.sideImages].map(img => {
                         return (
-                            <div key={img.sideName}>
+                            <div key={img.sideName} className="cursor-pointer hover:shadow-lg scale-110">
                                 <img src={img.url} alt="img" width="100%" />
                             </div>
                         )

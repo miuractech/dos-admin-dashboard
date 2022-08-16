@@ -25,6 +25,7 @@ import { MyAccount } from './MyAccount/MyAccount';
 import { OrderConfirmation } from './components/payment/OrderConfirmation';
 import { Paymentsuccess } from './components/payment/Paymentsuccess';
 import { Paymentfailuer } from './components/payment/Paymentfailuer';
+import { Home } from './Home/Home';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -141,7 +142,7 @@ export function App() {
                 </>
               )}
             </Route>
-            <Route path='/' element={<>home</>} />
+            <Route path='/' element={<Home/>} />
             <Route path='/shops/:resellerid' element={<StoreFront />} />
             <Route path='/shops/:resellerid/products/:productid' element={<ProductPage />} />
             <Route path="/contact" element={<ContactUs />} />

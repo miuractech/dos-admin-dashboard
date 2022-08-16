@@ -53,6 +53,8 @@ export function App() {
     })
     return () => Unsubscribe()
   }, [])
+
+
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
   if (loading) {

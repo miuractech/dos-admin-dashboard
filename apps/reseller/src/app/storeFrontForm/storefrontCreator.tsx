@@ -51,12 +51,7 @@ export default function StorefrontCreator({ }: Props) {
     setOpen(false)
     setError(null)
   }
-
-  // const location = useLocation();
-  // console.log(location.pathname);
-
-
-
+  
   return (
     <div>
       <Snackbar open={Boolean(error)} autoHideDuration={5000} onClose={handleClose}>
@@ -64,7 +59,6 @@ export default function StorefrontCreator({ }: Props) {
           {error}
         </Alert>
       </Snackbar>
-      <Header />
       <div id="bg">
         <Typography gutterBottom padding={5} variant='h4' align='center'>Customize Storefront</Typography>
         <div style={{ maxWidth: "800px", margin: "auto" }}>

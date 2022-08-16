@@ -33,12 +33,11 @@ export const createUser = createAsyncThunk("User/createUser",
   async (payload: createPayloadType, { rejectWithValue }) => {
     try {
       const response = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
-      // await setDoc(doc(db, "reSellers", response.user.uid), {
-      //   email: response.user.email,
-      //   phone: payload.phone,
-      //   storeName: payload.storeName,
-      //   fullName: payload.fullName
-      // })
+      await setDoc(doc(db, "reSellers", response.user.uid), {
+        phone: payload.phone,
+        storeName: payload.storeName,
+        fullName: payload.fullName
+      })
       // await sendEmailVerification(response.user)
       return { response }
 

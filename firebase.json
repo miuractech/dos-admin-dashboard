@@ -7,10 +7,12 @@
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
-    ]
+    ],
+    "source": "functions"
   },
-  "hosting": {
-    "public": "public",
+  "hosting": [{
+    "public": "./dist/apps/user-app/build",
+    "site":"dos-website",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -23,6 +25,21 @@
       }
     ]
   },
+{
+    "public": "./dist/apps/admin-dashboard/build",
+    "site":"admin-dashboard-e-da",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }],
   "storage": {
     "rules": "storage.rules"
   },

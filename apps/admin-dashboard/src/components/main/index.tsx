@@ -13,7 +13,7 @@ import {
 import SideNavBar from './sidenav';
 import { Orders } from '../Options/orders/orders';
 import { Products } from '../Options/products';
-import { Merchants } from '../Options/merchents';
+import { Merchants } from '../Options/merchents/merchents';
 import { Customers } from '../Options/coustomers';
 import { Meta } from '../Options/meta';
 import { Logout } from '../Options/logout';

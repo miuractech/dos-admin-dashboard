@@ -215,7 +215,6 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
                 progressPending={fetchNext}
                 paginationServer
                 paginationComponentOptions={{ noRowsPerPage: true }}
-                // subHeaderComponent={}
                 onChangePage={handlePageChange}
                 paginationTotalRows={numberOfRows}
             />

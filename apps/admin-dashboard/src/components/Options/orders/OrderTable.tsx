@@ -1,16 +1,16 @@
 import { OrderDetailsType, setOrderDetails } from '../../../store/orderSlice';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import DataTable, { ExpanderComponentProps } from "react-data-table-component"
 import { useDispatch, useSelector } from 'react-redux';
 import { firestore } from '../../../config/firebase.config';
 import { RootState } from '../../../store/index';
-import { Chip, Divider, Tooltip, Typography } from '@mui/material';
+import { Chip, CircularProgress, Divider, Tooltip, Typography } from '@mui/material';
 
 export const OrderTable = () => {
     const dispatch = useDispatch()
     const { orders } = useSelector((state: RootState) => state.orders)
-
+    const [loading, setLoading] = useState(false)
     const ExpandedComponent: React.FC<ExpanderComponentProps<OrderDetailsType>> = ({ data }) => {
         return <>
             {data.items.slice(1).map((item) => (
@@ -22,10 +22,10 @@ export const OrderTable = () => {
                         <div className='flex space-x-5'>
                             <div className='w-52 self-center'>
                                 <Tooltip title={item.productName} arrow>
-                                <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{item.productName}</Typography>
+                                <Typography variant='caption' className='text-ellipsis overflow-hidden whitespace-nowrap'>{item.productName}</Typography>
                                 </Tooltip>
                             </div>
-                            <Typography className='self-center'>{item.size} / {item.count}</Typography>
+                            <Typography variant='caption' className='self-center'>{item.size} / {item.count}</Typography>
                         </div>
                     </div>
                     <Divider />
@@ -35,12 +35,12 @@ export const OrderTable = () => {
     };
 
     useEffect(() => {
+        setLoading(true)
         const ordersRef = collection(firestore, "orders");
         const q = query(ordersRef, where("status", "==", "success"));
-
         const unsub = onSnapshot(q, (doc) => {
             const data = doc.docs.map(order => ({ ...order.data() }))
-            console.log(data);
+            setLoading(false)
             const newData = data.map(item => {
                 let disabled = true;
                 if (item['items'].length > 1) {
@@ -55,9 +55,10 @@ export const OrderTable = () => {
     
 
     return (
-      <DataTable
-          columns={columns}
-          data={orders}
+        <DataTable
+            title="Orders"
+            columns={columns}
+            data={orders}
             customStyles={customStyles}
             expandableRows
             expandableRowsComponent={ExpandedComponent}
@@ -65,6 +66,10 @@ export const OrderTable = () => {
             pagination 
             highlightOnHover
             pointerOnHover
+            fixedHeader
+            fixedHeaderScrollHeight="80vh"
+            progressPending={loading}
+            progressComponent={<CircularProgress />}
       />
   )
 }
@@ -99,46 +104,41 @@ const columns = [
         grow: 0.4
     },
     {
-        name: <Typography variant='h6'>Product</Typography>,
+        name: <Typography variant='caption'>Product</Typography>,
         cell: (data: OrderDetailsType) => <div className='w-full'>
             <Tooltip title={data.items[0].productName} arrow>
-            <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{data.items[0].productName}</Typography>
+            <Typography variant='caption' className='text-ellipsis overflow-hidden whitespace-nowrap'>{data.items[0].productName}</Typography>
             </Tooltip>
+            <br/>
             {data.items.length > 1 && <Chip label={`+${data.items.length - 1}`} variant="outlined" size='small' />}
         </div>,
         grow: 1.5
     },
     {
-        name: <Typography variant='h6'>Size/count</Typography>,
-        cell: (data: OrderDetailsType) => <div >
-            <Typography className='absolute left-5'>{data.items[0].size} / {data.items[0].count} </Typography>
-        </div>,
+        name: <Typography variant='caption'>Size/count</Typography>,
+        selector: (data: OrderDetailsType) =>data.items[0].size +"/"+data.items[0].count
     },
     {
-        name: <Typography variant='h6'>Name</Typography>,
+        name: <Typography variant='caption'>Name</Typography>,
         cell: (data: OrderDetailsType) => <div className='w-full'>
             <Tooltip title={data.address.firstName} arrow>
-                <Typography className='text-ellipsis overflow-hidden whitespace-nowrap'>{data.address.firstName}</Typography>
+                <Typography variant='caption' className='text-ellipsis overflow-hidden whitespace-nowrap'>{data.address.firstName}</Typography>
             </Tooltip>
-        </div>,
+        </div>
     },
     {
-        name: <Typography variant='h6'>Phone</Typography>,
-        cell: (data: OrderDetailsType) => <div>
-            <Typography>{data.address.phone}</Typography>
-        </div>,
+        name: <Typography variant='caption'>Phone</Typography>,
+        selector: (data: OrderDetailsType) => data.address.phone,
+        sortable: true
     },
     {
-        name: <Typography variant='h6'>Pincode</Typography>,
-        cell: (data: OrderDetailsType) => <div>
-            <Typography>{data.address.pincode}</Typography>
-        </div>,
+        name: <Typography variant='caption'>Pincode</Typography>,
+        selector: (data: OrderDetailsType) => data.address.pincode,
+        sortable: true
     },
     {
-        name: <Typography variant='h6'>Order Time</Typography>,
-        cell: (data: any) => <div>
-            <Typography>{data.timeStamp.toDate().toLocaleString()}</Typography>
-        </div>,
-        grow:1.2
+        name: <Typography variant='caption'>Order Time</Typography>,
+        cell: (data: any) => data.timeStamp.toDate().toLocaleString(),
+        grow: 1.2
     }
 ]

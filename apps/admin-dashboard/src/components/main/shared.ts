@@ -4,7 +4,7 @@ import { CMI } from '../Options/CMI';
 import { Coupons } from '../Options/c&g';
 import { Customers } from '../Options/coustomers';
 import { Logout } from '../Options/logout';
-import { Merchants } from '../Options/merchents';
+import { Merchants } from '../Options/merchents/merchents';
 import { Orders } from '../Options/orders/orders';
 import { Products } from '../Options/products';
 import { Location } from '../Options/Location/location';
