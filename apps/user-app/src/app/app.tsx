@@ -26,6 +26,7 @@ import { OrderConfirmation } from './components/payment/OrderConfirmation';
 import { Paymentsuccess } from './components/payment/Paymentsuccess';
 import { Paymentfailuer } from './components/payment/Paymentfailuer';
 import { Home } from './Home/Home';
+import { CMI } from '../CMI/cmi';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -146,7 +147,12 @@ export function App() {
             <Route path='/shops/:resellerid' element={<StoreFront />} />
             <Route path='/shops/:resellerid/products/:productid' element={<ProductPage />} />
             <Route path="/contact" element={<ContactUs />} />
-            {user &&<Route path='myprofile' element={<MyAccount />} />}
+            {user &&
+              <>
+              <Route path='myprofile' element={<MyAccount />} />
+              <Route path='CMI' element={<CMI />} />  
+            </>
+            }
             <Route path='*' element={<>not found</>} />
           </Routes>
         </Suspense>

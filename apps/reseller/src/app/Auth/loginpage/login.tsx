@@ -76,6 +76,7 @@ export function Login(props: LoginProps) {
         await auth?.currentUser?.reload()
         const newUser = auth.currentUser
         dispatch(setUser(newUser))
+        console.log("login");
       }
 
     } catch (error: any) {

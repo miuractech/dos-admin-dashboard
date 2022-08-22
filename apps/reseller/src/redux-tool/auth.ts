@@ -38,7 +38,7 @@ export const createUser = createAsyncThunk("User/createUser",
         storeName: payload.storeName,
         fullName: payload.fullName
       })
-      // await sendEmailVerification(response.user)
+      await sendEmailVerification(response.user)
       return { response }
 
     }

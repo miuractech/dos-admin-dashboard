@@ -12,13 +12,13 @@ app.use(cors({origin: true}));
 admin.initializeApp();
 
 // /
-const runTimeOption: {
-  vpcConnector: string;
-  vpcConnectorEgressSettings: "ALL_TRAFFIC" | "VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED" | "PRIVATE_RANGES_ONLY" | undefined;
-} = {
-  vpcConnector: "functions-connector", // ---> name of the serverless vpc connector
-  vpcConnectorEgressSettings: "ALL_TRAFFIC",
-};
+// const runTimeOption: {
+//   vpcConnector: string;
+//   vpcConnectorEgressSettings: "ALL_TRAFFIC" | "VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED" | "PRIVATE_RANGES_ONLY" | undefined;
+// } = {
+//   vpcConnector: "functions-connector", // ---> name of the serverless vpc connector
+//   vpcConnectorEgressSettings: "ALL_TRAFFIC",
+// };
 
 
 export const docCreation = functions.region("asia-south1")
@@ -56,7 +56,7 @@ export const createDocstorage = functions.region("asia-south1")
     });
 
 
-export const orderCreate = functions.region("asia-south1").firestore.document("cart/{userId}").onCreate(async (snap, context) => {
+export const orderCreate = functions.region("asia-south1").firestore.document("cart/{userId}").onCreate(async (snap) => {
   const newValue = snap.data();
   const res = await admin.firestore().collection("orders").add({
     ...newValue,
@@ -72,7 +72,7 @@ export const orderCreate = functions.region("asia-south1").firestore.document("c
   return;
 });
 
-export const orderUpdate = functions.region("asia-south1").firestore.document("cart/{userId}").onUpdate(async (snap, context) => {
+export const orderUpdate = functions.region("asia-south1").firestore.document("cart/{userId}").onUpdate(async (snap) => {
   const after = snap.after.data();
   const items = after.items;
   let total = 0;
@@ -91,7 +91,8 @@ export const orderUpdate = functions.region("asia-south1").firestore.document("c
   return;
 });
 
-export const api = functions.region("us-central1").runWith(runTimeOption).https.onRequest(app);
+// export const api = functions.region("us-central1").runWith(runTimeOption).https.onRequest(app);
+export const api = functions.region("asia-south1").https.onRequest(app);
 
 const fetchUrl = async (url: string) => {
   return new Promise((resolve, reject) => {
@@ -159,10 +160,10 @@ app.post("/pan", async (req, res) => {
     body: JSON.stringify(req.body),
   };
   fetch(url, options)
-      .then((res) => res.json())
+      .then((res) => res.text())
       .then((json) => {
         res.send({data: json});
-        console.log(JSON.parse(json));
+        console.log(json);
       })
       .catch((err) => console.error("error:" + err));
 });
@@ -215,7 +216,7 @@ app.post("/bank", async (req, res) => {
   }
 });
 
-export const pincode = functions.region("asia-south1").https.onCall(async (data, context) => {
+export const pincode = functions.region("asia-south1").https.onCall(async (data) => {
   return new Promise((resolve, reject) => {
     const config = {
       method: "get",
@@ -249,7 +250,6 @@ app.post("/success", async (req, res) => {
   if (!orderdata) return;
   admin.firestore().collection("cart").doc(orderdata.userId).delete();
   const resellers = orderdata.items.map((order: { resellerId: string; }) => order.resellerId);
-  // resellers.foreach(async (seller: string) =>
   for (const seller of resellers) {
     const filterProducts = orderdata.items.filter((pro:any) => pro.resellerId === seller);
     await admin.firestore().collection("reSellers").doc(seller).collection("orders").add({
