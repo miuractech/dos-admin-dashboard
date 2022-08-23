@@ -31,46 +31,74 @@ import Auth from '../../Midl/auth/component/auth';
 const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);
   useSubject(sideNavToggled$);
-  const user = useSelector((state:RootState)=>state.adminUser)
-  const dispatch = useDispatch()
-  
+  const user = useSelector((state: RootState) => state.adminUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
-      if(cred){
-        if(cred.uid === 'GjQ5QmZcLoT926oYTMNnJtZLjSo1'){
-          dispatch(setAdminUserState({
-            user: cred,
-            userLoading: false,
-            error: "",
-            signOutMessage: "",
-          }))
-        }else{
-          dispatch(setAdminUserState({
+      if (cred) {
+        if (cred.uid === 'GjQ5QmZcLoT926oYTMNnJtZLjSo1') {
+          dispatch(
+            setAdminUserState({
+              user: cred,
+              userLoading: false,
+              error: '',
+              signOutMessage: '',
+            })
+          );
+        } else {
+          dispatch(
+            setAdminUserState({
+              user: null,
+              userLoading: false,
+              error: "You're Not authorized",
+              signOutMessage: 'Unauthorized user',
+            })
+          );
+        }
+      } else {
+        dispatch(
+          setAdminUserState({
             user: null,
             userLoading: false,
-            error: "You're Not authorized",
-            signOutMessage: "Unauthorized user",
-          }))
-        }
-      }else{        
-        dispatch(setAdminUserState({
-          user: null,
-          userLoading: false,
-          error: "No user",
-          signOutMessage: "No user",
-        }))
+            error: 'No user',
+            signOutMessage: 'No user',
+          })
+        );
       }
-    })
-    return () => Unsubscribe()
-  }, [])
-  
-  if(user.user === undefined) return (<div style={{display:'flex', height:'100vh', width:'100vw', justifyContent:'center', alignItems:'center'}}>
-    <CircularProgress />
-  </div>)
-  else if(user.user === null) return (<div style={{display:'flex', height:'100vh', width:'100vw', justifyContent:'center', alignItems:'center'}}>
-  <Auth />
-</div>)
-  else{
+    });
+    return () => Unsubscribe();
+  }, []);
+
+  if (user.user === undefined)
+    return (
+      <div
+        style={{
+          display: 'flex',
+          height: '100vh',
+          width: '100vw',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  else if (user.user === null)
+    return (
+      <div
+        style={{
+          display: 'flex',
+          height: '100vh',
+          width: '100vw',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Auth />
+      </div>
+    );
+  else {
     return (
       <>
         <SideNavBar />
@@ -89,7 +117,7 @@ const Main: React.FC = () => {
             <Route path="/customers" element={<Customers />} />
             <Route path="/meta" element={<Meta />} />
             <Route path="/couponsgifts" element={<Coupons />} />
-            <Route path="/cmi" element={<CMI />} >
+            <Route path="/cmi" element={<CMI />}>
               <Route path="/cmi/font" element={<Fonts />} />
               <Route path="/cmi/art" element={<Art />} />
             </Route>

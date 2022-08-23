@@ -54,7 +54,7 @@ export const SalesViewTable = () => {
         return () => unsub()
     }, [])
 
-
+    
     return (
         <DataTable
             columns={columns}
