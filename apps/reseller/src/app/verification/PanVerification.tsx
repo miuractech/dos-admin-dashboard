@@ -5,9 +5,9 @@ import pan from "./pancard.svg"
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup'
-import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { app } from '../../firebaseConfig/config';
-import { setBackDrop } from '../../redux-tool/auth';
+import { setBackDrop, setError } from '../../redux-tool/auth';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import verified from "./verified.json"
@@ -15,12 +15,12 @@ import Lottie from "lottie-react";
 
 type Inputs = {
     name: string,
-    panNumber: string
+    pan: string
 };
 
 const schema = yup.object({
     name: yup.string().min(3).required("Name is a requried"),
-    panNumber: yup.string()
+    pan: yup.string()
         .required("PAN is Required")
         .test(
             "PAN",
@@ -37,21 +37,29 @@ export const PanVerification = () => {
     const [validData, setValidData] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const functions = getFunctions(app,"asia-south1")
-    connectFunctionsEmulator(functions, "localhost", 5001);
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     })
-    const onSubmit = async (data: Inputs) => {
+    const [data, setData] = useState<null | Inputs>(null)
+    const onSubmit = async (data: any) => {
         try {
             dispatch(setBackDrop(true))
-            const verifiyPan = httpsCallable(functions, "pan")
-            const result = await verifiyPan(data)
-            console.log(result);
-            //  setValidData(true)
+            const url = "http://localhost:5001/dropoutstore-8979d/asia-south1/api/pan"
+            const response = await fetch(url, { method: 'POST', body: JSON.stringify(data)})
+            const result =  await response.json()
+            const resObj = JSON.parse(result.data)
+            if (resObj.valid) {
+                setData({
+                    name: resObj.name_provided,
+                    pan: resObj.pan
+                })
+                setValidData(true)
+            } else {
+                dispatch(setError("Invalid please enter a valid PAN"))
+            }
             dispatch(setBackDrop(false))
         } catch (error) {
-            console.log(error)
+            dispatch(setError("Something went wrong please try again."))
             dispatch(setBackDrop(false))
         }
     }
@@ -64,10 +72,10 @@ export const PanVerification = () => {
                     <div className='space-y-5'>
                         <div className='flex'>
                             <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>Name Provided :</Typography>
-                            <Typography variant='subtitle2' fontWeight={500} className="md:pl-10">KIRAN</Typography>
+                            <Typography variant='subtitle2' fontWeight={500} className="md:pl-10">{data?.name}</Typography>
                         </div>
                         <div className='flex'>
-                            <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>PAN :</Typography><Typography className="md:pl-10" variant='subtitle2' fontWeight={500}>DTWPK233332E</Typography>
+                            <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>PAN :</Typography><Typography className="md:pl-10" variant='subtitle2' fontWeight={500}>{data?.pan}</Typography>
                         </div>
                         <div className='self-center justify-self-center w-1/2 m-auto'>
                             <Button type='submit' variant='contained' fullWidth onClick={() => navigate("/bankstatement")}>Next</Button>
@@ -84,9 +92,9 @@ export const PanVerification = () => {
                             <InputField
                                 placeholder='PAN number'
                                 fullWidth
-                                forminput={{ ...register("panNumber") }}
-                                error={Boolean(errors.panNumber)}
-                                helperText={errors.panNumber?.message}
+                                    forminput={{ ...register("pan") }}
+                                    error={Boolean(errors.pan)}
+                                    helperText={errors.pan?.message}
                             />
                         </div>
                         <div>

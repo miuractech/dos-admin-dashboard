@@ -40,7 +40,7 @@ export default function StorefrontCreator({ }: Props) {
         bannerUrl,
         selectedTemplate
       })
-      navigate("/verification")
+      window.location.reload()
     } catch (error) {
       setError("failed to save, please try again")
       console.log("error");

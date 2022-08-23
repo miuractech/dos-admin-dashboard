@@ -68,7 +68,7 @@ const columns = [
     {
         cell: (data: MerchentType) => <div>
             <Tooltip title={data.storeName} arrow>
-                <img src={data.bannerUrl} alt="img" className='w-16 cursor-pointer' />
+                <img src={data.profileUrl} alt="img" className='w-10 cursor-pointer'/>
             </Tooltip>
         </div>,
         grow: 0.4

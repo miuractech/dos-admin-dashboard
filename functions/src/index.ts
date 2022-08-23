@@ -7,19 +7,10 @@ import fetch from "node-fetch";
 import axios from "axios";
 import * as crypto from "crypto";
 import * as fs from "fs";
+import * as cfSdk from "cashfree-sdk";
 const app = express();
 app.use(cors({origin: true}));
 admin.initializeApp();
-
-// /
-// const runTimeOption: {
-//   vpcConnector: string;
-//   vpcConnectorEgressSettings: "ALL_TRAFFIC" | "VPC_CONNECTOR_EGRESS_SETTINGS_UNSPECIFIED" | "PRIVATE_RANGES_ONLY" | undefined;
-// } = {
-//   vpcConnector: "functions-connector", // ---> name of the serverless vpc connector
-//   vpcConnectorEgressSettings: "ALL_TRAFFIC",
-// };
-
 
 export const docCreation = functions.region("asia-south1")
     .auth.user().onCreate(async (user) => {
@@ -91,7 +82,6 @@ export const orderUpdate = functions.region("asia-south1").firestore.document("c
   return;
 });
 
-// export const api = functions.region("us-central1").runWith(runTimeOption).https.onRequest(app);
 export const api = functions.region("asia-south1").https.onRequest(app);
 
 const fetchUrl = async (url: string) => {
@@ -131,23 +121,17 @@ app.post("/successTest", (req, res) => {
 
 
 app.post("/pan", async (req, res) => {
-  const unix = new Date().getTime();
-  const data = unix + "." + "CF182083CBIGGFQUF4T8G302KPQ0";
+  const unix = Math.round((new Date()).getTime() / 1000);
+  const data =`CF182083CBIGGFQUF4T8G302KPQ0.${unix}`;
   const publicKey = fs.readFileSync(`${__dirname}\\key.pem`, {encoding: "utf8"});
   const encryptedData = crypto.publicEncrypt(
-      // {
-      publicKey,
-      // padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-      // oaepHash: "sha256",
-      // },
+      {
+        key: publicKey,
+      },
       Buffer.from(data)
   );
   const signature = encryptedData.toString("base64");
-  console.log("encypted data: ", encryptedData.toString("base64"));
-  console.log("unix: ", unix);
-  console.log("publicKey: ", publicKey);
-  console.log("data", data);
-  const url = "https://sandbox.cashfree.com/verification/pan";
+  const url = "https://api.cashfree.com/verification/pan";
   const options = {
     method: "POST",
     headers: {
@@ -157,7 +141,7 @@ app.post("/pan", async (req, res) => {
       "Content-Type": "application/json",
       "x-cf-signature": signature,
     },
-    body: JSON.stringify(req.body),
+    body: req.body,
   };
   fetch(url, options)
       .then((res) => res.text())
@@ -170,60 +154,38 @@ app.post("/pan", async (req, res) => {
 
 app.post("/bank", async (req, res) => {
   try {
-    const url = "https://payout-gamma.cashfree.com/payout/v1/authorize";
-    const options = {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "x-client-id": "CF182083CBFEIHI4FIP7LR03HO8G",
-        "x-client-secret": "3a10249c0fcf35256007b960fa5abf8d03d9dc49",
+    const publicKey = fs.readFileSync(`${__dirname}\\key.pem`, {encoding: "utf8"});
+    const {Payouts} = cfSdk;
+    const {Validation} = Payouts;
+    const config = {
+      Payouts: {
+        ClientID: "CF182083CBIGGFQUF4T8G302KPQ0",
+        ClientSecret: "13fe675c4e0db3d7f4d6a1d89a9a0d8a406a8594",
+        PublicKey: publicKey,
+        ENV: "PRODUCTION",
       },
     };
-    const authRes = await fetch(url, options);
-    const authjson = await authRes.json();
-    const token = authjson.data.token;
-    console.log(token);
-    const verifyUrl = "https://payout-gamma.cashfree.com/payout/v1/verifyToken";
-    const verifyOptions = {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Authorization": token,
-      },
-    };
-
-    const verifyRes = await fetch(verifyUrl, verifyOptions);
-    const verifyJson = await verifyRes.json();
-    const verifyToken = verifyJson;
-    console.log(verifyToken);
-    res.send(verifyToken);
-  //   res.json(verifyJson);
-  // const url1 = "https://payout-gamma.cashfree.com/payout/v1/validation/bankDetails?bankAccount=026291800001191&ifsc=YESB0000262";
-  // const options2 = {
-  //   method: "GET",
-  //   headers: {"Accept": "application/json", "Authorization": token, "Content-Type": "application/json"},
-  // };
-  // console.log("Token", token);
-  // await fetch(url1, options2)
-  //     .then((res) => res.json())
-  //     .then((json) => {
-  //       console.log(json);
-  //       res.send({data: json});
-  //     })
-  //     .catch((err) => console.error("error:" + err));
-  } catch (error) {
-    console.log(error);
+    Payouts.Init(config.Payouts);
+    const data = JSON.parse(req.body);
+    const response = await Validation.ValidateBankDetails(data);
+    console.log("bank validation response");
+    console.log(response);
+    res.send(response);
+  } catch (err) {
+    console.log("err caught in bank validation");
+    console.log(err);
+    res.send(err);
   }
 });
 
 export const pincode = functions.region("asia-south1").https.onCall(async (data) => {
   return new Promise((resolve, reject) => {
     const config = {
-      method: "get",
+      method: "GET",
       url: `https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=560034&delivery_postcode=${data.pincode}&cod=1&weight=0.5`,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI5MDI4NTcsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjYwMTk3MDU5LCJleHAiOjE2NjEwNjEwNTksIm5iZiI6MTY2MDE5NzA1OSwianRpIjoiNTU3UVFuODRvTGdCaGNkVCJ9.WAVgLcYjPFbm7rGv5Ur8sbJW3pqFd2jSNc_t0LIEzbA",
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI5MDI4NTcsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjYxMjM5MjE5LCJleHAiOjE2NjIxMDMyMTksIm5iZiI6MTY2MTIzOTIxOSwianRpIjoiU1pRRU56UVJCQU5WZHpVVyJ9.XKr48uMFvgR6mvZhM9fpFsBZC5gw_0bgNe-XaSIcStw",
       },
     };
     return axios(config)
