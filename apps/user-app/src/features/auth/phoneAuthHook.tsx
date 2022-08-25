@@ -4,6 +4,7 @@ import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from 'fire
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { analytics } from '../../configs/firebaseConfig';
+import { setBackDrop } from '../../store/alertslice';
 import { removeUserError, removeUserLoading, setPhone, setStep, setUser, setUserError, setUserLoading } from './authSlice';
 
 type stepType = 'phone' | 'otp'
@@ -32,6 +33,7 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
     }, [])
     const sendOtp = async (phone: string) => {
         try {
+            dispatch(setBackDrop(true))
             // dispatch(setUserLoading())
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
@@ -44,7 +46,7 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
             dispatch(removeUserLoading())
             dispatch(setStep("otp"))
             dispatch(setPhone(phone))
-            console.log("success");
+            dispatch(setBackDrop(false))
         } catch (error) {
             dispatch(setUserError(error))
             console.log("Error",error);

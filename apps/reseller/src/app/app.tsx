@@ -5,7 +5,7 @@ import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { multiFactor, onAuthStateChanged } from 'firebase/auth';
-import { setUser, auth, submit, setNotification } from '../redux-tool/auth';
+import { setUser, auth, submit, setNotification, setError } from '../redux-tool/auth';
 import { Alert, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
 import Home from './Auth/regHomePage/home';
@@ -33,6 +33,7 @@ import { PanVerification } from './verification/PanVerification';
 import { BankStatement } from './verification/BankStatement';
 
 export function App() {
+<<<<<<< HEAD
   
   const dispatch = useDispatch();
   const { User, notification, backDrop } = useSelector(
@@ -42,6 +43,12 @@ export function App() {
   const { profileUrl, profileLoading } = useSelector(
     (state: RootState) => state.condition
   );
+=======
+  const dispatch = useDispatch()
+  const { User, notification, backDrop,error } = useSelector((state: RootState) => state.User)
+  const { loading } = useSelector((state: RootState) => state.User)
+  const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
+>>>>>>> 51823239241ff204cfa8ad2c81753b9fa4d445ac
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       dispatch(setUser(cred));
@@ -142,6 +149,9 @@ export function App() {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+        <Snackbar open={Boolean(error)} autoHideDuration={5000} onClose={() => dispatch(setError(null))}>
+          <Alert severity='error'>{error}</Alert>
+        </Snackbar>
       </>
     );
   } else {

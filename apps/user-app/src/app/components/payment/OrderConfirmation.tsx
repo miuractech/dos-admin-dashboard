@@ -142,11 +142,11 @@ export const OrderConfirmation = () => {
                         <input type="hidden" name="productinfo" value="T-Shirt" />
                         <input type="hidden" name="amount" value={`${orderDetails?.total}`} />
                         <input type="hidden" name="email" value={orderDetails?.address.email} />
-                    <input type="hidden" name="firstname" value={orderDetails?.address.firstName} />
-                    <input type="hidden" name="lastname" value={orderDetails?.address.lastName} />
-                        <input type="hidden" name="surl" value="https://us-central1-dropoutstore-8979d.cloudfunctions.net/api/success" />
-                        <input type="hidden" name="furl" value="https://us-central1-dropoutstore-8979d.cloudfunctions.net/api/failure" />
-                    <input type="hidden" name="phone" value={`${orderDetails?.address.phone}`} />
+                        <input type="hidden" name="firstname" value={orderDetails?.address.firstName} />
+                        <input type="hidden" name="lastname" value={orderDetails?.address.lastName} />
+                        <input type="hidden" name="surl" value="https://asia-south1-dropoutstore-8979d.cloudfunctions.net/api/success" />
+                        <input type="hidden" name="furl" value="https://asia-south1-dropoutstore-8979d.cloudfunctions.net/api/failure" />
+                        <input type="hidden" name="phone" value={`${orderDetails?.address.phone}`} />
                         <input type="hidden" name="hash" value={hash ?? ''} />
                         <Button type='submit' variant='contained' fullWidth>Proceed to payment</Button>
                     </form>}

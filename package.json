@@ -16,6 +16,7 @@
     "@mantine/hooks": "^4.2.12",
     "@mantine/rte": "^4.2.12",
     "@mui/icons-material": "^5.6.2",
+    "@mui/lab": "^5.0.0-alpha.96",
     "@mui/material": "^5.7.0",
     "@mui/styled-engine-sc": "^5.7.0",
     "@reduxjs/toolkit": "^1.8.0",

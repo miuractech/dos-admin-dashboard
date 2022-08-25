@@ -29,11 +29,12 @@ export function VerifyPhone(props: VerifyPhoneProps) {
 
   const onSuccess = async () => {
     try {
-      await auth?.currentUser?.reload()
-      navigate("/home")
+      await currentUser?.reload()
+      const newUser = auth.currentUser
+      dispatch(setUser(newUser))
+      window.location.reload()
     } catch (error) {
       console.log("error in onsuccess", error);
-
     }
   }
 

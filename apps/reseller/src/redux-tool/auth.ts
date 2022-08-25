@@ -38,7 +38,7 @@ export const createUser = createAsyncThunk("User/createUser",
         storeName: payload.storeName,
         fullName: payload.fullName
       })
-      // await sendEmailVerification(response.user)
+      await sendEmailVerification(response.user)
       return { response }
 
     }
@@ -95,6 +95,9 @@ export const UserSlice = createSlice({
     },
     setBackDrop: (state, action) => {
       state.backDrop = action.payload
+    },
+    setError: (state, action) => {
+      state.error = action.payload
     }
   },
   extraReducers: {
@@ -125,6 +128,6 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { setUser, submit, setNotification, setBackDrop } = UserSlice.actions
+export const { setUser, submit, setNotification, setBackDrop, setError } = UserSlice.actions
 
 export default UserSlice.reducer

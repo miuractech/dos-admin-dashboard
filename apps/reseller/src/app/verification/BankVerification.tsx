@@ -10,7 +10,7 @@ import { app } from '../../firebaseConfig/config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup'
-import { setBackDrop } from '../../redux-tool/auth';
+import { setBackDrop, setError } from '../../redux-tool/auth';
 import { useDispatch } from 'react-redux';
 import { AccountBalance } from '@mui/icons-material';
 import verified from "./verified.json"
@@ -19,9 +19,9 @@ import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object({
     name: yup.string().min(3).required("Name is a requried"),
-    mobileNumber: yup.number().typeError('Enter only numbers').positive('Cannot contain special characters').integer('Cannot contain special characters').min(6000000000, 'Enter valid phone number').max(9999999999, 'enter valid phone number').required('Mobile Number is required'),
-    accountNumber: yup.number().min(10000000, "Enter valid account number").typeError('Enter only numbers').positive('Cannot contain special characters').integer('Cannot contain special characters').required('Account Number is required'),
-    ifscCode: yup.string()
+    phone: yup.number().typeError('Enter only numbers').positive('Cannot contain special characters').integer('Cannot contain special characters').min(6000000000, 'Enter valid phone number').max(9999999999, 'enter valid phone number').required('Mobile Number is required'),
+    bankAccount: yup.string().matches(/^[0-9]+$/, 'Enter only digits').required('Account Number is required').min(10, "minimum of 10 digits").max(20,"maximum of 20 digits"),
+    ifsc: yup.string()
         .required("IFSC Code Is Required")
         .test(
             "IFSC Code",
@@ -36,31 +36,42 @@ const schema = yup.object({
 
 type Inputs = {
     name: string,
-    mobileNumber: string,
-    accountNumber: string,
-    ifscCode: string
+    phone: string,
+    bankAccount: string,
+    ifsc: string
 };
 
 export const BankVerification = () => {
     const [validData, setValidData] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const functions = getFunctions(app, 'asia-south1')
-    connectFunctionsEmulator(functions, "localhost", 5001);
+    const [data, setdata] = useState<null | Inputs>(null)
     const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     })
     const onSubmit = async (data: Inputs) => {
         try {
             dispatch(setBackDrop(true))
-            const verifyBank = httpsCallable(functions, "bank")
-            const result = await verifyBank(data)
-            console.log(result)
+            console.log(data);
+            const url = "http://localhost:5001/dropoutstore-8979d/asia-south1/api/bank"
+            const response = await fetch(url, { method: 'POST', body: JSON.stringify(data) })
+            const result = await response.json()
+            console.log("result", result);
+            if (result.status === "SUCCESS") {
+                setValidData(true)
+                setdata({
+                    name: result.data.nameAtBank,
+                    phone: data.phone ,
+                    bankAccount: data.bankAccount,
+                    ifsc: data.ifsc
+                })
+            } else {
+                dispatch(setError("Invalid Account number please try again"))
+            }
             dispatch(setBackDrop(false))
-            // setValidData(true)
         } catch (error) {
-            console.log('err', error)
             dispatch(setBackDrop(false))
+            dispatch(setError("Something went wrong please try again."))
         }
     }
     return (
@@ -72,13 +83,13 @@ export const BankVerification = () => {
                     <div className='space-y-5'>
                         <div className='flex'>
                             <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>Name Provided :</Typography>
-                            <Typography variant='subtitle2' fontWeight={500} className="md:pl-10">KIRAN</Typography>
+                            <Typography variant='subtitle2' fontWeight={500} className="md:pl-10">{data?.name }</Typography>
                         </div>
                         <div className='flex'>
-                            <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>Bank A/C No :</Typography><Typography className="md:pl-10" variant='subtitle2' fontWeight={500}>123456789987456</Typography>
+                            <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>Bank A/C No :</Typography><Typography className="md:pl-10" variant='subtitle2' fontWeight={500}>{data?.bankAccount}</Typography>
                         </div>
                         <div className='flex'>
-                            <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>IFSC  :</Typography><Typography className="md:pl-10" variant='subtitle2' fontWeight={500}>ABCD1234567</Typography>
+                            <Typography variant='subtitle2' className='w-1/2 text-gray-500 md:pl-32'>IFSC  :</Typography><Typography className="md:pl-10" variant='subtitle2' fontWeight={500}>{data?.ifsc}</Typography>
                         </div>
                         <div className='self-center justify-self-center w-1/2 m-auto'>
                             <Button type='submit' variant='contained' fullWidth onClick={() => navigate("/panverification")}>Next</Button>
@@ -106,9 +117,9 @@ export const BankVerification = () => {
                                 <InputField
                                     placeholder='Mobile linked to bank'
                                     fullWidth
-                                    forminput={{ ...register("mobileNumber") }}
-                                    error={Boolean(errors.mobileNumber)}
-                                    helperText={errors.mobileNumber?.message}
+                                        forminput={{ ...register("phone") }}
+                                    error={Boolean(errors.phone)}
+                                        helperText={errors.phone?.message}
                                 />
                             </div>
                             <div>
@@ -116,9 +127,9 @@ export const BankVerification = () => {
                                 <InputField
                                     placeholder='Account Number'
                                     fullWidth
-                                    forminput={{ ...register("accountNumber") }}
-                                    error={Boolean(errors.accountNumber)}
-                                    helperText={errors.accountNumber?.message}
+                                        forminput={{ ...register("bankAccount") }}
+                                        error={Boolean(errors.bankAccount)}
+                                        helperText={errors.bankAccount?.message}
                                 />
                             </div>
                             <div>
@@ -126,9 +137,9 @@ export const BankVerification = () => {
                                 <InputField
                                     placeholder='IFSC Code'
                                     fullWidth
-                                    forminput={{ ...register("ifscCode") }}
-                                    error={Boolean(errors.ifscCode)}
-                                    helperText={errors.ifscCode?.message}
+                                        forminput={{ ...register("ifsc") }}
+                                        error={Boolean(errors.ifsc)}
+                                        helperText={errors.ifsc?.message}
                                 />
                             </div>
                             <div className='self-center justify-self-center w-full'>
