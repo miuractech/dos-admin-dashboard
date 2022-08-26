@@ -32,7 +32,8 @@ export interface DesignerState {
   selectedSideName: sideNameType | null;
   colors: colorProps[] | null;
   sideNames: sideNameType[];
-  designPreviewImages: { sideName: string, url: string }[]
+  designPreviewImages: { sideName: string, url: string }[];
+  selectedSize:string|null
 }
 
 const initialState: DesignerState = {
@@ -59,7 +60,8 @@ const initialState: DesignerState = {
   selectedColor: null,
   colors: null,
   sideNames: [],
-  designPreviewImages: []
+  designPreviewImages: [],
+  selectedSize:null
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -144,11 +146,14 @@ export const DesignerSlice = createSlice({
     setPreviewImagesToRedux: (state, action) => {
       state.designPreviewImages = action.payload
     },
+    setSelectedSize: (state, action) => {
+      state.selectedSize = action.payload
+    },
     resetDesigner:() => initialState,
   },
 });
 
-export const { setBgImage, setProduct, setProducts, setSelectedColor, setSelectedSide, setPreviewImagesToRedux, resetDesigner } = DesignerSlice.actions;
+export const { setBgImage, setSelectedSize, setProduct, setProducts, setSelectedColor, setSelectedSide, setPreviewImagesToRedux, resetDesigner } = DesignerSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

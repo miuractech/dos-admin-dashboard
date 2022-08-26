@@ -28,6 +28,7 @@ export type localCart = {
     size: string
     count: number
     resellerId: string
+    userId?:string
     id: string
     img: string
     productName: string

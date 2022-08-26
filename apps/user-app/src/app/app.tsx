@@ -44,14 +44,25 @@ export function App() {
     const cartData = JSON.parse(data)
     dispatch(setLocalCart(cartData))
     cartData.forEach(async (element: localCart) => {
-      const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
-      const docSnap = await getDoc(docRef)
-      dispatch(addCartProducts({
-        product: docSnap.data(),
-        size: element.size,
-        count: element.count,
-        id: element.id
-      }))
+      if (element.resellerId) {
+        const docRef = doc(db, "reSellers", element.resellerId, "products", element.productID)
+        const docSnap = await getDoc(docRef)
+        dispatch(addCartProducts({
+          product: docSnap.data(),
+          size: element.size,
+          count: element.count,
+          id: element.id
+        }))
+      } else if (element.userId) {
+        const docRef = doc(db, "users", element.userId, "products", element.productID)
+        const docSnap = await getDoc(docRef)
+        dispatch(addCartProducts({
+          product: docSnap.data(),
+          size: element.size,
+          count: element.count,
+          id: element.id
+        }))
+   }
     })
   }
 
@@ -147,11 +158,9 @@ export function App() {
             <Route path='/shops/:resellerid' element={<StoreFront />} />
             <Route path='/shops/:resellerid/products/:productid' element={<ProductPage />} />
             <Route path="/contact" element={<ContactUs />} />
+            <Route path='/CMI' element={<CMI />} /> 
             {user &&
-              <>
               <Route path='myprofile' element={<MyAccount />} />
-              <Route path='CMI' element={<CMI />} />  
-            </>
             }
             <Route path='*' element={<>not found</>} />
           </Routes>
@@ -167,7 +176,7 @@ export function App() {
         <Alert severity='warning'>{warning}</Alert>
       </Snackbar>
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 10 }}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 10000 }}
         open={backDrop}
       >
         <CircularProgress color="inherit" />

@@ -11,14 +11,18 @@ import StyleBar from './styleBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { circleSide, rectSide, RootObject, sideType } from './selectProduct';
-import { Button, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Drawer, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import SimpleModal from '../ui-components/modal';
-import UrlImage from '../objects/urlImage';
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import { RootState } from '../../../../store/store';
-import AreYouSure from './AreYouSure';
 import { useNavigate } from 'react-router-dom';
 import ProgressiveImg from './imageLoad';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../../config/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { storage } from '../../../../configs/firebaseConfig';
+import { addCartProducts, addLocalCart } from '../../../../store/cartSlice';
+import { setBackDrop, setError, setNotification } from '../../../../store/alertslice';
 
 type Props = {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -31,9 +35,10 @@ type Props = {
 
 
 export default function Center({ selectedId, setSelectedId, previews, setPreviews }: Props) {
-    const { sides, selectedSide, image, selectedSideName, sideNames } = useSelector((state: RootState) => state.designer)
-    const [previewImages, setPreviewImages] = useState<string[]>([])
-    const [createProductConsent, setCreateProductConsent] = useState(false)
+    const { sides, selectedSide, image, selectedSideName, sideNames, designPreviewImages, product, selectedColor, selectedSize } = useSelector((state: RootState) => state.designer)
+    const { user } = useSelector((state: RootState) => state.User)
+
+    const [previewImages, setPreviewImages] = useState<{ sideName: string, url: string }[]>([])
     const objects = useSelector((state: RootState) => state.objects)
     const dispatch = useDispatch()
     const stageRef = useRef<any>(null)
@@ -47,14 +52,32 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
     const navigate = useNavigate()
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up('md'))
+    const [modal, setModal] = useState(false)
+    const [productName, setProductName] = useState<string|null>(null)
+
+    const dataURLtoBlob = (dataURL: string, img: any, productId: string) => {
+        return new Promise((resolve, reject) => {
+            return fetch(dataURL)
+                .then(res => res.blob())
+                .then(blob => {
+                    const storageRef = ref(storage, `userProducts/${productId}/${uuidv4()}`);
+                    uploadBytes(storageRef, blob).then((snapshot) => {
+                        getDownloadURL(snapshot.ref).then((downloadURL) => {
+                            resolve({ sideName: img.sideName, url: downloadURL })
+                        })
+                            .catch(err => reject(err))
+                    })
+                })
+                .catch(err => reject(err))
+        })
+    }
+
     return (
         <div>
             <div
-            // className=''
             >
                 <div className="flex justify-center m-auto" style={{ boxShadow: `0px 4px 9px rgba(244, 209, 209, 0.25)`, width: 'min-content' }}>
                     {sideNames.map((side) => {
-                        // if (selectedSide?.imgUrl) {
                         return (
                             <div key={side}>
                                 <Button
@@ -131,13 +154,13 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                             onClick={() => {
                                 setPreviewImages([])
                                 setTimeout(() => {
-                                    if(sides){
+                                    if (sides) {
                                         const allImg = sideNames.map((s, index) => ({ sideName: s, backgroundUrl: sides[s].imgUrl, photoUrl: allRefs[index]?.current?.toDataURL() }))
                                         for (const pre in allImg) {
                                             getPreviewImg(allImg[pre], setPreviewImages)
                                             if (parseInt(pre) === allImg.length - 1) {
                                                 setTimeout(() => {
-                                                    setCreateProductConsent(true)
+                                                    setModal(true)
                                                 }, 100);
                                             }
                                         }
@@ -150,16 +173,72 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                     </div>
                 </div>
             </SimpleModal>
-            <AreYouSure open={createProductConsent} onClose={() => {
-                setCreateProductConsent(false)
-            }} discard={() => {
-                dispatch(setPreviewImagesToRedux(previewImages))
-                // console.log(previewImages);
-                setCreateProductConsent(false)
-                navigate("/designproduct/addproducts")
-            }} 
-            text={'add this product?'}
-            />
+            <SimpleModal open={modal} onClose={()=>setModal(true)}>
+                <div className='mb-5'>
+                    <Typography variant='h5' align='center' className='m-10'>Product Name</Typography>
+                    <div className='flex items-baseline justify-center space-x-10'>
+                        <Typography className=''>Name :</Typography>
+                        <TextField color='secondary' size='small' onChange={(event) => setProductName(event.target.value)}/>
+                    </div>
+                    <div className='text-center space-x-10 m-10'>
+                        <Button color='secondary'  variant='outlined'>cancel</Button>
+                        <Button  color='secondary' variant='contained' onClick={async() => {
+                          try {
+                              if (!user) return
+                              if (!product) return
+                              dispatch(setBackDrop(true))
+                              const productId = uuidv4()
+                              const sideImages: { sideName: string, url: string }[] = []
+                              for (const img of previewImages) {
+                                  const targetImage = await dataURLtoBlob(img.url, img, productId) as { sideName: string, url: string }
+                                  sideImages.push(targetImage)
+                              }
+                              console.log(previewImages);
+                              const data = {
+                                  status: "active",
+                                  sideImages: sideImages,
+                                  subCategoryId: product.subcategoryId,
+                                  comparePrice: product.basePrice + 200,
+                                  sku: product.sku,
+                                  productName: productName,
+                                  productId: productId,
+                                  price: product.basePrice + 100,
+                                  color: selectedColor,
+                                  familyId: product.familyId,
+                                  categoryId: product.categoryId,
+                                  sizeAvailable: product.size,
+                                  userId: user.uid
+                              }
+                              await setDoc(doc(db, "users", user.uid, "products", productId), data);
+                              dispatch(addCartProducts({
+                                  product: data,
+                                  count: 1,
+                                  id: productId,
+                                  size: selectedSize
+                              }))
+                              dispatch(addLocalCart({
+                                  productName: productName,
+                                  productID: productId,
+                                  size: selectedSize,
+                                  count: 1,
+                                  userId: user.uid,
+                                  id: productId,
+                                  img: sideImages.find(img => img.sideName === "Front"),
+                                  price: product.basePrice + 100
+                              }))
+                              dispatch(setBackDrop(false))
+                              dispatch(setNotification("Product added to cart successfully"))
+                              setModal(false)
+                              setPreviews(false)
+                              navigate("/cart")
+                          } catch (error) {
+                              dispatch(setError("Somthing went wrong please try adding again"))
+                              dispatch(setBackDrop(false))
+                          }
+                        }}> Add to cart </Button>
+                    </div>
+                </div>
+            </SimpleModal>
         </div >
     )
 }
@@ -171,7 +250,6 @@ type CMIstageProps = {
     setSelectedId: React.Dispatch<React.SetStateAction<string | null>>,
     selectedSide: circleSide | rectSide | null,
     image: string | null,
-    // objects:any,
     currentObjects: RootObject[]
 }
 
@@ -187,7 +265,6 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
             setSelectedId(null);
         }
     }
-    // console.log(currentObjects);
 
     return (
         <div
@@ -294,7 +371,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                 </React.Fragment>
 
                             ))}
-                            {previewMode && <UrlImage
+                            {/* {previewMode && <UrlImage
                                 src={'https://firebasestorage.googleapis.com/v0/b/dropoutstore-8979d.appspot.com/o/uploads%2FAvBRhCfNeahixsRnKNYABVVl9jE2%2Fimages%2FLogo.png?alt=media&token=34387507-2b38-4c97-a034-f1d08f3fecec'}
                                 props={{
                                     object: {
@@ -308,7 +385,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                         keepRatio: true
                                     },
                                 }}
-                            />}
+                            />} */}
                         </Group>
                         {(selectedId) && !previewMode && (
                             <Transformer

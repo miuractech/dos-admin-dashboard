@@ -61,7 +61,7 @@ export default function usePhoneAuth(app: FirebaseApp, redirectUrl?: string): { 
         window.confirmationResult.confirm(code).then((result) => {
             const user = result.user;
             dispatch(setUser(user))
-            window.location.href = redirectUrl ?? '/' // code translation :  redirectUrl??'/' =  redirectUrl?redirectUrl:'/'
+            // window.location.href = redirectUrl ?? '/' // code translation :  redirectUrl??'/' =  redirectUrl?redirectUrl:'/'
         }).catch((error: FirebaseError) => {
             dispatch(setUserError(error))
         });

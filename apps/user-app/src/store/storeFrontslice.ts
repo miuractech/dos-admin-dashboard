@@ -87,4 +87,5 @@ export interface produstsType {
     basePrice: number;
     sizeAvailable: string[];
     resellerId: string;
+    userId?:string
 }

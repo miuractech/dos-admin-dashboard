@@ -68,11 +68,20 @@ export const orderUpdate = functions.region("asia-south1").firestore.document("c
   const items = after.items;
   let total = 0;
   for (const item of items) {
-    const res= admin.firestore().collection("reSellers").doc(item.resellerId).collection("products").doc(item.productID);
-    const doc = await res.get();
-    const data = doc.data();
-    if (data) {
-      total = total + (item.count * data.price);
+    if (item.resellerId) {
+      const res = admin.firestore().collection("reSellers").doc(item.resellerId).collection("products").doc(item.productID);
+      const doc = await res.get();
+      const data = doc.data();
+      if (data) {
+        total = total + (item.count * data.price);
+      }
+    } else if (item.userId) {
+      const res = admin.firestore().collection("users").doc(item.userId).collection("products").doc(item.productID);
+      const doc = await res.get();
+      const data = doc.data();
+      if (data) {
+        total = total + (item.count * data.price);
+      }
     }
   }
   await admin.firestore().collection("orders").doc(after.orderid).update({
@@ -185,7 +194,7 @@ export const pincode = functions.region("asia-south1").https.onCall(async (data)
       url: `https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=560034&delivery_postcode=${data.pincode}&cod=1&weight=0.5`,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI5MDI4NTcsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjYxMjM5MjE5LCJleHAiOjE2NjIxMDMyMTksIm5iZiI6MTY2MTIzOTIxOSwianRpIjoiU1pRRU56UVJCQU5WZHpVVyJ9.XKr48uMFvgR6mvZhM9fpFsBZC5gw_0bgNe-XaSIcStw",
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI5MzYxNTUsImlzcyI6Imh0dHBzOi8vYXBpdjIuc2hpcHJvY2tldC5pbi92MS9leHRlcm5hbC9hdXRoL2xvZ2luIiwiaWF0IjoxNjYxNTM0NzA1LCJleHAiOjE2NjIzOTg3MDUsIm5iZiI6MTY2MTUzNDcwNSwianRpIjoiZ2RRZXNIQ2VQSG9XQmxXbSJ9.vVb6XtGGIO0G82D7UxllocQl-CwNg01jUbrnIsjs1mM",
       },
     };
     return axios(config)
@@ -212,12 +221,18 @@ app.post("/success", async (req, res) => {
   if (!orderdata) return;
   admin.firestore().collection("cart").doc(orderdata.userId).delete();
   const resellers = orderdata.items.map((order: { resellerId: string; }) => order.resellerId);
-  for (const seller of resellers) {
-    const filterProducts = orderdata.items.filter((pro:any) => pro.resellerId === seller);
-    await admin.firestore().collection("reSellers").doc(seller).collection("orders").add({
-      ...orderdata,
-      items: filterProducts,
-    });
+  if (resellers.length > 1) {
+    for (const seller of resellers) {
+      if (!seller) {
+        continue;
+      }
+      const filterProducts = orderdata.items.filter((pro: any) => pro.resellerId === seller);
+      await admin.firestore().collection("reSellers").doc(seller).collection("orders").add({
+        ...orderdata,
+        items: filterProducts,
+      });
+    }
+    res.redirect("http://localhost:4200/success");
   }
   res.redirect("http://localhost:4200/success");
 });

@@ -66,10 +66,11 @@ export const OrderConfirmation = () => {
         const getSha = async () => {
             if (!orderDetails?.address)return
             dispatch(setBackDrop(true))
-                const res = await sha512(`gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||wia56q6O`)
+            console.log("hash", `gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||4R38IvwiV57FwVpsgOvTXBdLE4tHUXFW`)
+                const res = await sha512(`gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||4R38IvwiV57FwVpsgOvTXBdLE4tHUXFW`)
+            console.log(res);
             dispatch(setHash(res))
             dispatch(setBackDrop(false))
-            console.log("hash",`gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||wia56q6O`)
             }
             getSha();
     }, [dispatch, orderDetails, orderId])

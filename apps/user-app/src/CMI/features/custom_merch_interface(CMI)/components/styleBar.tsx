@@ -12,9 +12,9 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import CustomFonts from './customFonts'
 import { Add, ChevronLeft, ChevronRight, FormatAlignCenter, FormatAlignLeft, FormatAlignRight, KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp, Remove } from '@mui/icons-material'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from '../store/store';
+import { RootState } from '../../../../store/store';
 import { Box } from '@mui/system'
-import { setSelectedColor } from '../store/designerSlice';
+import { setSelectedColor, setSelectedSize } from '../store/designerSlice';
 import AreYouSure from './AreYouSure'
 import { Color } from './selectProduct'
 type Props = {
@@ -50,7 +50,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
   const objects = useSelector((state:RootState) => state.objects)
   const selectedObject = objects?.currentObjects.filter((obj: any) => obj.id === selectedId)[0]
   const dispatch = useDispatch()
-  const { product, image,selectedSide,selectedColor,sides, colors } = useSelector((state:RootState) => state.designer)
+  const { product, image,selectedSide,selectedColor,sides, colors, selectedSize } = useSelector((state:RootState) => state.designer)
   const [sure, setSure] = useState<Color | null>(null)
   const { handelChange } = useChanges({
     selectedId,
@@ -422,7 +422,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
             <Card style={{ padding: "10px" }}>
               <Typography gutterBottom align='center'>Choose size</Typography>
               {product?.size && <div style={{ display: "flex", gap: "20px" }}>
-                {product.size.map((size) => <Paper key={size} style={{ padding: "5px", cursor: "pointer" }}><strong>{size}</strong></Paper>)}
+                {product.size.map((size) => <button onClick={() => dispatch(setSelectedSize(size))} className='border-none bg-inherit'><Paper key={size} style={{ padding: "5px", cursor: "pointer", border: selectedSize===size?"1px solid black":"" }}><strong>{size}</strong></Paper></button>)}
               </div>}
             </Card>
           </div>
