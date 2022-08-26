@@ -56,6 +56,7 @@ import { Paymentfailuer } from './components/payment/Paymentfailuer';
 import { Home } from './Home/Home';
 import { CMI } from '../CMI/cmi';
 import YourOders from './MyAccount/YourOders';
+import Wishlist from './MyAccount/Wishlist';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -234,6 +235,7 @@ export function App() {
 
                 <Route path="CMI" element={<CMI />} />
                 <Route path="myprofile/your-order" element={<YourOders />} />
+                <Route path="myprofile/wishlist" element={<Wishlist />} />
               </>
             )}
             <Route path="*" element={<>not found</>} />

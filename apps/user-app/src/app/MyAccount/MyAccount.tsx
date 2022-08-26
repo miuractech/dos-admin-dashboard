@@ -5,6 +5,7 @@ import address from './images/address.svg'
 import designe from './images/designe.svg'
 import order from './images/order.svg'
 import profile from './images/profile.svg'
+import { Link } from 'react-router-dom'
 
 export const MyAccount = () => {
   return (
@@ -14,7 +15,13 @@ export const MyAccount = () => {
               <Card className='p-5 text-center'>
           <img src={order} alt="order" />
           <Typography variant='h6'>Your Order</Typography>
-          <Button variant='outlined'>Track Order</Button>
+          <Button variant='outlined'>
+            <Link to="/myprofile/your-order" className="">
+
+            Track Order
+            </Link>
+            
+            </Button>
               </Card>
         <Card className='p-5 text-center'>
           <img src={profile} alt="profile" />
