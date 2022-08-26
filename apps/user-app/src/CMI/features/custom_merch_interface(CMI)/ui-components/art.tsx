@@ -10,7 +10,7 @@ import { useLeftState } from '../states/states'
 import { collection, doc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { db } from '../../../config/firebase'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from 'apps/reseller/src/redux-tool/store'
+import { RootState } from '../../../../store/store'
 
 const artRef = collection(db, "Arts");
 type Props = {

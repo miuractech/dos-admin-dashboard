@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ArtInsert from "../ui-components/art";
 import Qr from "../ui-components/qr";
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from "apps/reseller/src/redux-tool/store";
+import { RootState } from '../../../../store/store';
 import { Button, Divider, Typography, useMediaQuery, useTheme } from "@mui/material";
 import SimpleModal from "../ui-components/modal";
 

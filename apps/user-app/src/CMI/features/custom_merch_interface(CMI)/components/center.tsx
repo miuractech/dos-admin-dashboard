@@ -15,7 +15,7 @@ import { Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import SimpleModal from '../ui-components/modal';
 import UrlImage from '../objects/urlImage';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from 'apps/reseller/src/redux-tool/store';
+import { RootState } from '../../../../store/store';
 import AreYouSure from './AreYouSure';
 import { useNavigate } from 'react-router-dom';
 import ProgressiveImg from './imageLoad';

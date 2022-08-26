@@ -1,7 +1,7 @@
 import { ContentCopy, Delete, Redo, Undo } from '@mui/icons-material'
 import { Button, Paper, Tooltip } from '@mui/material'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from 'apps/reseller/src/redux-tool/store'
+import { RootState } from '../../../../store/store'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { copyObject, redo, removeObject, undo } from '../store/objects'

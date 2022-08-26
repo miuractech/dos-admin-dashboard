@@ -12,7 +12,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import CustomFonts from './customFonts'
 import { Add, ChevronLeft, ChevronRight, FormatAlignCenter, FormatAlignLeft, FormatAlignRight, KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp, Remove } from '@mui/icons-material'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from '../../../../../../../apps/reseller/src/redux-tool/store';
+import { RootState } from '../store/store';
 import { Box } from '@mui/system'
 import { setSelectedColor } from '../store/designerSlice';
 import AreYouSure from './AreYouSure'

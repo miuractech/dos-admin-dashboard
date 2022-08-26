@@ -1,7 +1,7 @@
 import { MiuracImage } from '@miurac/image-upload'
 import { Edit } from '@mui/icons-material'
 import { Button, IconButton, Typography } from '@mui/material'
-import { app } from 'apps/reseller/src/firebaseConfig/config'
+import { app } from '../../../firebaseConfig/config'
 import upload from "../../../assets/images/upload.svg"
 import Login from '../../Auth/loginpage/login'
 import ProgressiveImg from './imageLoad'

@@ -1,6 +1,6 @@
 import { Backdrop, CircularProgress } from '@mui/material';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from 'apps/reseller/src/redux-tool/store';
+import { RootState } from '../store/store';
 import { useSelector } from 'react-redux';
 import styles from './cmi.module.css';
 import CustomMerchInterface from './features/custom_merch_interface(CMI)';
