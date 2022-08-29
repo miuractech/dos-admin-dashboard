@@ -45,28 +45,30 @@ export default function yourOrders() {
         </div>
 
         <Box className="my-10">
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 gap-8 items-center align-middle justify-items-center ">
             {/* card  */}
-            <Card>
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/dropoutstore-8979d.appspot.com/o/resellerProducts%2F129ed9d5-5772-4f7a-9071-85067a392d40%2F1d7666f6-5f53-4e3a-b8d7-2b3a0fb13bd4?alt=media&token=3f86e7a4-0f41-48ff-832d-0682ddd2c265"
-                alt=""
-                className="object-cov w-full object-center"
-              />
-              <div className="flex px-8 my-5">
-                <div className="flex-1">
-                  <Typography variant="h6">Pengiven Tshirt</Typography>
-                  <div className="flex my-5">
-                    <div className="mx-3 flex">
-                      <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
-                      <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
-                      <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
+            <div className="flex justify-center  px-10">
+              <Card className="p-5 text-center">
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/dropoutstore-8979d.appspot.com/o/resellerProducts%2F129ed9d5-5772-4f7a-9071-85067a392d40%2F1d7666f6-5f53-4e3a-b8d7-2b3a0fb13bd4?alt=media&token=3f86e7a4-0f41-48ff-832d-0682ddd2c265"
+                  alt=""
+                  className="object-cov w-60 h-60   "
+                />
+                <div className="flex  my-3">
+                  <div className="flex-1">
+                    <Typography variant="h6">Pengiven Tshirt</Typography>
+                    <div className="flex my-2">
+                      <div className="mx-3 flex">
+                        <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-green-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-black rounded-full"></div>
+                      </div>
                     </div>
                   </div>
+                  <Typography variant="h6">₹ 99</Typography>
                 </div>
-                <Typography variant="h6">₹ 99</Typography>
-              </div>
-            </Card>
+              </Card>
+            </div>
           </div>
         </Box>
       </Card>

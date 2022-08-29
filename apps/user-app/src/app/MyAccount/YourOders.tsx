@@ -95,7 +95,40 @@ export default function yourOrders() {
               </div>
             </TabPanel>
             <TabPanel className="my-10" value="2">
-              Item Two
+              <div className="grid grid-cols-2 gap-4">
+                {/* card  */}
+                {yourOrders.items &&
+                  yourOrders.items.map((item: any) => (
+                    <Card className="flex h-52">
+                      <img
+                        src={item.img}
+                        alt=""
+                        className="object-contain  h-full"
+                      />
+
+                      <div className="mx-5">
+                        <Typography className="" variant="h6">
+                          {item.productName}
+                        </Typography>
+                        <Typography className="my-5">
+                          Order placed on:{' '}
+                          <span className="font-semibold"> 21 / 12 / 2022</span>{' '}
+                        </Typography>
+                        <Typography className="my-5">
+                          Delivery Address:{' '}
+                          <span className="font-semibold">
+                            {yourOrders.address.city} -{' '}
+                            {yourOrders.address.pincode},{' '}
+                            {yourOrders.address.country}
+                          </span>
+                        </Typography>
+                        <div className="flex">
+                          <Button variant="contained">Track Order</Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}{' '}
+              </div>
             </TabPanel>
           </TabContext>
         </Box>
