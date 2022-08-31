@@ -40,10 +40,9 @@ export default function StorefrontCreator({ }: Props) {
         bannerUrl,
         selectedTemplate
       })
-      window.location.reload()
+      window.location.href = "https://dosdesigners.web.app/designproduct"
     } catch (error) {
       setError("failed to save, please try again")
-      console.log("error");
     }
   }
 

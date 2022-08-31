@@ -1,5 +1,5 @@
 import { Button, Checkbox, FormControlLabel, IconButton, Typography } from '@mui/material';
-import { createUser } from '../../../redux-tool/auth';
+import { createUser,setErrorString } from '../../../redux-tool/auth';
 import { RootState } from '../../../redux-tool/store';
 import InputField from '../../../UI/input-field/input-field';
 import { useEffect, useState } from 'react';
@@ -27,12 +27,10 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
 
   const [checked, setChecked] = useState(false)
   const [viewPassword, setViewPassword] = useState(false)
-  const [err, setErr] = useState("")
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const userEmail = useSelector((state: RootState) => state.User.userDetails.email)
   const { phone, storeName, fullName } = useSelector((state: RootState) => state.User.userDetails)
-  const { error } = useSelector((state: RootState) => state.User)
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   })
@@ -40,19 +38,17 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
 
   const onSumit = (data: any) => {
     if (data.password === data.confirmPassword) {
-      dispatch(createUser({ email: userEmail, password: data.password, storeName: storeName, phone:phone, fullName:fullName}))
+      dispatch(createUser({ email: userEmail, password: data.password, storeName: storeName, phone: phone, fullName: fullName }))
     } else if (data.password !== data.confirmPassword) {
-      setErr("Passwords don't match")
+      dispatch(setErrorString("Passwords don't match"))
     }
   }
-
 
   useEffect(() => {
     if (userEmail === '') {
       navigate('/')
     }
   }, [navigate, userEmail])
-
   return (
     <div>
       <form onSubmit={handleSubmit(onSumit)}>
@@ -61,16 +57,16 @@ export function RegistrationPassword(props: RegistrationPasswordProps) {
             <div>
               <h3 style={{ color: "black", height: 60 }}>CREATE YOUR SELLER ACCOUNT </h3>
             </div>
-            <InputField fullWidth color="primary" placeholder="Enter Your Password" type={viewPassword ? 'text' : "password"} forminput={{ ...register("password") }} InputProps={{ endAdornment: viewPassword ? <IconButton onClick={() => setViewPassword(false)} ><VisibilityOff /></IconButton> : <IconButton onClick={() => setViewPassword(true)} ><Visibility /></IconButton> }} />
-            <InputField fullWidth color='primary' placeholder="Confirm Your Password" type="password" forminput={{ ...register("confirmPassword") }} />
-            {err && <Typography variant='caption' color={'error'}>{err}</Typography>}
-            {error && <Typography variant='caption' color={'error'} >
-              {error}
-            </Typography>}
-            {errors['password'] && <Typography variant='caption' color={'error'} >
-              {errors["password"]?.message}
-            </Typography>}
-            <FormControlLabel control={<Checkbox color='info' onChange={() => setChecked(!checked)} checked={checked} />} label="Agree DropOut Store Terms and Conditions" />
+            <InputField error={Boolean(errors["password"])}
+              fullWidth color="primary" placeholder="Enter Your Password" type={viewPassword ? 'text' : "password"} forminput={{ ...register("password") }} InputProps={{ endAdornment: viewPassword ? <IconButton onClick={() => setViewPassword(false)} ><VisibilityOff /></IconButton> : <IconButton onClick={() => setViewPassword(true)} ><Visibility /></IconButton> }} />
+            <InputField
+              error={Boolean(errors["password"])}
+              helperText={errors["password"]?.message}
+              fullWidth color='primary' placeholder="Confirm Your Password" type="password" forminput={{ ...register("confirmPassword") }} />
+            <div className='flex gap-2'>
+              <input className='h-5 cursor-pointer' type="checkbox" onChange={() => setChecked(!checked)} />
+              <Typography>Agree DropOut Store Terms and Conditions</Typography>
+            </div>
             <Button type="submit" disabled={!checked} variant='contained' color='primary' fullWidth style={{ height: 56 }} > Sign Up</Button>
             <p style={{ textAlign: "center" }}>You alderdy have an account? <strong onClick={() => navigate("/login")} style={{ color: '#167AF9', cursor: "pointer" }}>Sign In</strong></p>
           </div>

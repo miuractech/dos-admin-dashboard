@@ -29,7 +29,6 @@ export const MerchentTable = () => {
 
     return (
         <DataTable
-            title="Merchents"
             columns={columns}
             data={merchents}
             customStyles={customStyles}
@@ -106,7 +105,7 @@ const columns = [
     {
         name: <Typography variant='caption'>Link</Typography>,
         cell: (data: MerchentType) => {
-            const url = `http://localhost:4200/shops/${data.id}`
+            const url = `https://dos-website.web.app/shops/${data.id}`
              return <a href = { url } target = "_blank" rel = "noreferrer" > Link</a>
         },
         sortable: true

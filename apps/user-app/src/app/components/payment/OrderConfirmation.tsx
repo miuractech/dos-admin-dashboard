@@ -21,7 +21,8 @@ export const OrderConfirmation = () => {
     const { user } = useSelector((state: RootState) => state.User)
     const { courierpartners, ETD, days, message } = useSelector((state: RootState) => state.pincode)
     const functions = getFunctions(app, "asia-south1")
-    connectFunctionsEmulator(functions, "localhost", 5001);
+    const [pincodedata, setPincode] = useState<null|number>(null)
+    // connectFunctionsEmulator(functions, "localhost", 5001);
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -33,15 +34,11 @@ export const OrderConfirmation = () => {
                 const result = data['address']
                 if (result) {
                     dispatch(setOrderDetails(data))
-                    // dispatch(setBackDrop(false))
                 }
             }
         });
         return () => unsub()
     }, [])
-
-    console.log(orderId);
-    console.log(orderDetails);
 
     useEffect(() => {
         if (!orderDetails) {
@@ -57,7 +54,6 @@ export const OrderConfirmation = () => {
             if (docSnap.exists()) {
                 const data = docSnap.data()
                 dispatch(setOrderDetails(data))
-                // dispatch(setBackDrop(false))
             }
     }
 
@@ -66,9 +62,7 @@ export const OrderConfirmation = () => {
         const getSha = async () => {
             if (!orderDetails?.address)return
             dispatch(setBackDrop(true))
-            console.log("hash", `gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||4R38IvwiV57FwVpsgOvTXBdLE4tHUXFW`)
                 const res = await sha512(`gtKFFx|${orderId}|${orderDetails.total}|T-Shirt|${orderDetails.address.firstName}|${orderDetails.address.email}|||||||||||4R38IvwiV57FwVpsgOvTXBdLE4tHUXFW`)
-            console.log(res);
             dispatch(setHash(res))
             dispatch(setBackDrop(false))
             }
@@ -80,6 +74,10 @@ export const OrderConfirmation = () => {
         const id = courierpartners.data.recommended_courier_company_id
         if (!id) {
             dispatch(setDeliveryMessage("Currently out of stock in this area."))
+            dispatch(setDeliverydetails({
+                ETD: null,
+                days: null
+            }))
         }
         const companies = courierpartners.data.available_courier_companies
         const recommendedcouriercompany = companies.find(com => com.courier_company_id === id)
@@ -88,33 +86,39 @@ export const OrderConfirmation = () => {
             ETD: recommendedcouriercompany?.etd
         }
         dispatch(setDeliverydetails(result))
+        dispatch(setDeliveryMessage(null))
     }, [courierpartners])
 
     const getDeleveryDate = async() => {
         try {
-            if (!selectedAddressfull) return
+            if (!pincodedata) return
+            dispatch(setBackDrop(true))
             const pincode = httpsCallable(functions, "pincode")
-            const result = await (await pincode({ pincode: selectedAddressfull.pincode })).data as any
+            console.log(pincodedata, "before");
+            const result = await (await pincode({ pincode: pincodedata })).data as any
+            console.log(pincodedata, result, "after");
             if (result.status === 200) {
                 dispatch(setcourierpartners(result))
-                dispatch(setDeliveryMessage(null))
-                // dispatch(setBackDrop(false))
             } else {
                 dispatch(setDeliveryMessage("Currently out of stock in this area."))
-                dispatch(setDeliverydetails(null))
-                // dispatch(setBackDrop(false))
+                dispatch(setBackDrop(false))
             }
         } catch (error) {
-            console.log(error)
-            dispatch(setBackDrop(false))
+            console.log("Eroorrrrrrr",error)
         }
 }
     useEffect(() => {
-        if (selectedAddressfull) {
+        if (pincodedata) {
             getDeleveryDate()
+            console.log("hey");
         } 
-    }, [selectedAddressfull, user])
-    
+    }, [pincodedata])
+
+    useEffect(() => {
+        if (selectedAddressfull) {
+            setPincode(selectedAddressfull.pincode)
+        }
+    }, [selectedAddressfull])
     return (
             <div className='p-5 gap-5 md:grid grid-cols-3 md:mx-16'>
                 <div className='col-span-2 space-y-5'>

@@ -13,7 +13,8 @@ import { useNavigate } from 'react-router-dom';
 export interface VerifyPhoneProps { }
 
 export function VerifyPhone(props: VerifyPhoneProps) {
-  const phone = useSelector((state: RootState) => state.User.userDetails.phone)
+  const { phone } = useSelector((state: RootState) => state.User.userDetails)
+  const { Errorstring } = useSelector((state: RootState) => state.User)
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [alert, setAlert] = useState<string>("")
   const [requestOTP, setRequestOTP] = useState(false)
@@ -42,7 +43,7 @@ export function VerifyPhone(props: VerifyPhoneProps) {
     const OTP = data.OTP
     verifyOtp({
       onSuccess: onSuccess,
-      onFail: (error: any) => setErr(error),
+      onFail: (error: any) => setErr("Invalid OTP try again!"),
       OTP
     })
   }
@@ -76,7 +77,7 @@ export function VerifyPhone(props: VerifyPhoneProps) {
       onSuccess: () => setRequestOTP(true), onFail: (error: any) => {
         console.log(error);
         if (error === "Firebase: Error (auth/too-many-requests).") {
-          setAlert("too-many-requests please try after some time")
+          setAlert("Too-many-requests please try after some time")
         }
 
         if (error === "Firebase: Error (auth/requires-recent-login).") {
@@ -117,16 +118,23 @@ export function VerifyPhone(props: VerifyPhoneProps) {
 
             </div>
             :
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div>
-                <h3 style={{ color: "black" }}>Verification</h3>
-                <h4 style={{ textAlign: "center" }}>OTP SENT TO MOBILE NUMBER - {phone}</h4>
-              </div>
-              <InputField fullWidth color='primary' placeholder="Enter OTP" type="number" style={{ textDecoration: "none" }} forminput={{ ...register("OTP") }} />
-              <Button fullWidth type='submit' variant='contained'>verify</Button>
-              {err && <Typography variant='caption' color={'error'} >{err}</Typography>}
-              {timer ? <p><strong>wait for to resend OTP : {seconds} seconds</strong></p> : <p><strong onClick={resend} style={{ color: '#167AF9', cursor: "pointer" }}>Resend OTP</strong></p>}
-            </form>
+            <>
+            <div>
+              <h3 style={{ color: "black" }}>Verification</h3>
+              <h4 style={{ textAlign: "center" }}>OTP SENT TO MOBILE NUMBER - {phone}</h4>
+            </div>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                <div className='space-y-5'>
+                  <InputField
+                    error={Boolean(Errorstring)}
+                    helperText={Errorstring}
+                    fullWidth color='primary' placeholder="Enter OTP" style={{ textDecoration: "none" }} forminput={{ ...register("OTP") }} />
+                  {timer ? <p><strong>wait for to resend OTP : {seconds} seconds</strong></p> : <p><strong onClick={resend} style={{ color: '#167AF9', cursor: "pointer" }}>Resend OTP</strong></p>}
+                  <Button fullWidth type='submit' variant='contained'>verify</Button>
+            </div>
+                </form>
+            {err && <Typography variant='caption' color={'error'} >{err}</Typography>}
+            </>
           }
         </div>
         <div id="recaptcha"></div>

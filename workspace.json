@@ -4,7 +4,6 @@
     "admin-dashboard": "apps/admin-dashboard",
     "admin-dashboard-e2e": "apps/admin-dashboard-e2e",
     "assets": "libs/assets",
-    "cmi": "libs/cmi",
     "global": "libs/global",
     "image-crop-input": "libs/image-crop-input",
     "mfa-firebase": "libs/mfa-firebase",

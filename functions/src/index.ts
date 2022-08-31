@@ -131,8 +131,8 @@ app.post("/successTest", (req, res) => {
 
 app.post("/pan", async (req, res) => {
   const unix = Math.round((new Date()).getTime() / 1000);
-  const data =`CF182083CBIGGFQUF4T8G302KPQ0.${unix}`;
-  const publicKey = fs.readFileSync(`${__dirname}\\key.pem`, {encoding: "utf8"});
+  const data =`CF182083CC4JME2P52PFAQQB6Q00.${unix}`;
+  const publicKey = fs.readFileSync(`${__dirname}/key.pem`, {encoding: "utf8"});
   const encryptedData = crypto.publicEncrypt(
       {
         key: publicKey,
@@ -140,13 +140,13 @@ app.post("/pan", async (req, res) => {
       Buffer.from(data)
   );
   const signature = encryptedData.toString("base64");
-  const url = "https://api.cashfree.com/verification/pan";
+  const url = "https://sandbox.cashfree.com/verification/pan";
   const options = {
     method: "POST",
     headers: {
       "Accept": "application/json",
-      "x-client-id": "CF182083CBIGGFQUF4T8G302KPQ0",
-      "x-client-secret": "13fe675c4e0db3d7f4d6a1d89a9a0d8a406a8594",
+      "x-client-id": "CF182083CC4JME2P52PFAQQB6Q00",
+      "x-client-secret": "8c00e632bbd529cde23330cfc29f09783a0b29c6",
       "Content-Type": "application/json",
       "x-cf-signature": signature,
     },
@@ -163,15 +163,15 @@ app.post("/pan", async (req, res) => {
 
 app.post("/bank", async (req, res) => {
   try {
-    const publicKey = fs.readFileSync(`${__dirname}\\key.pem`, {encoding: "utf8"});
+    const publicKey = fs.readFileSync(`${__dirname}/key.pem`, {encoding: "utf8"});
     const {Payouts} = cfSdk;
     const {Validation} = Payouts;
     const config = {
       Payouts: {
-        ClientID: "CF182083CBIGGFQUF4T8G302KPQ0",
-        ClientSecret: "13fe675c4e0db3d7f4d6a1d89a9a0d8a406a8594",
+        ClientID: "CF182083CC4JME2P52PFAQQB6Q00",
+        ClientSecret: "8c00e632bbd529cde23330cfc29f09783a0b29c6",
         PublicKey: publicKey,
-        ENV: "PRODUCTION",
+        ENV: "TEST",
       },
     };
     Payouts.Init(config.Payouts);
@@ -200,9 +200,11 @@ export const pincode = functions.region("asia-south1").https.onCall(async (data)
     return axios(config)
         .then(function(response) {
           resolve(response.data);
+          console.log(response.data);
         })
         .catch(function(error) {
           reject(error);
+          console.log(error);
         });
   });
 });
@@ -220,21 +222,34 @@ app.post("/success", async (req, res) => {
   const orderdata = result.data();
   if (!orderdata) return;
   admin.firestore().collection("cart").doc(orderdata.userId).delete();
-  const resellers = orderdata.items.map((order: { resellerId: string; }) => order.resellerId);
-  if (resellers.length > 1) {
+  const Resellerdata = orderdata.items.map((order: { resellerId: string; }) => order.resellerId);
+  const resellers = [...new Set(Resellerdata)] as string[];
+  if (resellers.length > 0) {
     for (const seller of resellers) {
       if (!seller) {
         continue;
       }
       const filterProducts = orderdata.items.filter((pro: any) => pro.resellerId === seller);
+      let baseTotal = 0;
+      let priceTotal = 0;
+      for (const product of filterProducts) {
+        const res = admin.firestore().collection("reSellers").doc(product.resellerId).collection("products").doc(product.productID);
+        const doc = await res.get();
+        const data = doc.data();
+        if (data) {
+          baseTotal = baseTotal + data.basePrice * product.count;
+          priceTotal = priceTotal + data.price * product.count;
+        }
+      }
       await admin.firestore().collection("reSellers").doc(seller).collection("orders").add({
         ...orderdata,
         items: filterProducts,
+        profit: priceTotal - baseTotal,
       });
     }
-    res.redirect("http://localhost:4200/success");
+    res.redirect("https://dos-website.web.app//success");
   }
-  res.redirect("http://localhost:4200/success");
+  res.redirect("https://dos-website.web.app//success");
 });
 
 app.post("/failure", async (req, res) => {
@@ -245,7 +260,7 @@ app.post("/failure", async (req, res) => {
     status: status,
     mode: mode,
   });
-  res.redirect("http://localhost:4200/failure");
+  res.redirect("https://dos-website.web.app//failure");
 });
 
 

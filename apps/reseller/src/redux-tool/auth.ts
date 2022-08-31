@@ -18,7 +18,8 @@ const initialState: UserDetailState = {
   error: null,
   User: undefined,
   notification: null,
-  backDrop: false
+  backDrop: false,
+  Errorstring:null
 }
 
 type createPayloadType = {
@@ -63,6 +64,7 @@ export const loginUser = createAsyncThunk("User/loginUser",
     catch (error: any) {
       const errorCode = error.code;
       console.log(errorCode);
+      console.log(error);
       return rejectWithValue(error)
     }
   }
@@ -98,6 +100,9 @@ export const UserSlice = createSlice({
     },
     setError: (state, action) => {
       state.error = action.payload
+    },
+    setErrorString: (state, action) => {
+      state.Errorstring = action.payload
     }
   },
   extraReducers: {
@@ -107,6 +112,7 @@ export const UserSlice = createSlice({
     [createUser.rejected.toString()]: (state, action) => {
       state.loading = false
       state.error = action.payload.message
+      state.Errorstring = action.payload.message
     },
     [createUser.fulfilled.toString()]: (state, action) => {
       state.loading = false
@@ -120,7 +126,10 @@ export const UserSlice = createSlice({
     },
     [loginUser.rejected.toString()]: (state, action) => {
       state.loading = false
-      state.error = action.payload
+      state.error = action.payload 
+      if (action.payload.code !== "auth/multi-factor-auth-required") {
+        state.Errorstring = action.payload.message 
+      }
     },
     [loginUser.pending.toString()]: (state, action) => {
       state.loading = true
@@ -128,6 +137,6 @@ export const UserSlice = createSlice({
   }
 })
 
-export const { setUser, submit, setNotification, setBackDrop, setError } = UserSlice.actions
+export const { setUser, submit, setNotification, setBackDrop, setError, setErrorString } = UserSlice.actions
 
 export default UserSlice.reducer

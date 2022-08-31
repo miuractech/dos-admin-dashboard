@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { multiFactor, PhoneAuthProvider, RecaptchaVerifier, Auth, User, PhoneMultiFactorGenerator, ApplicationVerifier, MultiFactorAssertion, MultiFactorSession } from 'firebase/auth';
+import { multiFactor, PhoneAuthProvider, RecaptchaVerifier, Auth, User, PhoneMultiFactorGenerator, ApplicationVerifier, MultiFactorAssertion, MultiFactorSession, getMultiFactorResolver } from 'firebase/auth';
 
 /* eslint-disable-next-line */
 export interface MfaFirebaseProps {

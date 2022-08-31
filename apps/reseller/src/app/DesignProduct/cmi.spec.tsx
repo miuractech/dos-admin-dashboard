@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 
-import CMI from './cmi';
+import Cmi from './cmi';
 
-describe('CMI', () => {
+describe('Cmi', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<CMI />);
+    const { baseElement } = render(<Cmi />);
     expect(baseElement).toBeTruthy();
   });
 });

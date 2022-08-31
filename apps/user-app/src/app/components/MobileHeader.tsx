@@ -1,5 +1,5 @@
 import { MenuOutlined, PersonOutlineOutlined, SearchOutlined, ShoppingCartOutlined } from '@mui/icons-material'
-import { Box, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer } from '@mui/material'
+import { Badge, Box, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer } from '@mui/material'
 import React, { useState } from 'react'
 import logo from "./images/logo.svg"
 import man from "./images/man.svg"
@@ -7,9 +7,14 @@ import woman from "./images/woman.svg"
 import child from "./images/child.svg"
 import about from "./images/about.svg"
 import shop from "./images/shop.svg"
+import { useNavigate } from 'react-router-dom'
+import { RootState } from '../../store/store'
+import { useSelector } from 'react-redux'
 
 export const MobileHeader = () => {
     const [state, setState] = React.useState(false)
+    const { cartProductList } = useSelector((state: RootState) => state.cart)
+    const navigate = useNavigate()
     const toggleDrawer =
         (open: boolean) =>
             (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -69,12 +74,16 @@ export const MobileHeader = () => {
             >
                 {list()}
             </SwipeableDrawer>
-            <div style={{ height: "65px", display: "grid", gridTemplateColumns: "1fr 4fr 1fr 1fr 1fr", padding: "0px 0px 0px", alignItems: "center", boxShadow: "0px 9px 9px rgba(229, 229, 229, 0.3)" }}>
+            <div style={{ height: "65px", display: "grid", gridTemplateColumns: "1fr 3fr 2fr", alignItems: "center", boxShadow: "0px 9px 9px rgba(229, 229, 229, 0.3)" }}>
                 <div ><IconButton onClick={toggleDrawer(true)}><MenuOutlined /></IconButton></div>
-                <div style={{ paddingTop: "5px 5px", alignSelf: "center" }}><img src={logo} alt="dropoutstore" style={{ maxWidth: "150px" }} /></div>
-                <IconButton><SearchOutlined /></IconButton>
-                <IconButton><PersonOutlineOutlined /></IconButton>
-                <IconButton><ShoppingCartOutlined /></IconButton>
+                <div style={{ paddingTop: "5px 5px", alignSelf: "center", justifySelf:"baseline" }}><img src={logo} alt="dropoutstore" style={{ maxWidth: "150px" }} /></div>
+                <div className='flex gap-5'>
+                    <SearchOutlined />
+                    <PersonOutlineOutlined />
+                    <Badge className='cursor-pointer' color="secondary" badgeContent={cartProductList.length}>
+                        <ShoppingCartOutlined onClick={() => navigate("/cart")} />
+                    </Badge>
+                </div>
             </div>
         </>
     )

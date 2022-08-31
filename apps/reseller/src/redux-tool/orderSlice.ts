@@ -69,4 +69,5 @@ export interface OrderDetailsType {
     timeStamp: TimeStamp;
     status: string;
     disabled: boolean;
+    profit?:number
 }

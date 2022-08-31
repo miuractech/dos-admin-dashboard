@@ -22,8 +22,8 @@ type Inputs = {
 
 const schema = yup.object().shape({
     productName: yup.string().required('product name cannot be empty').min(3, "minimum of 3 characters required"),
-    price: yup.number().positive().integer().required("price cannot be empty"),
-    comparePrice: yup.number().positive().integer().required("compare price cannot be empty"),
+    price: yup.number().positive().integer().required("price cannot be empty").typeError("can only be numbers"),
+    comparePrice: yup.number().positive().integer().required("compare price cannot be empty").typeError("can only be numbers"),
 }).required();
 
 export const AddProduct = () => {
@@ -33,7 +33,7 @@ export const AddProduct = () => {
     const navigate = useNavigate()
     const [price, setPrice] = useState<null | number>(null)
     const [loading, setLoading] = useState(false)
-    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
+    const { register, handleSubmit,watch,setError, formState: { errors } } = useForm<Inputs>({
         resolver: yupResolver(schema)
     });
     const dispatch = useDispatch()
@@ -43,6 +43,8 @@ export const AddProduct = () => {
             navigate(-1)
         }
     }, [])
+    
+    console.log(watch("price"));
 
     const dataURLtoBlob = (dataURL: string, img: any, productId: string) => {
         return new Promise((resolve, reject) => {
@@ -66,32 +68,38 @@ export const AddProduct = () => {
             if (!User) return
             if (!product) return
             if (!selectedColor) return
-            setLoading(true)
-            const productId = uuidv4()
-            const sideImages = []
-            for (const img of designPreviewImages) {
-                const targetImage = await dataURLtoBlob(img.url, img, productId)
-                sideImages.push(targetImage)
+            if (data.price < product.basePrice) {
+                setError("price", { type: 'custom', message: 'Cannot be less than base price' })
+            } else {
+                setLoading(true)
+                const productId = uuidv4()
+                const sideImages: { sideName: string, url: string }[] = []
+                for (const img of designPreviewImages) {
+                    const targetImage = await dataURLtoBlob(img.url, img, productId) as { sideName: string, url: string }
+                    sideImages.push(targetImage)
+                }
+                const side = ["Front", "Back", "Left", "Right", "Top", "Bottom"]
+                const result = sideImages.map((a: any, index: number) => ({ sideName: side[index], url: sideImages.find(img => img.sideName === side[index])?.url }))
+                await setDoc(doc(db, "reSellers", User.uid, "products", productId), {
+                    ...data,
+                    productId: productId,
+                    color: selectedColor.colorName,
+                    resellerId: User.uid,
+                    sizeAvailable: product.size,
+                    sku: product.sku[selectedColor.colorName],
+                    description: product.description,
+                    resellerDescription: "",
+                    subCategoryId: product.subcategoryId,
+                    categoryId: product.categoryId,
+                    basePrice: product.basePrice,
+                    sideImages: result,
+                    familyId: product.familyId,
+                    status: "inactive",
+                    productTypeName: product.name
+                });
+                setLoading(false)
+                dispatch(setNotification("Product added successfully"))   
             }
-            await setDoc(doc(db, "reSellers", User.uid, "products", productId), {
-                ...data,
-                productId: productId,
-                color: selectedColor.colorName,
-                resellerId: User.uid,
-                sizeAvailable: product.size,
-                sku: product.sku[selectedColor.colorName],
-                description:product.description,
-                resellerDescription: "",
-                subCategoryId: product.subcategoryId,
-                categoryId: product.categoryId,
-                basePrice: product.basePrice,
-                sideImages: sideImages,
-                familyId: product.familyId,
-                status: "inactive",
-                productTypeName: product.name
-            });
-            setLoading(false)
-            dispatch(setNotification("Product added successfully"))
         } catch (error) {
             console.log(error);
         }

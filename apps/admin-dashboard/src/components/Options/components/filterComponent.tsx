@@ -25,7 +25,7 @@ export const FilterComponent = ({ setFilterText, filterText }: filterProps) => {
     }, 1500)
 
     return (
-        <TextField onChange={(event) => changed(event.target.value)} InputProps={{ endAdornment: filterText ? <IconButton onClick={() => setFilterText("")}><ClearIcon /></IconButton> : null, startAdornment: <SearchIcon /> }} id="standard-basic" label="Filter" variant="standard" />
+        <TextField style={{width:"20%"}} onChange={(event) => changed(event.target.value)} InputProps={{ endAdornment: filterText ? <IconButton onClick={() => setFilterText("")}><ClearIcon /></IconButton> : null, startAdornment: <SearchIcon /> }} value={filterText} id="standard-basic" variant="standard" />
 
     )
 }

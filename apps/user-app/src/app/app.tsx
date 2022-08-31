@@ -27,6 +27,7 @@ import { Paymentsuccess } from './components/payment/Paymentsuccess';
 import { Paymentfailuer } from './components/payment/Paymentfailuer';
 import { Home } from './Home/Home';
 import { CMI } from '../CMI/cmi';
+import { NotFound } from './components/NotFound';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -39,6 +40,8 @@ export function App() {
   const location = useLocation();
 
   const getLocalData = () => {
+    if (location.pathname === "/success") return
+    console.log(location.pathname);
     const data = localStorage.getItem('cart')
     if (!data) return
     const cartData = JSON.parse(data)
@@ -124,7 +127,7 @@ export function App() {
 
   const theme = useTheme()
   const media = useMediaQuery(theme.breakpoints.up("sm"))
-  if (loading) return <CircularProgress />
+  if (loading) return <div className='w-screen h-screen flex justify-center items-center'><CircularProgress /></div>
   return (
     <>
       <div>
@@ -133,7 +136,7 @@ export function App() {
           {media ? (
             <>
               <Header />
-              {location.pathname === "/cart" ? null : <NavBar />}
+              {/* {location.pathname === "/cart" ? null : <NavBar />} */}
             </>
           ) : (
             <MobileHeader />
@@ -146,7 +149,7 @@ export function App() {
             <Route path='/failure' element={<Paymentfailuer />} />
             <Route path='/cart' element={<Cardbredcrum />}>
               <Route index element={<Cart />} />
-              <Route path='cartt' element={<Cart />} />
+              <Route path='cart' element={<Cart />} />
               {user && (
                 <>
                   <Route path='shippingmethod' element={<ShippingMethod />} />
@@ -160,9 +163,9 @@ export function App() {
             <Route path="/contact" element={<ContactUs />} />
             <Route path='/CMI' element={<CMI />} /> 
             {user &&
-              <Route path='myprofile' element={<MyAccount />} />
+              <Route path='/myprofile' element={<MyAccount />} />
             }
-            <Route path='*' element={<>not found</>} />
+            <Route path='*' element={<NotFound/>} />
           </Routes>
         </Suspense>
       </div>
@@ -181,6 +184,7 @@ export function App() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+     <div id="sign-in-button" style={{visibility:'hidden'}} ></div>
     </>
   );
 }

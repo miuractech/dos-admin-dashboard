@@ -207,7 +207,8 @@ const AddProductTypeForm = ({ onClose, item }: { onClose: any, item?: any }) => 
             <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
             <ProductDescriptionField 
             setValue={setValue}
-            watch={watch}
+              watch={watch}
+              errors={errors}
             />
             <ProductMetaFields register={register} watch={watch} errors={errors} getValue={getValues} />
             <ProductDisplayImage
@@ -389,23 +390,11 @@ export const ProductNameField: React.FC<{
   );
 };
 
-export const ProductDescriptionField: React.FC<{ watch:any,setValue:any }> = ({
-   setValue, watch
-}) => {
+export const ProductDescriptionField: React.FC<{ watch: any, setValue: any, errors:any }> = ({setValue, watch, errors}) => {
   return (
     <div className={styles['field-container']}>
       <label>Description:</label>
-      <div>
-        {/* <DOSInput
-          fullWidth
-          multiline
-          minRows={3}
-          // style={{ height: 'auto' }}
-          InputProps={{ style: { height: 'auto', borderRadius: 16, padding: '12px 0px' } }}
-          forminput={{ ...register('description') }}
-          error={Boolean(error.message)}
-          helperText={error.message}
-        /> */}
+      <div style={{ border: errors.description ? "1px solid red" :"0px solid red"}} className="rounded-lg">
         <RichTextEditor 
         style={{maxWidth:450, borderRadius:12}}
         value={watch('description')} 
@@ -417,6 +406,8 @@ export const ProductDescriptionField: React.FC<{ watch:any,setValue:any }> = ({
         ]}
         />
       </div>
+      <div></div>
+      {errors.description && <Typography color="red" align='center' variant='caption'>Atleast 10 characters are requried</Typography>}
     </div>
   );
 };
@@ -823,7 +814,3 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-
-// function colorObj(colorObj: any) {
-//   throw new Error('Function not implemented.');
-// }

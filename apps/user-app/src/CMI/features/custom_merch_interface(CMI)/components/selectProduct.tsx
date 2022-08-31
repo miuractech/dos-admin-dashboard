@@ -31,11 +31,11 @@ import CardMedia from '@mui/material/CardMedia'
 // import { } from '@mui/material'
 import { useAppDispatch } from '../../../app/hooks'
 import { setProducts, setProduct, sideNameType } from '../store/designerSlice'
-import { db } from '../../../config/firebase'
+import { db } from '../../../../configs/firebaseConfig'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 import { resetObjects } from '../store/objects'
-import AreYouSure from './AreYouSure'
 import { Typography } from '@mui/material'
+import {AreYouSure} from './AreYouSure'
 
 export interface CreatedAt {
     nanoseconds: number;

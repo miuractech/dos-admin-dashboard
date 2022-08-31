@@ -22,6 +22,7 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
     const [numberOfRows, setNumberOfRows] = useState(0)
     const [fetchNext, setFetchNext] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
+    const [queary, setQueary] = useState(false)
 
     const fontsCollectionRef = collection(firestore, "Fonts")
     const countRef = doc(firestore, "meta", "count")
@@ -49,11 +50,12 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
             const lastVisible = snapshot.docs[snapshot.docs.length - 1]
             setlastVisibleRecords([lastVisible])
             count()
+            setQueary(false)
         })
 
         return () => unsub()
 
-    }, [])
+    }, [queary])
 
     const useDidMountEffect = (func: any, deps: any) => {
         const didMount = useRef(false);
@@ -143,12 +145,6 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
             sortable: true
         },
         {
-            name: "Preview",
-            selector: (a: any) => <div style={{ fontFamily: a.originalName }}>Abcdef</div>,
-            sortable: true
-        },
-
-        {
             name: "Action",
             cell: (row: any) =>
                 <div style={{ width: "200px", display: "flex", justifyContent: "space-evenly" }}>
@@ -202,6 +198,9 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
     const endcode = strFrontCode + String.fromCharCode(strEndCode.charCodeAt(0) + 1);
 
     useDidMountEffect(() => {
+        if (filterText.length < 1) {
+            setQueary(true)
+        }
         const q = query(fontsCollectionRef, where("fontName", ">=", filterText), where("fontName", "<", endcode), limit(10));
         const unsub = onSnapshot(q, (snapshot: any) => {
             const Doc = snapshot.docs.map((fonts: any) => ({ ...fonts.data(), id: fonts.id }))
@@ -219,7 +218,6 @@ export const DataGrid = ({ changed }: DataGripPorps) => {
     return (!loading ?
         <>
             <DataTable
-
                 columns={coloum}
                 data={font}
                 pagination

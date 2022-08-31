@@ -16,7 +16,6 @@ export function CMI(props: CmiProps) {
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isExporting}
-      // onClick={handleClose}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

@@ -1,7 +1,7 @@
 import { Button, CircularProgress, FormControlLabel } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import DataTable from "react-data-table-component"
-import { collection, doc, DocumentData, getDoc, limit, onSnapshot, orderBy, query, QueryDocumentSnapshot, QuerySnapshot, startAfter } from 'firebase/firestore';
+import { collection, doc, DocumentData, getDoc, limit, onSnapshot, orderBy, query, QueryDocumentSnapshot, QuerySnapshot, startAfter, where } from 'firebase/firestore';
 import { firestore } from '../../../../config/firebase.config'
 import PopUpArt from './popUpArt';
 import { SubHeaderComponent } from '../../components/filterComponent';
@@ -21,6 +21,7 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
     const [numberOfRows, setNumberOfRows] = useState(0)
     const [fetchNext, setFetchNext] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
+    const [queary, setQueary] = useState(false)
 
     const artsCollectionRef = collection(firestore, "Arts")
     const countRef = doc(firestore, "meta", "count")
@@ -48,11 +49,12 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
             const lastVisible = snapshot.docs[snapshot.docs.length - 1]
             setlastVisibleRecords([lastVisible])
             count()
+            setQueary(false)
         })
 
         return () => unsub()
 
-    }, [])
+    }, [queary])
 
     const useDidMountEffect = (func: any, deps: any) => {
         const didMount = useRef(false);
@@ -197,12 +199,32 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
         },
     ]
 
-    // const filteredItems = allArts.filter(
-    //     (item: any) => item.artName && item.artName.toLowerCase().includes(filterText.toLowerCase()),
-    // );
+    const strlength = filterText.length;
+    const strFrontCode = filterText.slice(0, strlength - 1);
+    const strEndCode = filterText.slice(strlength - 1, filterText.length);
+    const endcode = strFrontCode + String.fromCharCode(strEndCode.charCodeAt(0) + 1);
+
+    useDidMountEffect(() => {
+        if (filterText.length < 1) {
+            setQueary(true)
+        }
+        const q = query(artsCollectionRef, where("artName", ">=", filterText), where("artName", "<", endcode), limit(10));
+        const unsub = onSnapshot(q, (snapshot: any) => {
+            const Doc = snapshot.docs.map((fonts: any) => ({ ...fonts.data(), id: fonts.id }))
+            setAllArts(Doc)
+            setLoading(false)
+            const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+            setlastVisibleRecords([lastVisible])
+        })
+
+        return () => unsub()
+    }, [filterText])
+
+    console.log(filterText);
+    
 
     return (!loading ?
-        <><SubHeaderComponent filterText={filterText} setFilterText={setFilterText} />
+        <>
             <DataTable
                 columns={coloum}
                 data={allArts}
@@ -217,6 +239,7 @@ export const DataGridArt = ({ changed }: DataGripPorps) => {
                 paginationComponentOptions={{ noRowsPerPage: true }}
                 onChangePage={handlePageChange}
                 paginationTotalRows={numberOfRows}
+                subHeaderComponent={<SubHeaderComponent filterText={filterText} setFilterText={setFilterText} />}
             />
             <PopUpArt
                 open={Boolean(popUpInfo)}

@@ -7,9 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addObject } from '../store/objects'
 import { v4 as uuidv4 } from 'uuid';
 import { MiuracImage } from '@miurac/image-upload'
-import { app } from '../../../config/firebase'
+import { app } from '../../../../configs/firebaseConfig'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from 'apps/reseller/src/redux-tool/store'
+import { RootState } from '../../../../store/store'
 type Props = {
     open: boolean
     onClose : (event?: Record<string, unknown>, reason?: "backdropClick" | "escapeKeyDown") => void | undefined,

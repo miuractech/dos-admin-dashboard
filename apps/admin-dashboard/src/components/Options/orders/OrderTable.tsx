@@ -56,7 +56,6 @@ export const OrderTable = () => {
 
     return (
         <DataTable
-            title="Orders"
             columns={columns}
             data={orders}
             customStyles={customStyles}

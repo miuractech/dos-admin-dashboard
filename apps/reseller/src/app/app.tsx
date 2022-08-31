@@ -5,7 +5,7 @@ import { RootState } from '../redux-tool/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { multiFactor, onAuthStateChanged } from 'firebase/auth';
-import { setUser, auth, submit, setNotification, setError } from '../redux-tool/auth';
+import { setUser, auth, submit, setNotification, setErrorString } from '../redux-tool/auth';
 import { Alert, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import NewsLetter from './Auth/news-letter/news-letter';
 import Home from './Auth/regHomePage/home';
@@ -20,7 +20,6 @@ import VerifyPhone from './Auth/verify-phone/verify-phone';
 import StorefrontCreator from './storeFrontForm/storefrontCreator';
 import Header from './sideNav/header'
 import { setStoreInfo } from '../redux-tool/functions';
-import { CustomMerchInterface } from './DesignProduct/cmi';
 import { AddProduct } from './DesignProduct/AddProducts';
 import { NewHeader } from './sideNav/navbar';
 import { Products } from './Products/Products';
@@ -31,10 +30,14 @@ import { Support } from './Support/Support';
 import { BankVerification } from './verification/BankVerification';
 import { PanVerification } from './verification/PanVerification';
 import { BankStatement } from './verification/BankStatement';
+import { CMI } from './DesignProduct/cmi';
+import { Orders } from './Orders/Orders';
+import { NotFound } from './NotFound';
+import { Logout } from './Logout';
 
 export function App() {
   const dispatch = useDispatch()
-  const { User, notification, backDrop,error } = useSelector((state: RootState) => state.User)
+  const { User, notification, backDrop,error,Errorstring } = useSelector((state: RootState) => state.User)
   const { loading } = useSelector((state: RootState) => state.User)
   const { profileUrl, profileLoading } = useSelector((state: RootState) => state.condition)
   useEffect(() => {
@@ -53,7 +56,6 @@ export function App() {
     })
     return () => Unsubscribe()
   }, [])
-
 
   let userMultiFactor: any[] = [];
   if (User) userMultiFactor = multiFactor(User).enrolledFactors
@@ -77,8 +79,10 @@ export function App() {
           <Route path='*' element={<Navigate to='/login' />} />
         </Routes>
         <NewsLetter />
+        <Snackbar open={Boolean(Errorstring)} autoHideDuration={5000} onClose={() => dispatch(setErrorString(null))}>
+          <Alert severity='error'>{Errorstring}</Alert>
+        </Snackbar>
       </>
-
     )
   }
   else if (!User.emailVerified) {
@@ -115,8 +119,9 @@ export function App() {
         <NewHeader>
           <Routes>
             <Route path='/designproduct/addproducts' element={<AddProduct />} />
-            <Route path="/designproduct" element={<CustomMerchInterface />} />
+            <Route path="/designproduct" element={<CMI />} />
             <Route path='/products' element={<Products />} />
+            <Route path='/orders' element={<Orders />} />
             <Route path="/editStore" element={<StorefrontCreator />} />
             <Route path='/payment' element={<Payment />} />
             <Route path='/settings' element={<Settings />} />
@@ -124,11 +129,12 @@ export function App() {
             <Route path='/bankverification' element={<BankVerification />} />
             <Route path='/panverification' element={<PanVerification />} />
             <Route path='/bankstatement' element={<BankStatement />} />
+            <Route path='/logout' element={<Logout />} />
             <Route path='/' element={<SalesView />} />
-            <Route path='*' element={<Navigate to='/' replace />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </NewHeader>
-        {/* <Footer /> */}
+        <NewsLetter />
         <Snackbar open={Boolean(notification)} autoHideDuration={5000} onClose={() => dispatch(setNotification(null))}>
           <Alert severity='success'>{notification}</Alert>
         </Snackbar>
@@ -138,8 +144,8 @@ export function App() {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Snackbar open={Boolean(error)} autoHideDuration={5000} onClose={() => dispatch(setError(null))}>
-          <Alert severity='error'>{error}</Alert>
+        <Snackbar open={Boolean(Errorstring)} autoHideDuration={5000} onClose={() => dispatch(setErrorString(null))}>
+          <Alert severity='error'>{Errorstring}</Alert>
         </Snackbar>
       </>
     );

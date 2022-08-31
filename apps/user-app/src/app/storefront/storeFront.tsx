@@ -51,7 +51,7 @@ const StoreFront = () => {
             <div style={{ position: "relative" }}>
                 <ProgressiveImg loadingComponent={<Skeleton variant="rectangular" width="100%" />} src={storeFrontDetails.bannerUrl} alt="bannerImage" style={{ width: "100%" }} />
                 <div id='circle' style={{ position: "absolute", right: "calc(50% - 60px)", overflow: "hidden", bottom: "-90px" }}>
-                    <ProgressiveImg src={storeFrontDetails.profileUrl} alt="profileimage" style={{ width: "100%", height: "100%" }} loadingComponent={<Skeleton variant="circular" width="100%" height="100%"/>} />
+                    <ProgressiveImg src={storeFrontDetails.profileUrl} alt="profileimage" style={{ width: "100%", height: "100%" }} loadingComponent={<Skeleton variant="circular" width="100vw" height="50vh"/>} />
                 </div>
             </div>
             <div style={{ margin: "55px 55px 30px" }}>
@@ -72,7 +72,7 @@ const StoreFront = () => {
                 <div style={{ margin: "20px 0 20px", float: "right" }}>
                     <InputField iconend={<Search />} size='small' placeholder='Find designs or products' />
                 </div>
-                {productsList && <Grid container spacing={4}>
+                {productsList && <Grid container gap={6}>
                     {productsList.length > 0 ? (
                         productsList?.map(item =>
                             <div onClick={() => dispatch(setProduct(item))}>

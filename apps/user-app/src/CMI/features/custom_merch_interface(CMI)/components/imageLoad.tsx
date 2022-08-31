@@ -20,7 +20,7 @@ export const ProgressiveImg = ({ src, alt, style, skeletonDimension }: { src: st
         <div>
             {
                 loading ? (
-                    <Skeleton  variant="rectangular" width={skeletonDimension?.width??250} height={skeletonDimension?.height??250} />
+                    <Skeleton className="bg-inherit"  variant="rectangular" width={skeletonDimension?.width??250} height={skeletonDimension?.height??250} />
                 ) : (
                     <img
                         style={style}

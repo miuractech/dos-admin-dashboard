@@ -38,11 +38,6 @@ export const SideNavItemList: Array<{
       icon: OrdersIcon,
     },
     {
-      id: Keys[1],
-      value: SideNavItemObject['PRODUCTS'].value,
-      icon: ProductsIcon,
-    },
-    {
       id: Keys[2],
       value: SideNavItemObject['MERCHANTS'].value,
       icon: MerchantsIcon,

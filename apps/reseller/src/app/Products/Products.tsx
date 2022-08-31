@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { db } from '../../firebaseConfig/config';
 import { ProductsObject, setQueriedListings } from '../../redux-tool/products';
 import { RootState } from '../../redux-tool/store';
+import { useNavigate } from 'react-router-dom';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -20,7 +21,7 @@ export const Products = () => {
     const { User } = useSelector((state: RootState) => state.User)
     const { queriedListings } = useSelector((state: RootState) => state.listings)
     const dispatch = useDispatch()
-    // const [filteredData, setfilteredData] = useState<any>(null)
+    const navigate = useNavigate()
 
     const handleChange = async (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue)
@@ -86,7 +87,7 @@ export const Products = () => {
         <div style={{ width: "90%", margin: "auto" }}>
             <Grid container justifyContent="space-between" margin={[3, 0, 3]}>
                 <Grid item> <Typography fontWeight={600} variant='h5'>Products</Typography></Grid>
-                <Grid item><Button variant='contained' color='error'>Add Products</Button></Grid>
+                <Grid item><Button variant='contained' color='error' onClick={() => navigate("/designproduct")}>Add Products</Button></Grid>
             </Grid>
             <Card style={{
                 borderRadius: "15px",

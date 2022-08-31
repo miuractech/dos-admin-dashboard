@@ -19,10 +19,6 @@
   .absolute{
     position: absolute;
   }
-  .modal-close{
-    right:8px;
-    top:8px;
-  }
   .relative{
     position: relative;
   }
@@ -171,22 +167,6 @@
   
   .full-width{
     width: 100%;
-  }
-  
-  .modal{
-    position: absolute;
-    text-align: center;
-    background-color: #fff;
-    outline: 0;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-    overflow-y: auto;
-    border-radius: 8px;
-    /* height: 80%; */
-    min-height: 300px;
-    padding:32px;
-    max-height:70%;
   }
   
   

@@ -12,7 +12,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import CustomFonts from './customFonts'
 import { Add, ChevronLeft, ChevronRight, FormatAlignCenter, FormatAlignLeft, FormatAlignRight, KeyboardArrowDown, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowUp, Remove } from '@mui/icons-material'
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from '../../../../../../../apps/reseller/src/redux-tool/store';
+import { RootState } from '../../../../../redux-tool/store';
 import { Box } from '@mui/system'
 import { setSelectedColor } from '../store/designerSlice';
 import AreYouSure from './AreYouSure'
@@ -404,7 +404,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
 
           <div style={{ backgroundColor: "#E5E5E5", display: "flex", flexDirection: "column", gap: "15px", padding: "10px" }}>
             <Card style={{ padding: "10px" }}>
-              <Typography align='center'>Choose Color</Typography>
+              <Typography align='center'>Available Color</Typography>
               {colors && <div style={{ display: "flex", gap: "10px" }}>
                 {colors.map((color: colorProps) =>
                   <div
@@ -420,7 +420,7 @@ export default function StyleBar({ selectedId, setSelectedId }: Props) {
               </div>}
             </Card>
             <Card style={{ padding: "10px" }}>
-              <Typography gutterBottom align='center'>Choose size</Typography>
+              <Typography gutterBottom align='center'>Available size</Typography>
               {product?.size && <div style={{ display: "flex", gap: "20px" }}>
                 {product.size.map((size) => <Paper key={size} style={{ padding: "5px", cursor: "pointer" }}><strong>{size}</strong></Paper>)}
               </div>}

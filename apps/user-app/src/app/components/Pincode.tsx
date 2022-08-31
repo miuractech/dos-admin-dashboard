@@ -25,7 +25,7 @@ const schema = yup.object().shape({
 export const Pincode = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>({ resolver: yupResolver(schema) });
     const functions = getFunctions(app, "asia-south1")
-    connectFunctionsEmulator(functions, "localhost", 5001);
+    // connectFunctionsEmulator(functions, "localhost", 5001);
     const { ETD,days,message,courierpartners } = useSelector((state: RootState) => state.pincode)
     const dispatch = useDispatch()
     const onSubmit = async(data: Inputs) => {

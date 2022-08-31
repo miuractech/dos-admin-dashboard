@@ -10,7 +10,7 @@ type Props = {
     discard:any
 }
 
-export default function AreYouSure({open,text,onClose,discard}: Props) {
+export function AreYouSure({open,text,onClose,discard}: Props) {
   return (
     <SimpleModal
     open={open}

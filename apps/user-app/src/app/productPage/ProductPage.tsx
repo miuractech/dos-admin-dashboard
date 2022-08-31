@@ -54,7 +54,8 @@ const ProductPage = () => {
                     resellerId: product.resellerId,
                     id: id,
                     img: target.url,
-                    price: product.price
+                    price: product.price,
+                    basePrice:product.basePrice
                 }
                 dispatch(addCartProducts({  
                     product: product,

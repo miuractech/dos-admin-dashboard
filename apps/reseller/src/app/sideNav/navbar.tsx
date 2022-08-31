@@ -29,6 +29,7 @@ import payment from './navLogo/fluent_payment-20-regular.svg'
 import setting from './navLogo/carbon_settings.svg'
 import customerSupport from './navLogo/bx_bx-support.svg'
 import logout from './navLogo/carbon_logout.svg'
+import orders from './navLogo/orders-icon.svg'
 import { RootState } from '../../redux-tool/store';
 
 const drawerWidth = 240;
@@ -203,6 +204,11 @@ const navData = [
         route: "products"
     },
     {
+        icon: orders,
+        name: 'Orders',
+        route: "orders"
+    },
+    {
         icon: hand,
         name: 'Sales View',
         route: "salesview"
@@ -225,4 +231,5 @@ const navData = [
     {
         icon: logout,
         name: "Logout",
+        route: "logout"
     }]

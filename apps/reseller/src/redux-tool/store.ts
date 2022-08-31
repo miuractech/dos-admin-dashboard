@@ -1,8 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import UserReduser from "./auth"
-import designerReducer from '../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/designerSlice';
-import ObjectReducer from '../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/objects';
-// import selectSlice from "../../../../libs/cmi/src/lib/features/custom_merch_interface(CMI)/store/color&size"
+import designerReducer from '../app/DesignProduct/features/custom_merch_interface(CMI)/store/designerSlice'
+import ObjectReducer from '../app/DesignProduct/features/custom_merch_interface(CMI)/store/objects';
 import conditionSlice from './functions';
 import ListingsSlice from "./products"
 import OrdersReduser from "./orderSlice"

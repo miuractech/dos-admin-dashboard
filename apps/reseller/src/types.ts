@@ -17,5 +17,5 @@ export interface UserDetailState {
     User: User | null | undefined
     notification: null | string
     backDrop: boolean
-
+    Errorstring:null|string
 }

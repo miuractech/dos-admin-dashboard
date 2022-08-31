@@ -15,7 +15,7 @@ import { Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import SimpleModal from '../ui-components/modal';
 import UrlImage from '../objects/urlImage';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from 'apps/reseller/src/redux-tool/store';
+import { RootState } from '../../../../../redux-tool/store';
 import AreYouSure from './AreYouSure';
 import { useNavigate } from 'react-router-dom';
 import ProgressiveImg from './imageLoad';
@@ -294,7 +294,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                 </React.Fragment>
 
                             ))}
-                            {previewMode && <UrlImage
+                            {/* {previewMode && <UrlImage
                                 src={'https://firebasestorage.googleapis.com/v0/b/dropoutstore-8979d.appspot.com/o/uploads%2FAvBRhCfNeahixsRnKNYABVVl9jE2%2Fimages%2FLogo.png?alt=media&token=34387507-2b38-4c97-a034-f1d08f3fecec'}
                                 props={{
                                     object: {
@@ -308,7 +308,7 @@ const StageComponent = ({ previewMode, stageRef, selectedId, setSelectedId, sele
                                         keepRatio: true
                                     },
                                 }}
-                            />}
+                            />} */}
                         </Group>
                         {(selectedId) && !previewMode && (
                             <Transformer

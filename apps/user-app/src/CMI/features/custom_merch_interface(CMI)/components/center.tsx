@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import ProgressiveImg from './imageLoad';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../config/firebase';
+import { db } from '../../../../configs/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import { storage } from '../../../../configs/firebaseConfig';
 import { addCartProducts, addLocalCart } from '../../../../store/cartSlice';
@@ -193,10 +193,11 @@ export default function Center({ selectedId, setSelectedId, previews, setPreview
                                   const targetImage = await dataURLtoBlob(img.url, img, productId) as { sideName: string, url: string }
                                   sideImages.push(targetImage)
                               }
-                              console.log(previewImages);
+                              const side = ["Front", "Back", "Left", "Right", "Top", "Bottom"]
+                              const result = sideImages.map((a: any, index: number) => ({ sideName: side[index], url: sideImages.find(img => img.sideName === side[index])?.url }))
                               const data = {
                                   status: "active",
-                                  sideImages: sideImages,
+                                  sideImages: result,
                                   subCategoryId: product.subcategoryId,
                                   comparePrice: product.basePrice + 200,
                                   sku: product.sku,

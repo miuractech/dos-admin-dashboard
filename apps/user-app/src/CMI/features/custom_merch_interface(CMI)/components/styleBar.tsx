@@ -15,7 +15,7 @@ import { Add, ChevronLeft, ChevronRight, FormatAlignCenter, FormatAlignLeft, For
 import { RootState } from '../../../../store/store';
 import { Box } from '@mui/system'
 import { setSelectedColor, setSelectedSize } from '../store/designerSlice';
-import AreYouSure from './AreYouSure'
+import {AreYouSure} from './AreYouSure'
 import { Color } from './selectProduct'
 type Props = {
   selectedId: string | null,

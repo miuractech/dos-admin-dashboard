@@ -53,10 +53,7 @@ export function MiuracImage({ app, authComponent, updateFirestore, editConfig, s
               updateFirestore={updateFirestore}
               editConfig={editConfig}
               getUrl={getUrl}
-              // setUrl = {setUrl}
               app={app}
-              // minHeight={minHeight}
-              // minWidth={minWidth}
             />
           </SimpleModal>
         }

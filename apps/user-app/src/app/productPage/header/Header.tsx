@@ -19,11 +19,11 @@ export const Header = () => {
             </div>
             {media &&
                 <div style={{ display: "flex", justifySelf: "center", gap: "20px" }}>
-                    <div>
+                    <div onClick={() => navigate("/CMI")} className="cursor-pointer">
                         <Typography fontWeight={600} align='center' variant='subtitle1'>Create</Typography>
                         <Typography color="#C5C5C5" variant='caption'>new designs</Typography>
                     </div>
-                    <div>
+                    <div className="cursor-pointer">
                         <Typography fontWeight={600} align='center' variant='subtitle1'>Shop</Typography>
                         <Typography color="#C5C5C5" variant='caption'>explore store</Typography>
                     </div>

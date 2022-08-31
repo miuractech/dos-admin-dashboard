@@ -98,6 +98,13 @@ export const Cart = () => {
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(localCart))
     }, [localCart])
+
+    useEffect(() => {
+        if (!user) return
+        setUserDrawer(false)
+}, [user])
+
+
     return (
         cartProductList.length >= 1 ? (
             <>
@@ -163,6 +170,7 @@ export const Cart = () => {
                 </div>
                 <Drawer anchor='left' open={userDrawer} onClose={() => setUserDrawer(false)}>
                     {step === 'phone' ? (<GetPhoneNumber />) : (<GetOTP />)}
+                    
                 </Drawer>
             </>
         ) : (

@@ -14,7 +14,8 @@ export const ProductsTable = ({ filteredData }: { filteredData: ProductsObject[]
         {
             name: <Typography style={{ color: "#3c3c43" }} fontWeight={600}></Typography>,
             cell: (data: ProductsObject) => {
-                const findFrontImg = data.sideImages[3].url
+                const findFrontImg = data.sideImages[0].url
+                console.log(data);
                 return (
                     <div style={{ width: "50px" }}>
                         <img src={findFrontImg} alt="Img" width="100%" />

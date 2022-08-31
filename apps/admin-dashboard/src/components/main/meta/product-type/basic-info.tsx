@@ -62,9 +62,8 @@ const BasicInfo: React.FC<{ item: TMetaProductType }> = ({ item }) => {
       >
         <ProductNameField register={register} error={errors?.name ? errors?.name : {}} />
         <ProductDescriptionField 
-         setValue={setValue}
-         watch={watch}
-          />
+          setValue={setValue}
+          watch={watch} errors={errors}/>
         <ReadOnlyField label="FamilyId" val={item.familyId} />
         <ReadOnlyField label="CategoryId" val={item.categoryId} />
         <ReadOnlyField label="SubCategoryId" val={item.subcategoryId} />

@@ -44,7 +44,7 @@ export const PanVerification = () => {
     const onSubmit = async (data: any) => {
         try {
             dispatch(setBackDrop(true))
-            const url = "http://localhost:5001/dropoutstore-8979d/asia-south1/api/pan"
+            const url = "https://asia-south1-dropoutstore-8979d.cloudfunctions.net/api/pan"
             const response = await fetch(url, { method: 'POST', body: JSON.stringify(data)})
             const result =  await response.json()
             const resObj = JSON.parse(result.data)

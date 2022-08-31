@@ -16,7 +16,7 @@ const SideNavItem: React.FC<{
   const nav = () => {
     switch (id) {
       case 'ORDERS':
-        navigate('/orders');
+        navigate('/');
         break;
       case 'PRODUCTS':
         navigate('/products');

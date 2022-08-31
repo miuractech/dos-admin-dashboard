@@ -83,13 +83,14 @@ const Main: React.FC = () => {
           }}
         >
           <Routes>
-            <Route path="/orders" element={<Orders />} />
+            <Route path="/" element={<Orders />} />
             <Route path="/products" element={<Products />} />
             <Route path="/merchants" element={<Merchants />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/meta" element={<Meta />} />
             <Route path="/couponsgifts" element={<Coupons />} />
             <Route path="/cmi" element={<CMI />} >
+              <Route index element={<Fonts />} />
               <Route path="/cmi/font" element={<Fonts />} />
               <Route path="/cmi/art" element={<Art />} />
             </Route>

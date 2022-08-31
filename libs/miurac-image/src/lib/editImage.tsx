@@ -1,4 +1,4 @@
-import { Button } from '@mui/material'
+import { Button, CircularProgress } from '@mui/material'
 import React, { useCallback, useEffect, useState } from 'react'
 import Cropper from 'react-easy-crop'
 import './image-crop-input.css'
@@ -34,17 +34,6 @@ export default function EditImage({ url, editConfig, getUrl, app, updateFirestor
   const onCropComplete = (__: crop, croppedAreaPixels: crop) => {
     setCropped(croppedAreaPixels);
   }
-
-
-  //   const updateFile = async()=>{
-  //       try{
-  //           const updatedFile = await dataURLtoFile(croppedAreaPixels) as File
-  //           console.log(updatedFile,croppedAreaPixels);
-  //       }
-  //       catch(err){
-  //           console.log(err);
-  //       }
-  //   }
   return (
     <div className='App' >
       <div className="crop-container">
@@ -59,7 +48,7 @@ export default function EditImage({ url, editConfig, getUrl, app, updateFirestor
 
         />
       </div>
-      <div className="controls">
+      <div className="controls space-x-10">
         <input
           type="range"
           value={zoom}
@@ -70,20 +59,22 @@ export default function EditImage({ url, editConfig, getUrl, app, updateFirestor
           onChange={(e) => {
             setZoom(Number(e.target.value))
           }}
-          className="zoom-range"
+          className="zoom-range cursor-pointer"
         />
-        <Button disabled={loading} variant='contained' onClick={async () => {
+        {loading ? (
+        <CircularProgress/>
+        ): (
+            <Button disabled = { loading } variant = 'contained' onClick = { async() => {
           try {
-            const croppedImage = await getCroppedImg(url.url, cropped)
-            const updatedFile = await dataURLtoFile(croppedImage, url.fileName) as File
-            const user = getAuth(app).currentUser
-            const uploadedUrl = await upload({ file: updatedFile, fileName: updatedFile.name, path: `/uploads/${user?.uid}/images` }) as string
-            getUrl(uploadedUrl);
-          } catch (error) {
-            console.log(error);
+          const croppedImage = await getCroppedImg(url.url, cropped)
+          const updatedFile = await dataURLtoFile(croppedImage, url.fileName) as File
+          const user = getAuth(app).currentUser
+          const uploadedUrl = await upload({ file: updatedFile, fileName: updatedFile.name, path: `/uploads/${user?.uid}/images` }) as string
+          getUrl(uploadedUrl);
+        } catch (error) {
+          console.log(error);
           }
-
-        }}>{loading ? 'uploading...' : 'Save'}</Button>
+        }}>Upload</Button>)}
       </div>
     </div>
   )

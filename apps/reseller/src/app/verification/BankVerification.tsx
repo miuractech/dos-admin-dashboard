@@ -53,7 +53,7 @@ export const BankVerification = () => {
         try {
             dispatch(setBackDrop(true))
             console.log(data);
-            const url = "http://localhost:5001/dropoutstore-8979d/asia-south1/api/bank"
+            const url = "https://asia-south1-dropoutstore-8979d.cloudfunctions.net/api/bank"
             const response = await fetch(url, { method: 'POST', body: JSON.stringify(data) })
             const result = await response.json()
             console.log("result", result);
@@ -72,6 +72,7 @@ export const BankVerification = () => {
         } catch (error) {
             dispatch(setBackDrop(false))
             dispatch(setError("Something went wrong please try again."))
+            console.log();
         }
     }
     return (

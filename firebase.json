@@ -39,6 +39,21 @@
         "destination": "/index.html"
       }
     ]
+  },
+{
+    "public": "./dist/apps/reseller/build",
+    "site":"dosdesigners",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }],
   "storage": {
     "rules": "storage.rules"

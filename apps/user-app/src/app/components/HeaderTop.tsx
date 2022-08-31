@@ -26,7 +26,7 @@ export const HeaderTop = () => {
                 <img src={right} alt="right" />
             </div>
             {sm && <div style={{ display: "grid", gridTemplateColumns: "5fr 1fr 1fr", justifyItems: "center", alignItems: "center", gap: "20px" }}>
-                <Button variant='contained' color='secondary'>
+                <Button variant='contained' color='secondary' onClick={() => window.location.href = 'https://dosdesigners.web.app/'}>
                     <img src={shop} alt="shop" style={{ marginRight: "10px" }} />
                     Start Selling
                 </Button>

@@ -17,6 +17,7 @@ import { AddressCard } from './AddressCard'
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions'
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom'
+import {v4 as uuid} from "uuid"
 
 const schema = yup.object().shape({
     email: yup.string().email('Must be a valid email').max(255).required('Email is required'),
@@ -25,7 +26,7 @@ const schema = yup.object().shape({
     address: yup.string().min(10).max(1000).required("Address is required"),
     city: yup.string().min(2).max(1000).required("City is required"),
     country: yup.string().min(3).max(1000).required("Country is required"),
-    pincode: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').required('Pincode is required'),
+    pincode: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').required('Pincode is required').min(100000,"enter valid pincode").max(999999,"enter valid pincode"),
     phone: yup.number().typeError('enter only numbers').positive('cannot contain special characters').integer('cannot contain special characters').min(6000000000, 'enter valid phone number').max(9999999999, 'enter valid phone number').required('phone number is required'),
 })
 
@@ -84,15 +85,17 @@ export const ShippingMethod = () => {
         } else {
             try {
                 if (!user) return
+                const id = uuid()
                 dispatch(setBackDrop(true))
-                const ref = collection(db, "users", user.uid, "addresses",)
-                await addDoc(ref, {
+                const ref = doc(db, "users", user.uid, "addresses", id)
+                await setDoc(ref, {
                     ...data,
                     timeStamp: serverTimestamp()
                 });
                 dispatch(addAddress({
                     ...data,
-                    timeStamp: serverTimestamp()
+                    timeStamp: serverTimestamp(),
+                    id: id
                 }))
                 reset() 
                 dispatch(setBackDrop(false))
@@ -140,27 +143,29 @@ export const ShippingMethod = () => {
 
     const updateAddressToDoc = async () => {
       try {
-          if (!user) return
-          if (selectedAddress) {
-              const address = addresses.find(a => a.id === selectedAddress)
-              if (!address) return
+          if (!user) return  
+          if (selectedAddressfull) {
+            //   const address = addresses.find(a => a.id === selectedAddress)
+            //   if (!address) return
               const local = localStorage.getItem("cart")
               if (!local) return
               const data: localCart[] = JSON.parse(local)
               const ref = doc(db, "cart", user.uid)
               await updateDoc(ref, {
                   timeStamp: serverTimestamp(),
-                  address: address,
-                  addressId: selectedAddress,
+                  address: selectedAddressfull,
+                  addressId: selectedAddressfull.id,
                   items: data
               })
-              dispatch(setSelectedAddressfull(address))
+            //   dispatch(setSelectedAddressfull(selectedAddressfull))
               navigate("/cart/orderconfirmation")
           } else {
               dispatch(setError("Please add/select a address before checkout"))
           }
       } catch (error) {
-        dispatch(setError("Error updating address please try once again"))
+          dispatch(setError("Error updating address please try once again"))
+          console.log(error);
+          
       }
     }
 
@@ -257,6 +262,7 @@ export const ShippingMethod = () => {
                     <Typography variant='h6' fontWeight={500}>Add New Contact Information</Typography>
                     <div className='grid md:grid-cols-2 gap-5 justify-center mt-5'>
                         {addresses.map(a => <AddressCard
+                            a={a}
                             key={a.id}
                             fname={a.firstName}
                             lname={a.lastName}

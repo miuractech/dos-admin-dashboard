@@ -22,18 +22,19 @@ export default function AreYouSure({open,text,onClose,discard}: Props) {
         style={{padding:16}}
         >
             <Typography variant='h6' align='center' gutterBottom >
-                are you sure you want to {text??'close?'}
+                Are you sure you want to {text??'close?'}
             </Typography>
             <div style={{display:'flex',justifyContent:'space-between',gap:24,margin:'24px auto',width:250}}>
                 <Button
                 variant='outlined'
-                onClick={onClose}
+                      onClick={onClose}
+                      color="secondary"
                 >
                     cancel
                 </Button>
                 <Button
-                variant='contained'
-                color='error'
+                      variant='contained'
+                      color="secondary"
                 onClick={discard}
                 >
                     Confirm
