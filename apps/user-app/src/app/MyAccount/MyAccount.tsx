@@ -26,12 +26,22 @@ export const MyAccount = () => {
         <Card className="p-5 text-center">
           <img src={profile} alt="profile" />
           <Typography variant="h6">Profile</Typography>
-          <Button variant="outlined">Edit Profile</Button>
+
+          <Button variant="outlined">
+            <Link to="/myprofile/profile" className="">
+              Edit Profile
+            </Link>
+          </Button>
         </Card>
         <Card className="p-5 text-center">
           <img src={address} alt="address" />
           <Typography variant="h6">Your Address</Typography>
-          <Button variant="outlined">Manage Address</Button>
+
+          <Button variant="outlined">
+            <Link to="address" className="">
+              Manage Address
+            </Link>
+          </Button>
         </Card>
         <Card className="p-5 text-center">
           <img src={fav} alt="fav" />
@@ -43,7 +53,12 @@ export const MyAccount = () => {
         <Card className="p-5 text-center">
           <img src={designe} alt="designe" />
           <Typography variant="h6">My Designs</Typography>
-          <Button variant="outlined">View Designs</Button>
+
+          <Button variant="outlined">
+            <Link to="designs" className="">
+              View Designs
+            </Link>
+          </Button>
         </Card>
       </div>
     </div>

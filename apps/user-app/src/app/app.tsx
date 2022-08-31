@@ -57,6 +57,9 @@ import { Home } from './Home/Home';
 import { CMI } from '../CMI/cmi';
 import YourOders from './MyAccount/YourOders';
 import Wishlist from './MyAccount/Wishlist';
+import MyProfile from './MyAccount/MyProfile';
+import MyAddress from './MyAccount/MyAddress';
+import MyDesign from './MyAccount/MyDesign';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -235,7 +238,10 @@ export function App() {
 
                 <Route path="CMI" element={<CMI />} />
                 <Route path="myprofile/your-order" element={<YourOders />} />
+                <Route path="myprofile/profile" element={<MyProfile />} />
                 <Route path="myprofile/wishlist" element={<Wishlist />} />
+                <Route path="myprofile/designs" element={<MyDesign />} />
+                <Route path="myprofile/address" element={<MyAddress />} />
               </>
             )}
             <Route path="*" element={<>not found</>} />

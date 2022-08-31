@@ -36,7 +36,7 @@ export default function yourOrders() {
   console.log(yourOrders.items);
   return (
     <div className="mt-10 md:mt-10  md:m-auto min-h-fit p-10">
-      <Card className="px-5">
+      <Card className="md:px-5">
         <div className="flex justify-center align-middle mt-10">
           <img src={fav} alt="order" />
           <Typography variant="h5" className="mx-4 font-semibold">
@@ -44,8 +44,8 @@ export default function yourOrders() {
           </Typography>
         </div>
 
-        <Box className="my-10">
-          <div className="grid grid-cols-3 gap-8 items-center align-middle justify-items-center ">
+        <Box className="my-10 w-100% m-atuo">
+          <div className="grid md:grid-cols-3 gap-8 items-center align-middle justify-items-center ">
             {/* card  */}
             <div className="flex justify-center  px-10">
               <Card className="p-5 text-center">

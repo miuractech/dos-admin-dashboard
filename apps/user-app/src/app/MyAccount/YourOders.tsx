@@ -38,7 +38,7 @@ export default function yourOrders() {
   }, []);
   console.log(yourOrders.items);
   return (
-    <div className="mt-10 md:mt-10  md:m-auto min-h-fit p-10">
+    <div className="mt-10 md:mt-10  md:m-auto min-h-fit md:p-10">
       <Card className="px-5">
         <div className="flex justify-center align-middle mt-10">
           <img src={order} alt="order" />
@@ -54,20 +54,24 @@ export default function yourOrders() {
                 onChange={handleChange}
                 aria-label="lab API tabs example"
               >
-                <Tab label="Current Orders" value="1" />
-                <Tab label="Past Orders" value="2" />
+                <Tab
+                  label="Current Orders"
+                  value="1"
+                  className="text-gray-600"
+                />
+                <Tab label="Past Orders" value="2" className="text-gray-600" />
               </TabList>
             </Box>
-            <TabPanel className="my-10 overflow-y-auto h-full" value="1">
-              <div className="grid grid-cols-2 gap-4">
+            <TabPanel className="my-10 overflow-y-auto h-full p-0" value="1">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 py-5 pb-10 px-2">
                 {/* card  */}
                 {yourOrders.items &&
                   yourOrders.items.map((item: any) => (
-                    <Card className="flex h-52">
+                    <Card className="flex px-4 py-4">
                       <img
                         src={item.img}
                         alt=""
-                        className="object-contain  h-full"
+                        className="object-contain w-40 h-52 "
                       />
 
                       <div className="mx-5">
@@ -90,6 +94,7 @@ export default function yourOrders() {
                           <Button variant="contained">Track Order</Button>
                         </div>
                       </div>
+
                     </Card>
                   ))}{' '}
               </div>
