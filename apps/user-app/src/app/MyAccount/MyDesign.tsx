@@ -1,18 +1,20 @@
 import { Box, Card, Typography } from '@mui/material';
 import React from 'react';
 import tshirt from './images/t-shirt.png';
+import myDesign from './images/designe.svg';
 export default function MyDesign() {
   return (
-    <div className="mt-10 md:mt-10  md:m-auto min-h-fit p-10">
+    <div className="mt-10 md:mt-10  md:m-auto min-h-fit  md:p-10 ">
       <Card className="md:px-5">
         <div className="flex justify-center align-middle mt-10">
+          <img src={myDesign} alt="myDesign" />
           <Typography variant="h5" className="mx-4 font-semibold">
-            WishList
+            My Designs
           </Typography>
         </div>
 
         <Box className="my-10 ">
-          <div className="w-4/5 m-auto grid md:grid-cols-3 gap-8 items-center align-middle justify-items-center ">
+          <div className="w-4/5 flex-wrap m-auto grid lg:grid-cols-3 md:grid-cols-2 gap-8 items-center align-middle justify-items-center ">
             {/* card  */}
             <div className="w-72  ">
               <div className="text-center w-full h-72">

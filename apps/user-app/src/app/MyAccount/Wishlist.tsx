@@ -2,7 +2,7 @@ import { Box, Button, Card, Tab, Tabs, Typography } from '@mui/material';
 
 import React, { useEffect, useState } from 'react';
 import fav from './images/fav.svg';
-
+import tshirt from './images/t-shirt.png';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../configs/firebaseConfig';
 import { useSelector } from 'react-redux';
@@ -35,25 +35,99 @@ export default function yourOrders() {
   }, []);
   console.log(yourOrders.items);
   return (
-    <div className="mt-10 md:mt-10  md:m-auto min-h-fit p-10">
+    <div className="mt-10 md:mt-10  md:m-auto min-h-fit  md:p-10 ">
       <Card className="md:px-5">
         <div className="flex justify-center align-middle mt-10">
-          <img src={fav} alt="order" />
+          <img src={fav} alt="heart" />
           <Typography variant="h5" className="mx-4 font-semibold">
-            WishList
+            My Designs
           </Typography>
         </div>
 
-        <Box className="my-10 w-100% m-atuo">
-          <div className="grid md:grid-cols-3 gap-8 items-center align-middle justify-items-center ">
+        <Box className="my-10 ">
+          <div className="w-4/5 flex-wrap m-auto grid lg:grid-cols-3 md:grid-cols-2 gap-8 items-center align-middle justify-items-center ">
             {/* card  */}
-            <div className="flex justify-center  px-10">
-              <Card className="p-5 text-center">
+            <div className="w-72  ">
+              <div className="text-center w-full h-72">
                 <img
-                  src="https://firebasestorage.googleapis.com/v0/b/dropoutstore-8979d.appspot.com/o/resellerProducts%2F129ed9d5-5772-4f7a-9071-85067a392d40%2F1d7666f6-5f53-4e3a-b8d7-2b3a0fb13bd4?alt=media&token=3f86e7a4-0f41-48ff-832d-0682ddd2c265"
+                  src={tshirt}
                   alt=""
-                  className="object-cov w-60 h-60   "
+                  className="w-full h-full object-cover"
                 />
+              </div>
+              <Card className="rounded-none px-8 shadow-md">
+                <div className="flex  my-3">
+                  <div className="flex-1">
+                    <Typography variant="h6">Pengiven Tshirt</Typography>
+                    <div className="flex my-2">
+                      <div className="mx-3 flex">
+                        <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-green-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-black rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <Typography variant="h6">₹ 99</Typography>
+                </div>
+              </Card>
+            </div>{' '}
+            <div className="w-72  ">
+              <div className="text-center w-full h-72">
+                <img
+                  src={tshirt}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <Card className="rounded-none px-8 shadow-md">
+                <div className="flex  my-3">
+                  <div className="flex-1">
+                    <Typography variant="h6">Pengiven Tshirt</Typography>
+                    <div className="flex my-2">
+                      <div className="mx-3 flex">
+                        <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-green-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-black rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <Typography variant="h6">₹ 99</Typography>
+                </div>
+              </Card>
+            </div>{' '}
+            <div className="w-72  ">
+              <div className="text-center w-full h-72">
+                <img
+                  src={tshirt}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <Card className="rounded-none px-8 shadow-md">
+                <div className="flex  my-3">
+                  <div className="flex-1">
+                    <Typography variant="h6">Pengiven Tshirt</Typography>
+                    <div className="flex my-2">
+                      <div className="mx-3 flex">
+                        <div className="w-8 h-8 mr-2 bg-red-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-green-700 rounded-full"></div>
+                        <div className="w-8 h-8 mr-2 bg-black rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <Typography variant="h6">₹ 99</Typography>
+                </div>
+              </Card>
+            </div>{' '}
+            <div className="w-72  ">
+              <div className="text-center w-full h-72">
+                <img
+                  src={tshirt}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <Card className="rounded-none px-8 shadow-md">
                 <div className="flex  my-3">
                   <div className="flex-1">
                     <Typography variant="h6">Pengiven Tshirt</Typography>
