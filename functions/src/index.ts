@@ -249,6 +249,11 @@ app.post("/success", async (req, res) => {
     }
     res.redirect("https://dos-website.web.app//success");
   }
+  const orderData = admin.firestore().collection("orders").where("userId", "==", orderdata.userId).where("status", "==", "success");
+  const docs = await orderData.get();
+  await admin.firestore().collection("users").doc(orderdata.userId).collection("Count").doc("orderCount").set({
+    count: docs.docs.length,
+  });
   res.redirect("https://dos-website.web.app//success");
 });
 

@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import Meta from './meta';
 import { CMI } from '../Options/CMI';
-import { Coupons } from '../Options/c&g';
+import { Coupons } from '../Options/Coupons/Coupons';
 import { Customers } from '../Options/coustomers';
 import { Logout } from '../Options/logout';
 import { Merchants } from '../Options/merchents/merchents';

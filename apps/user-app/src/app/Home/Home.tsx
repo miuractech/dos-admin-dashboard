@@ -1,5 +1,6 @@
+import SimpleModal from '@dropout-store/simple-modal'
 import { Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import NewsLetter from '../news-letter/news-letter'
 
 export const Home = () => {

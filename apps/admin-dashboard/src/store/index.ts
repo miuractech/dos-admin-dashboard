@@ -9,6 +9,8 @@ import topbarReducer from '../components/Options/components/top-bar.slice'
 import locationReducer from "../components/Options/components/locationData"
 import ordersReduser from "./orderSlice"
 import merchentReduser from "./merchentSlice"
+import alertReduser from "./alert"
+import couponsReduser from "./couponSlice"
 export const store = configureStore({
   reducer: {
     adminUser: adminUserReducers,
@@ -19,7 +21,10 @@ export const store = configureStore({
     topbar: topbarReducer,
     location: locationReducer,
     orders: ordersReduser,
-    merchents:merchentReduser
+    merchents: merchentReduser,
+    alert: alertReduser,
+    coupons:couponsReduser
+    
   },
   middleware: (middleware) =>
     middleware({

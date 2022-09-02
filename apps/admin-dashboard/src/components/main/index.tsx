@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { useSubject } from 'rxf-rewrite/dist';
 import { CMI } from '../Options/CMI';
-import { Coupons } from '../Options/c&g';
+import { Coupons } from '../Options/Coupons/Coupons';
 import styles from './meta/styles/meta.module.scss';
 
 import {
@@ -20,18 +20,20 @@ import { Logout } from '../Options/logout';
 import { Fonts } from '../Options/CMI/fonts/fonts';
 import { Art } from '../Options/CMI/art/art';
 import { Location } from '../Options/Location/location';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../config/firebase.config';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { setAdminUserState } from '../../Midl/auth/store/admin.user.slice';
-import { CircularProgress } from '@mui/material';
+import { Alert, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import Auth from '../../Midl/auth/component/auth';
+import { seterror, setNotification, setWarning } from '../../store/alert';
 
 const Main: React.FC = () => {
   useSubject(selectedSideNavItem$);
   useSubject(sideNavToggled$);
-  const user = useSelector((state:RootState)=>state.adminUser)
+  const user = useSelector((state: RootState) => state.adminUser)
+  const {backDrop,error,notification,warning} = useSelector((state: RootState) => state.alert)
   const dispatch = useDispatch()
   
   useEffect(() => {
@@ -97,6 +99,21 @@ const Main: React.FC = () => {
             <Route path="/logout" element={<Logout />} />
             <Route path="/location" element={<Location />} />
           </Routes>
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 10000 }}
+            open={backDrop}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+          <Snackbar open={Boolean(error)} autoHideDuration={5000} onClose={() => dispatch(seterror(null))}>
+            <Alert severity='error'>{error}</Alert>
+          </Snackbar>
+          <Snackbar open={Boolean(notification)} autoHideDuration={5000} onClose={() => dispatch(setNotification(null))}>
+            <Alert severity='success'>{notification}</Alert>
+          </Snackbar>
+          <Snackbar open={Boolean(warning)} autoHideDuration={5000} onClose={() => dispatch(setWarning(null))}>
+            <Alert severity='warning'>{warning}</Alert>
+          </Snackbar>
         </div>
       </>
     );

@@ -1,4 +1,4 @@
-import { Card, Checkbox, Divider, FormControlLabel, Typography } from '@mui/material'
+import { Card, Checkbox, Divider, FormControlLabel, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { RootState } from '../../../store/store'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -6,12 +6,17 @@ import { SummaryCard } from './SummaryCard'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { cartProduct } from '../../../store/cartSlice'
+import SimpleModal from '@dropout-store/simple-modal'
+import { Coupons } from '../Coupons/Coupons'
 
-export const OrderSummary = () => {
+export const OrderSummary = ({ setUserDrawer }: { setUserDrawer?: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const { cartProductList, localCart } = useSelector((state: RootState) => state.cart)
+    const { user } = useSelector((state: RootState) => state.User)
     const [subtotal, setSubtotal] = useState(0)
     const [discount, setDiscount] = useState(0)
-
+    const [couponModal, setCouponModal] = useState(false)
+    const theme = useTheme()
+    const media = useMediaQuery(theme.breakpoints.up("md"))
     useEffect(() => {
         const arr: number[] = []
         const arr1: number[] = []
@@ -33,10 +38,23 @@ export const OrderSummary = () => {
 
     return (
         <div>
+            <SimpleModal
+                open={couponModal}
+                onClose={() => setCouponModal(false)}
+                style={{ left: !media ?"50%":"78%"}}
+            >
+                <Coupons/>
+            </SimpleModal>
             <Card className='my-5 p-3'>
                 <Typography fontWeight={600} gutterBottom className='mb-5'>Shipping</Typography>
                 {cartProductList.map((item: cartProduct, index: number) => <SummaryCard key={index} productName={item.product.productName} size={item.size} price={item.product.price} count={item.count} />)}
-                <div className='flex justify-between py-4 cursor-pointer'>
+                <div className='flex justify-between py-4 cursor-pointer' onClick={() => {
+                    if (!user && setUserDrawer) {
+                        setUserDrawer(true)
+                    } else {
+                        setCouponModal(true)
+                    }
+                }}>
                     <div className='flex gap-4'>
                         <LocalOfferIcon />
                         <Typography>Apply Cupon Code</Typography>

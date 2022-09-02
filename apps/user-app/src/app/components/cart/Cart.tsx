@@ -139,7 +139,7 @@ export const Cart = () => {
                     </div>
                     <div className=''>
                         <Typography fontWeight={500} variant='h6'>Order Summary</Typography>
-                        <OrderSummary />
+                        <OrderSummary setUserDrawer={setUserDrawer} />
                         <Button variant='contained' fullWidth onClick={async () => {
                             try {
                                 if (user) {
