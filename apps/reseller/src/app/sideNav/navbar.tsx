@@ -16,10 +16,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { PeopleAltOutlined, DocumentScannerOutlined, FormatListBulletedOutlined, LoyaltyOutlined, WarningAmberOutlined, AssessmentOutlined, AccountBalanceOutlined, SettingsOutlined, InfoOutlined, DeleteOutlined, LoginOutlined, PersonOutlineOutlined, NotificationsNoneOutlined, MoreVertOutlined } from '@mui/icons-material';
+import { PersonOutlineOutlined, MoreVertOutlined } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, useMediaQuery } from '@mui/material';
 import logo from './navLogo/logo.svg'
 import add from './navLogo/carbon_add.svg'
 import designLine from './navLogo/clarity_design-line.svg'
@@ -32,8 +32,11 @@ import logout from './navLogo/carbon_logout.svg'
 import orders from './navLogo/orders-icon.svg'
 import { RootState } from '../../redux-tool/store';
 
-const drawerWidth = 240;
+interface AppBarProps extends MuiAppBarProps {
+    open?: boolean;
+}
 
+const drawerWidth = 240;
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
@@ -56,19 +59,6 @@ const closedMixin = (theme: Theme): CSSObject => ({
         width: `calc(${theme.spacing(8)} + 1px)`,
     },
 });
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
-}
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -105,6 +95,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+}));
+
 export function NewHeader({ children }: { children: React.ReactNode }) {
     const theme = useTheme();
     const { User } = useSelector((state: RootState) => state.User)
@@ -112,14 +111,16 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
     const [modal, setModal] = React.useState(false)
     const [selectedOption, setSelectedOption] = React.useState("Add Product")
     const navigate = useNavigate()
+    const media = useMediaQuery(theme.breakpoints.up("md"))
     const handleDrawerOpen = () => {
         setOpen(true);
     };
+
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
             <AppBar position="fixed" open={open} color="inherit">
-                <Toolbar style={{ justifyContent: "space-between" }}>
+                <Toolbar>
                     <IconButton
                         className="menu"
                         color="inherit"
@@ -133,10 +134,11 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <div>
-                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                            <PersonOutlineOutlined />
-                            <Typography fontWeight={500}>{User?.email}</Typography>
+                    <div className=''>
+                        <div></div>
+                        <div>
+                            <PersonOutlineOutlined className='h-5'/>
+                            <Typography variant='caption' fontWeight={500}>{User?.email}</Typography>
                             <IconButton>
                                 <MoreVertOutlined />
                             </IconButton>
@@ -144,7 +146,7 @@ export function NewHeader({ children }: { children: React.ReactNode }) {
                     </div>
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open} >
+            <Drawer variant="permanent" open={open} onMouseEnter={handleDrawerOpen} onMouseLeave={() => setOpen(false)}>
                 <DrawerHeader >
                     <img src={logo} alt="logo" width="80%" height="80%" />
                     <IconButton onClick={() => setOpen(false)}>

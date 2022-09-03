@@ -35,14 +35,14 @@ const ProductPage = lazy(() => import('./productPage/ProductPage'));
 export function App() {
   const dispatch = useDispatch()
   const { loading, user } = useSelector((state: RootState) => state.User)
-  const { localCart, addresses } = useSelector((state: RootState) => state.cart)
+  const { localCart, addresses,cartProductList } = useSelector((state: RootState) => state.cart)
   const { error, notification, warning,backDrop } = useSelector((state: RootState) => state.alerts)
   const location = useLocation();
 
   const getLocalData = () => {
     if (location.pathname === "/success") return
-    console.log(location.pathname);
     const data = localStorage.getItem('cart')
+    if (cartProductList.length>0)return
     if (!data) return
     const cartData = JSON.parse(data)
     dispatch(setLocalCart(cartData))

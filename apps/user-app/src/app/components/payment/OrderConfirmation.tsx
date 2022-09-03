@@ -140,7 +140,7 @@ export const OrderConfirmation = () => {
                 </div>
                 <div>
                     <Typography variant='h6' fontWeight={500}>Order Summary</Typography>
-                    <OrderSummary />
+                <OrderSummary />
                 {orderDetails?.address &&  <form action='https://test.payu.in/_payment' method='post'>
                         <input type="hidden" name="key" value="gtKFFx" />
                         <input type="hidden" name="txnid" value={orderId ?? ""} />

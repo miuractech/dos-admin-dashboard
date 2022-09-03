@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Timestamp } from 'firebase/firestore'
+import { CouponType } from '../app/components/Coupons/Coupons'
 import { OrderDetails } from '../app/components/payment/OrderConfirmation'
 import { produstsType } from './storeFrontslice'
 
@@ -44,6 +45,9 @@ type cartType = {
     hash: string | null
     orderDetails: OrderDetails | null
     selectedAddressfull: null | addressType
+    totalAfterCoupon: null | number
+    totalAmountRemoved: null | number
+    selectedCoupon: CouponType|null
 }
 
 const initialState: cartType = {
@@ -54,8 +58,10 @@ const initialState: cartType = {
     orderId: null,
     hash: null,
     orderDetails: null,
-    selectedAddressfull:null
-    
+    selectedAddressfull:null,
+    totalAfterCoupon: null,
+    totalAmountRemoved: null,
+    selectedCoupon:null
 }
 
 export const CartSlice = createSlice({
@@ -94,10 +100,19 @@ export const CartSlice = createSlice({
         },
         setSelectedAddressfull: (state, action) => {
             state.selectedAddressfull = action.payload
+        },
+        setTotalAfterCoupon: (state, action) => {
+            state.totalAfterCoupon = action.payload
+        },
+        setTotalAmountRemoved: (state, action) => {
+            state.totalAmountRemoved = action.payload
+        },
+        setSelectedCoupon: (state, action) => {
+            state.selectedCoupon = action.payload
         }
     },
 })
 
-export const { setSelectedAddressfull,setOrderDetails,setHash,addCartProducts, setOrderId, setLocalCart, setCartProducts, addLocalCart, setAddress, addAddress, setSelectedAddress } = CartSlice.actions
+export const { setSelectedCoupon,setTotalAmountRemoved,setTotalAfterCoupon,setSelectedAddressfull,setOrderDetails,setHash,addCartProducts, setOrderId, setLocalCart, setCartProducts, addLocalCart, setAddress, addAddress, setSelectedAddress } = CartSlice.actions
 
 export default CartSlice.reducer

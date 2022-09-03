@@ -5,12 +5,28 @@ import React, { useEffect, useState } from 'react'
 import { RootState } from '../../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBackDrop, setError } from '../../../store/alertslice';
+import { useForm } from 'react-hook-form';
+import { CouponCard } from './CouponCard';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+type Inputs = {
+  coupon:string
+};
+
+const schema = yup.object({
+  coupon: yup.string().min(3).max(20).required('Coupon code is required'),
+});
 
 export const Coupons = () => {
-    const { user } = useSelector((state: RootState) => state.User)
+  const { user } = useSelector((state: RootState) => state.User)
   const [orderCount, setOrderCount] = useState(0)
   const dispatch = useDispatch()
-  const [coupons, setCoupons] = useState <CouponType[]>([])
+  const [coupons, setCoupons] = useState<CouponType[]>([])
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>({
+    resolver: yupResolver(schema),
+  })
+  const setErrors = useForm().setError
     const getCoupons = async() => {
         try {
           if (!user) return
@@ -23,13 +39,10 @@ export const Coupons = () => {
           const phone = Number(user.phoneNumber?.slice(3))
           const q = query(collection(db, "coupons"), where("enabled", "==", true), where("expiryDate", ">=", new Date()), where("userPhone", "==", phone));
           const q2 = query(collection(db, "coupons"), where("enabled", "==", true), where("expiryDate", ">=", new Date()), where("target", "in", ["New User", "All Users"]));
-          // const q3 = query(collection(db, "coupons"), where("enabled", "==", true), where("expiryDate", ">=", new Date()), where("target", "==", "All Users"));
           const querySnapshot = await getDocs(q);
           const querySnapshot2 = await getDocs(q2);
-          // const querySnapshot3 = await getDocs(q3);
           const targetData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as CouponType[]
           const newUserCoupons = querySnapshot2.docs.map(doc => ({ ...doc.data(), id: doc.id })) as CouponType[]
-          // const allUsersCoupons = querySnapshot3.docs.map(doc => ({ ...doc.data(), id: doc.id })) as CouponType[]
           setCoupons((prev) => [...prev, ...targetData, ...newUserCoupons])
           dispatch(setBackDrop(false))
         } catch (error) {
@@ -42,39 +55,28 @@ export const Coupons = () => {
     if (coupons.length === 0) {
       getCoupons()
     }
-}, [user])
-
-  console.log(coupons);
+  }, [user])
+  
+  const onsubmit = (data: Inputs) => {
+    console.log(data);
+  }
 
   return (
       <div className='w-80'>
       <Typography fontWeight={600} className="my-5">APPLY COUPON</Typography>
       <div className='space-y-5 grid'>
-      <TextField size='small'
-        InputProps={{
-          endAdornment: <button className='text-blue-500 text-base cursor-pointer border-none bg-inherit active:text-blue-300 font-bold hover:text-blue-900'>Apply</button>
-        }}
-        />
+        <form onSubmit={handleSubmit(onsubmit)}>
+          <TextField size='small'
+            error={Boolean(errors.coupon)}
+            helperText={errors.coupon?.message}
+            inputProps={{ ...register("coupon") }}
+            InputProps={{
+              endAdornment: <button type='submit' className='text-blue-500 text-base cursor-pointer border-none bg-inherit active:text-blue-300 font-bold hover:text-blue-900'>Apply</button>
+            }}
+          />
+        </form>
         <Typography align='left' variant='caption'>Or choose from below</Typography>
-        {coupons.map((coupon: CouponType) => (<div className='px-5 pt-5 shadow-md rounded-lg'>
-          <div className='grid grid-cols-3 pb-2'>
-            <div className="col-span-2 space-y-2">
-              <div style={{ border: "1px dashed black" }} className="p-1 rounded-sm">
-                <Typography fontWeight={600}>{coupon.couponCode}</Typography>
-              </div>
-              <Typography align='left' variant='subtitle2'>{coupon.couponName}</Typography>
-            </div>
-            <div>
-              <button className='text-blue-500 text-base cursor-pointer border-none bg-inherit active:text-blue-300 font-bold hover:text-blue-900'>Apply</button>
-            </div>
-          </div>
-          <Divider />
-          <div className='text-left'>
-            {coupon.target === "New User" && <Typography className='' variant='caption'>Valid only for you</Typography>}
-            {/* {coupon.target === "All Users" && <Typography className='' variant='caption'>Valid for all users</Typography>} */}
-            {coupon.target === "Target User" && <Typography className='' variant='caption'>Valid only for you</Typography>}
-          </div>
-        </div>))}
+        {coupons.map((coupon: CouponType) => (<CouponCard setErrors={setErrors} coupon={coupon} />))}
       </div>
       </div>
   )
