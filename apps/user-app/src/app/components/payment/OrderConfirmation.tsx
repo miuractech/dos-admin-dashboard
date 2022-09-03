@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { OrderSummary } from '../cart/OrderSummary'
 import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { addressType, setAddress, setHash, setOrderDetails, setOrderId, setSelectedAddress, setSelectedAddressfull } from '../../../store/cartSlice'
+import { addressType, setAddress, setHash, setOrderDetails, setOrderId, setSelectedAddress, setSelectedAddressfull, setSelectedCoupon } from '../../../store/cartSlice'
 import { app, db } from '../../../configs/firebaseConfig'
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions'
 import { setcourierpartners, setDeliverydetails, setDeliveryMessage } from '../../../store/pincodeSlice'
 import { setBackDrop } from '../../../store/alertslice'
+import { CouponType } from '../Coupons/Coupons'
 
 const encoder = new TextEncoder();
 async function sha512(str: string) {
@@ -21,7 +22,8 @@ export const OrderConfirmation = () => {
     const { user } = useSelector((state: RootState) => state.User)
     const { courierpartners, ETD, days, message } = useSelector((state: RootState) => state.pincode)
     const functions = getFunctions(app, "asia-south1")
-    const [pincodedata, setPincode] = useState<null|number>(null)
+    const [pincodedata, setPincode] = useState<null | number>(null)
+
     // connectFunctionsEmulator(functions, "localhost", 5001);
     const dispatch = useDispatch()
 
@@ -29,16 +31,24 @@ export const OrderConfirmation = () => {
         if (!orderId)return
         dispatch(setBackDrop(true))
         const unsub = onSnapshot(doc(db, "orders", orderId), doc => {
-            const data = doc.data()
+            const data = doc.data() as OrderDetails
             if (data) {
                 const result = data['address']
                 if (result) {
                     dispatch(setOrderDetails(data))
                 }
+                const couponStatus = data['couponRemark']
+                const coupon = data['coupon']
+                if (couponStatus && coupon) {
+                    if (couponStatus === "success") {
+                        dispatch(setSelectedCoupon(coupon))
+                    }
+                }
             }
+            dispatch(setBackDrop(false))
         });
         return () => unsub()
-    }, [])
+    }, [orderId])
 
     useEffect(() => {
         if (!orderDetails) {
@@ -94,9 +104,7 @@ export const OrderConfirmation = () => {
             if (!pincodedata) return
             dispatch(setBackDrop(true))
             const pincode = httpsCallable(functions, "pincode")
-            console.log(pincodedata, "before");
             const result = await (await pincode({ pincode: pincodedata })).data as any
-            console.log(pincodedata, result, "after");
             if (result.status === 200) {
                 dispatch(setcourierpartners(result))
             } else {
@@ -104,13 +112,12 @@ export const OrderConfirmation = () => {
                 dispatch(setBackDrop(false))
             }
         } catch (error) {
-            console.log("Eroorrrrrrr",error)
+            console.log(error)
         }
 }
     useEffect(() => {
         if (pincodedata) {
             getDeleveryDate()
-            console.log("hey");
         } 
     }, [pincodedata])
 
@@ -119,6 +126,7 @@ export const OrderConfirmation = () => {
             setPincode(selectedAddressfull.pincode)
         }
     }, [selectedAddressfull])
+    
     return (
             <div className='p-5 gap-5 md:grid grid-cols-3 md:mx-16'>
                 <div className='col-span-2 space-y-5'>
@@ -198,5 +206,8 @@ export interface OrderDetails {
 	orderStatus: string;
 	total: number;
 	address: Addres;
-	items: Item[];
+    items: Item[];
+    couponRemark?: string;
+    discount?: number;
+    coupon?: CouponType
 }

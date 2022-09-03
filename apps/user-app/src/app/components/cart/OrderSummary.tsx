@@ -1,4 +1,4 @@
-import { Card, Checkbox, Divider, FormControlLabel, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Button, Card, Checkbox, Divider, FormControlLabel, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { RootState } from '../../../store/store'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -11,7 +11,7 @@ import { Coupons } from '../Coupons/Coupons'
 import { useLocation } from 'react-router-dom'
 
 export const OrderSummary = () => {
-    const { cartProductList, totalAfterCoupon,totalAmountRemoved,selectedCoupon } = useSelector((state: RootState) => state.cart)
+    const { cartProductList,selectedCoupon, orderDetails } = useSelector((state: RootState) => state.cart)
     const { user } = useSelector((state: RootState) => state.User)
     const [subtotal, setSubtotal] = useState(0)
     const [discount, setDiscount] = useState(0)
@@ -37,7 +37,7 @@ export const OrderSummary = () => {
         setSubtotal(result)
         setDiscount(result1)
     }, [cartProductList])
-    console.log(selectedCoupon);
+    console.log(location.pathname);
     return (
         <div>
             <SimpleModal
@@ -51,9 +51,14 @@ export const OrderSummary = () => {
                 <Typography fontWeight={600} gutterBottom className='mb-5'>Shipping</Typography>
                 {cartProductList.map((item: cartProduct, index: number) => <SummaryCard key={index} productName={item.product.productName} size={item.size} price={item.product.price} count={item.count} />)}
                 <div>
-                    {location.pathname === "/cart/orderconfirmation" && !selectedCoupon?(
-                        <div>
-                            py-4
+                    {location.pathname === "/cart/orderconfirmation" && selectedCoupon?(
+                        <div className='h-10 flex items-center align-middle justify-between' >
+                            <Typography color="green" fontWeight={600} >
+                                {selectedCoupon.couponCode}
+                            </Typography>
+                            <Button size='small' variant='text' color='secondary'  >
+                                Change
+                            </Button>
                         </div>
                         ): (
                         <div className = 'flex justify-between py-4 cursor-pointer' onClick = { () => { setCouponModal(true) } }>
@@ -79,13 +84,13 @@ export const OrderSummary = () => {
                     <Typography fontWeight={500} className='text-right text-green-500'>-₹{discount}</Typography>
                     <Typography>Shipping</Typography>
                     <Typography fontWeight={500} className='text-right text-green-500'>FREE</Typography>
-                    <Typography>Coupon Discount</Typography>
-                    <Typography fontWeight={500} className='text-right text-green-500'>-₹{totalAmountRemoved}</Typography>
+                    {orderDetails && <Typography>Coupon Discount</Typography>}
+                    {orderDetails && <Typography fontWeight={500} className='text-right text-green-500'>-₹{orderDetails.discount ? orderDetails.discount:"0"}</Typography>}
                 </div>
                 <Divider />
                 <div className='flex justify-between pt-3'>
                     <Typography variant='h6' fontWeight={600}>Total:</Typography>
-                    <Typography variant='h6' fontWeight={600}>₹{totalAfterCoupon ?totalAfterCoupon:subtotal}</Typography>
+                    <Typography variant='h6' fontWeight={600}>₹{orderDetails?.total ? orderDetails?.total :subtotal}</Typography>
                 </div>
             </Card >
         </div >

@@ -46,7 +46,6 @@ export const createDocstorage = functions.region("asia-south1")
       return;
     });
 
-
 export const orderCreate = functions.region("asia-south1").firestore.document("cart/{userId}").onCreate(async (snap) => {
   const newValue = snap.data();
   const res = await admin.firestore().collection("orders").add({
@@ -84,10 +83,67 @@ export const orderUpdate = functions.region("asia-south1").firestore.document("c
       }
     }
   }
-  await admin.firestore().collection("orders").doc(after.orderid).update({
-    ...after,
-    total,
-  });
+  if (after.coupon) {
+    const coupon = after.coupon;
+    const flatCoupon = (total: number, coupon: any) => {
+      return total - coupon.amount;
+    };
+
+    const flatPercentageCoupon = (total: number, coupon: any) => {
+      const amountToRemove = coupon.percentage / 100 * total;
+      const totalAmount = total - amountToRemove;
+      return {totalAmount, amountToRemove};
+    };
+
+    const percentageCouponUpto = (total: number, coupon: any) => {
+      const amountToRemove = coupon.percentage / 100 * total;
+      if (amountToRemove > coupon.percentageupto) {
+        const totalAmount = total - coupon.percentageupto;
+        return {totalAmount, amountToRemove};
+      } else {
+        const totalAmount = total - amountToRemove;
+        return {totalAmount, amountToRemove};
+      }
+    };
+    if (total < coupon.minOrderValue) {
+      await admin.firestore().collection("orders").doc(after.orderid).update({
+        ...after,
+        total: total,
+        couponRemark: `Minimum order value is ${coupon.minOrderValue}`,
+      });
+    } else {
+      if (coupon.couponType === "Flat") {
+        const result = flatCoupon(total, coupon);
+        await admin.firestore().collection("orders").doc(after.orderid).update({
+          ...after,
+          total: result,
+          discount: coupon.amount,
+          couponRemark: "success",
+        });
+      } else if (coupon.couponType === "Flat Percentage") {
+        const result = flatPercentageCoupon(total, coupon);
+        await admin.firestore().collection("orders").doc(after.orderid).update({
+          ...after,
+          total: result.totalAmount,
+          discount: result.amountToRemove,
+          couponRemark: "success",
+        });
+      } else if (coupon.couponType === "Percentage Upto") {
+        const result = percentageCouponUpto(total, coupon);
+        await admin.firestore().collection("orders").doc(after.orderid).update({
+          ...after,
+          total: result.totalAmount,
+          discount: result.amountToRemove,
+          couponRemark: "success",
+        });
+      }
+    }
+  } else {
+    await admin.firestore().collection("orders").doc(after.orderid).update({
+      ...after,
+      total,
+    });
+  }
   return;
 });
 
@@ -247,7 +303,7 @@ app.post("/success", async (req, res) => {
         profit: priceTotal - baseTotal,
       });
     }
-    res.redirect("https://dos-website.web.app//success");
+    // res.redirect("https://dos-website.web.app//success");
   }
   const orderData = admin.firestore().collection("orders").where("userId", "==", orderdata.userId).where("status", "==", "success");
   const docs = await orderData.get();

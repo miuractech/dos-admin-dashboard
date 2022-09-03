@@ -45,8 +45,6 @@ type cartType = {
     hash: string | null
     orderDetails: OrderDetails | null
     selectedAddressfull: null | addressType
-    totalAfterCoupon: null | number
-    totalAmountRemoved: null | number
     selectedCoupon: CouponType|null
 }
 
@@ -59,8 +57,6 @@ const initialState: cartType = {
     hash: null,
     orderDetails: null,
     selectedAddressfull:null,
-    totalAfterCoupon: null,
-    totalAmountRemoved: null,
     selectedCoupon:null
 }
 
@@ -101,18 +97,12 @@ export const CartSlice = createSlice({
         setSelectedAddressfull: (state, action) => {
             state.selectedAddressfull = action.payload
         },
-        setTotalAfterCoupon: (state, action) => {
-            state.totalAfterCoupon = action.payload
-        },
-        setTotalAmountRemoved: (state, action) => {
-            state.totalAmountRemoved = action.payload
-        },
         setSelectedCoupon: (state, action) => {
             state.selectedCoupon = action.payload
         }
     },
 })
 
-export const { setSelectedCoupon,setTotalAmountRemoved,setTotalAfterCoupon,setSelectedAddressfull,setOrderDetails,setHash,addCartProducts, setOrderId, setLocalCart, setCartProducts, addLocalCart, setAddress, addAddress, setSelectedAddress } = CartSlice.actions
+export const { setSelectedCoupon,setSelectedAddressfull,setOrderDetails,setHash,addCartProducts, setOrderId, setLocalCart, setCartProducts, addLocalCart, setAddress, addAddress, setSelectedAddress } = CartSlice.actions
 
 export default CartSlice.reducer

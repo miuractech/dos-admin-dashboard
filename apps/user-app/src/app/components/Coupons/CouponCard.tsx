@@ -1,5 +1,5 @@
 import { Divider, Typography } from '@mui/material'
-import { setError } from '../../../store/alertslice'
+import { setBackDrop, setError } from '../../../store/alertslice'
 import { RootState } from '../../../store/store'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,15 +8,16 @@ import { CouponType } from './Coupons'
 import { db } from '../../../configs/firebaseConfig'
 import { doc, updateDoc } from 'firebase/firestore'
 import { FieldValues, UseFormSetError } from 'react-hook-form'
-import { setSelectedCoupon, setTotalAfterCoupon, setTotalAmountRemoved } from '../../../store/cartSlice'
 
 export const CouponCard = ({ coupon, setErrors }: {
     coupon: CouponType, setErrors: UseFormSetError<FieldValues>
  }) => {
-    const { orderId,orderDetails } = useSelector((state: RootState) => state.cart)
+    const { orderId, orderDetails } = useSelector((state: RootState) => state.cart)
+    const { user } = useSelector((state: RootState) => state.User)
     const dispatch = useDispatch()
 
-    const applyCoupon = async() => {
+    const applyCoupon = async () => {
+        dispatch(setBackDrop(true))
         try {
             if (!orderId) return
             if (!orderDetails) return
@@ -24,32 +25,11 @@ export const CouponCard = ({ coupon, setErrors }: {
                 setErrors("coupon", { message: `minimum order value is ${coupon.minOrderValue}` })
                 dispatch(setError(`Minimum order value for should be atleast ${coupon.minOrderValue}`))
             } else {
-                const orderRef = doc(db, "orders", orderId);
-                if (coupon.couponType === "Flat") {
-                    const result = flatCoupon(orderDetails.total, coupon)
-                    await updateDoc(orderRef, {
-                        total: result
-                    });
-                    dispatch(setTotalAfterCoupon(result))
-                    dispatch(setTotalAmountRemoved(coupon.amount))
-                    dispatch(setSelectedCoupon(coupon))
-                } else if (coupon.couponType === "Flat Percentage") {
-                    const result = flatPercentageCoupon(orderDetails.total, coupon)
-                    await updateDoc(orderRef, {
-                        total: result.totalAmount
-                    });
-                    dispatch(setTotalAfterCoupon(result.totalAmount))
-                    dispatch(setTotalAmountRemoved(result.amountToRemove))
-                    dispatch(setSelectedCoupon(coupon))
-                } else if (coupon.couponType === "Percentage Upto") {
-                    const result = percentageCouponUpto(orderDetails.total, coupon)
-                    await updateDoc(orderRef, {
-                        total: result.totalAmount
-                    });
-                    dispatch(setTotalAfterCoupon(result.totalAmount))
-                    dispatch(setTotalAmountRemoved(result.amountToRemove))
-                    dispatch(setSelectedCoupon(coupon))
-                }
+                if (!user) return
+                const orderRef = doc(db, "cart", user.uid);
+                await updateDoc(orderRef, {
+                    coupon
+                });
             }
         } catch (error) {
             dispatch(setError("Somthing went wrong please try again"))
