@@ -1,13 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 import UserReducer from '../features/auth/authSlice';
-import storefrontreduser from "./storeFrontslice"
-import alertsReduser from "./alertslice"
-import productReduser from "./product"
-import cartReduser from "./cartSlice"
-import pincodeReduser from "./pincodeSlice"
-import designerReducer from "../CMI/features/custom_merch_interface(CMI)/store/designerSlice"
-import ObjectReducer from "../CMI/features/custom_merch_interface(CMI)/store/objects"
-
+import storefrontreduser from './storeFrontslice';
+import alertsReduser from './alertslice';
+import productReduser from './product';
+import cartReduser from './cartSlice';
+import pincodeReduser from './pincodeSlice';
+import designerReducer from '../CMI/features/custom_merch_interface(CMI)/store/designerSlice';
+import ObjectReducer from '../CMI/features/custom_merch_interface(CMI)/store/objects';
+import wishlistReducer from './wishlist';
 export const store = configureStore({
   reducer: {
     User: UserReducer,
@@ -17,13 +17,14 @@ export const store = configureStore({
     cart: cartReduser,
     pincode: pincodeReduser,
     designer: designerReducer,
-    objects: ObjectReducer
+    objects: ObjectReducer,
+    wishlist: wishlistReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: false
-  })
-})
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
 
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

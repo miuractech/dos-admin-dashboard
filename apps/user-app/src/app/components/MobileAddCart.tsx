@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import ShareIcon from '@mui/icons-material/Share';
 import { IconButton, Typography } from '@mui/material';
@@ -6,50 +6,57 @@ import { RootState } from '../../store/store';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { db } from '../../configs/firebaseConfig';
-import {
-  addDoc,
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore';
-import SimpleModal from '@dropout-store/simple-modal';
+import { setDoc, doc, updateDoc } from 'firebase/firestore';
 
 export const MobileAddCart = ({ AddToCard }: { AddToCard: () => void }) => {
   const { user } = useSelector((state: RootState) => state.User);
-  const { productid, resellerid } = useParams();
-  const [modal, setmodal] = useState(false);
+  const { wishlist } = useSelector((state: RootState) => state.wishlist);
+  const state = useSelector((state: RootState) => state);
 
+  const [cureentItems, setCureentItems] = useState([...wishlist]);
+  const { productid, resellerid } = useParams();
+  console.log(cureentItems);
   const [isFavorite, setFavorite] = useState(false);
+
+  useEffect(() => {
+    if (
+      cureentItems.some(
+        (item) => item.productid === productid && item.resellerid === resellerid
+      )
+    ) {
+      setFavorite(true);
+      if (user) {
+        const wishlistRef = doc(db, 'users', user.uid, 'wishlist', 'wishlist');
+        console.log(cureentItems);
+        setDoc(wishlistRef, {
+          wishlists:cureentItems,
+        });
+      }
+    }
+  }, [cureentItems, productid, resellerid, user]);
+
   const handelFavorite = async () => {
-    // const dbRef = collection(db, 'wishlist');
-    // if (isFavorite) {
-    //   // remove it from doc
-    //   const q = query(
-    //     dbRef,
-    //     where('productid', '==', `${productid}`),
-    //     where('userId', '==', `${user?.uid}`)
-    //   );
-    //   const unsb = onSnapshot(q, (doc) => {
-    //     console.log('run');
-    //     console.log(doc.docs);
-    //     const data = doc.docs.map((order) => ({ ...order.data() }));
-    //     console.log(data);
-    //   });
-    // await  unsb();
-    // } else {
-    //   // add it
-    //   await addDoc(dbRef, {
-    //     productid: productid,
-    //     resellerid: resellerid,
-    //     userid: user?.uid,
-    //   }).then(() => {
-    //     console.log('data added successfully');
-    //   });
-    // }
-    // setFavorite(!isFavorite);
+    const obj = {
+      productid,
+      resellerid,
+    };
+    if (isFavorite) {
+      // remove it
+      setCureentItems(
+        cureentItems.filter(
+          (item) =>
+            !(item.resellerid === resellerid && item.productid === productid)
+        )
+      );
+    } else {
+      // add
+      cureentItems.push(obj);
+    }
+    localStorage.setItem('wishlist', JSON.stringify(cureentItems));
+
+    setFavorite(!isFavorite);
   };
+
   return (
     <div className="grid grid-cols-4 h-14 border-solid border-gray-300 bottom-0 fixed bg-white w-screen z-10">
       <div className="flex justify-center items-center">
