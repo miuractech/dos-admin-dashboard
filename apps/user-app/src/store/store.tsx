@@ -7,6 +7,7 @@ import cartReduser from "./cartSlice"
 import pincodeReduser from "./pincodeSlice"
 import designerReducer from "../CMI/features/custom_merch_interface(CMI)/store/designerSlice"
 import ObjectReducer from "../CMI/features/custom_merch_interface(CMI)/store/objects"
+import myProfileReduser from "./myProfileSlice"
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +18,8 @@ export const store = configureStore({
     cart: cartReduser,
     pincode: pincodeReduser,
     designer: designerReducer,
-    objects: ObjectReducer
+    objects: ObjectReducer,
+    myProfile:myProfileReduser
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false

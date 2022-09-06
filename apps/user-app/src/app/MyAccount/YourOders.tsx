@@ -11,7 +11,7 @@ import { db } from '../../configs/firebaseConfig';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
-export default function yourOrders() {
+export default function YourOrders() {
   const { user } = useSelector((state: RootState) => state.User);
   const [yourOrders, setyourOrders] = React.useState<any>([]);
 

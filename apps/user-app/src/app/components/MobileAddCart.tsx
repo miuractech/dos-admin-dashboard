@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import ShareIcon from '@mui/icons-material/Share';
-import { IconButton, Typography } from '@mui/material';
+import { Drawer, IconButton, Typography } from '@mui/material';
 import { RootState } from '../../store/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { db } from '../../configs/firebaseConfig';
 import {
@@ -14,41 +14,68 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { setError } from '../../store/alertslice';
+import { GetOTP } from './cart/GetOTP';
+import { GetPhoneNumber } from './cart/GetPhoneNumber';
 
 export const MobileAddCart = ({ AddToCard }: { AddToCard: () => void }) => {
-  const { user } = useSelector((state: RootState) => state.User);
-  const { productid, resellerid } = useParams();
+  const { user, step } = useSelector((state: RootState) => state.User);
+  const { product } = useSelector((state: RootState) => state.product);
+  // const { productid, resellerid } = useParams();
+  const [authModal, setAuthModal] = useState(false)
+  const dispatch =useDispatch()
+  console.log(user);
+  
 
   const [isFavorite, setFavorite] = useState(false);
+  // const handelFavorite = async () => {
+  //   const dbRef = collection(db, 'wishlist');
+  //   if (isFavorite) {
+  //     // remove it from doc
+  //     const q = query(
+  //       dbRef,
+  //       where('productid', '==', `${productid}`),
+  //       where('userId', '==', `${user?.uid}`)
+  //     );
+  //     const unsb = onSnapshot(q, (doc) => {
+  //       console.log('run');
+  //       console.log(doc.docs);
+  //       const data = doc.docs.map((order) => ({ ...order.data() }));
+  //       console.log(data);
+  //     });
+  //   await  unsb();
+
+  //   } else {
+  //     // add it
+  //     await addDoc(dbRef, {
+  //       productid: productid,
+  //       resellerid: resellerid,
+  //       userid: user?.uid,
+  //     }).then(() => {
+  //       console.log('data added successfully');
+  //     });
+  //   }
+  //   setFavorite(!isFavorite);
+  // };
+
   const handelFavorite = async () => {
-    const dbRef = collection(db, 'wishlist');
-    if (isFavorite) {
-      // remove it from doc
-      const q = query(
-        dbRef,
-        where('productid', '==', `${productid}`),
-        where('userId', '==', `${user?.uid}`)
-      );
-      const unsb = onSnapshot(q, (doc) => {
-        console.log('run');
-        console.log(doc.docs);
-        const data = doc.docs.map((order) => ({ ...order.data() }));
-        console.log(data);
-      });
-    await  unsb();
-    
+    if (user) {
+      const favRef = collection(db, "users", user.uid, "wishlist")
+      try {
+        if (!product)return
+        await addDoc(favRef, {
+          productId: product.productId,
+          resellerId: product.resellerId,
+          userId: user.uid,
+        })
+      } catch (error) {
+        console.log(error);
+        dispatch(setError("Unable to add to whishlist try again"))
+      }
     } else {
-      // add it
-      await addDoc(dbRef, {
-        productid: productid,
-        resellerid: resellerid,
-        userid: user?.uid,
-      }).then(() => {
-        console.log('data added successfully');
-      });
+      setAuthModal(true)
     }
-    setFavorite(!isFavorite);
-  };
+   }
   return (
     <div className="grid grid-cols-4 h-14 border-solid border-gray-300 bottom-0 fixed bg-white w-screen z-10">
       <div className="flex justify-center items-center">
@@ -71,6 +98,9 @@ export const MobileAddCart = ({ AddToCard }: { AddToCard: () => void }) => {
       >
         <Typography fontWeight={500}>ADD TO CART</Typography>
       </div>
+      <Drawer anchor='left' open={authModal} onClose={() => setAuthModal(false)}>
+        {step === 'phone' ? (<GetPhoneNumber />) : (<GetOTP />)}
+      </Drawer>
     </div>
   );
 };

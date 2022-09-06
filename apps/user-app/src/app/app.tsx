@@ -55,11 +55,11 @@ import { Paymentsuccess } from './components/payment/Paymentsuccess';
 import { Paymentfailuer } from './components/payment/Paymentfailuer';
 import { Home } from './Home/Home';
 import { CMI } from '../CMI/cmi';
-import YourOders from './MyAccount/YourOders';
 import Wishlist from './MyAccount/Wishlist';
 import MyProfile from './MyAccount/MyProfile';
 import MyAddress from './MyAccount/MyAddress';
 import MyDesign from './MyAccount/MyDesign';
+import YourOrders from './MyAccount/YourOders';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -235,9 +235,8 @@ export function App() {
             {user && (
               <>
                 <Route path="myprofile" element={<MyAccount />} />
-
                 <Route path="CMI" element={<CMI />} />
-                <Route path="myprofile/your-order" element={<YourOders />} />
+                <Route path="myprofile/your-order" element={<YourOrders />} />
                 <Route path="myprofile/profile" element={<MyProfile />} />
                 <Route path="myprofile/wishlist" element={<Wishlist />} />
                 <Route path="myprofile/designs" element={<MyDesign />} />
