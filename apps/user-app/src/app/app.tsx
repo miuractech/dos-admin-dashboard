@@ -59,7 +59,11 @@ import Wishlist from './MyAccount/Wishlist';
 import MyProfile from './MyAccount/MyProfile';
 import MyAddress from './MyAccount/MyAddress';
 import MyDesign from './MyAccount/MyDesign';
+<<<<<<< HEAD
 import YourOrders from './MyAccount/YourOders';
+=======
+import { setLocalWishlistData } from '../store/wishlist';
+>>>>>>> 148c4c17dbc00a3644d5f797415061216911eddc
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -98,6 +102,14 @@ export function App() {
         })
       );
     });
+  };
+
+  const getLocalWishlistData = () => {
+    console.log('wishlist data');
+    const data = localStorage.getItem('wishlist');
+    if (!data) return;
+    const wishlistData = JSON.parse(data);
+    dispatch(setLocalWishlistData(wishlistData));
   };
 
   const getData = async () => {
@@ -139,9 +151,19 @@ export function App() {
       dispatch(setError('Error getting data'));
     }
   };
+  const getwishlist = async () => {
+    if (!user) return;
+
+    const docRef = doc(db, 'users', user.uid, 'wishlist', 'wishlist');
+    const docSnap = await getDoc(docRef);
+    const { wishlists } = docSnap.data() || [];
+
+    dispatch(setLocalWishlistData(wishlists));
+  };
 
   useEffect(() => {
     getorderid();
+    getwishlist();
   }, [user]);
 
   const getorderid = async () => {
@@ -165,6 +187,7 @@ export function App() {
       dispatch(setUser(cred));
     });
     getLocalData();
+    getLocalWishlistData();
     getData();
     return () => Unsubscribe();
   }, []);
