@@ -8,7 +8,7 @@ import { addressType, setAddress, setHash, setOrderDetails, setOrderId, setSelec
 import { app, db } from '../../../configs/firebaseConfig'
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions'
 import { setcourierpartners, setDeliverydetails, setDeliveryMessage } from '../../../store/pincodeSlice'
-import { setBackDrop } from '../../../store/alertslice'
+import { setBackDrop, setError, setNotification, setWarning } from '../../../store/alertslice'
 import { CouponType } from '../Coupons/Coupons'
 
 const encoder = new TextEncoder();
@@ -23,6 +23,7 @@ export const OrderConfirmation = () => {
     const { courierpartners, ETD, days, message } = useSelector((state: RootState) => state.pincode)
     const functions = getFunctions(app, "asia-south1")
     const [pincodedata, setPincode] = useState<null | number>(null)
+    const [showConfetti, setShowConfetti] = useState(false)
 
     // connectFunctionsEmulator(functions, "localhost", 5001);
     const dispatch = useDispatch()
@@ -42,6 +43,15 @@ export const OrderConfirmation = () => {
                 if (couponStatus && coupon) {
                     if (couponStatus === "success") {
                         dispatch(setSelectedCoupon(coupon))
+                        dispatch(setNotification("Coupon added successfully"))
+                        setShowConfetti(true)
+                    }else if (couponStatus === "removed") {
+                        dispatch(setSelectedCoupon(null))
+                        dispatch(setWarning("Coupon removed successfully"))
+                    } else if (couponStatus === "not eligible-(min value)") {
+                        dispatch(setError(`Minimum order value is ${coupon.minOrderValue}`))
+                    } else if (couponStatus === "Coupon used max times") {
+                        dispatch(setError("Coupon used max times"))
                     }
                 }
             }
@@ -128,7 +138,7 @@ export const OrderConfirmation = () => {
     }, [selectedAddressfull])
     
     return (
-            <div className='p-5 gap-5 md:grid grid-cols-3 md:mx-16'>
+        <div className='p-5 gap-5 md:grid grid-cols-3 md:mx-16'>
                 <div className='col-span-2 space-y-5'>
                     <Card className='grid grid-cols-2 p-5'>
                         <Typography className="font-bold">Delivery address :</Typography>
@@ -148,8 +158,8 @@ export const OrderConfirmation = () => {
                 </div>
                 <div>
                     <Typography variant='h6' fontWeight={500}>Order Summary</Typography>
-                <OrderSummary />
-                {orderDetails?.address &&  <form action='https://test.payu.in/_payment' method='post'>
+                    <OrderSummary />
+                    {orderDetails?.address && <form action='https://test.payu.in/_payment' method='post'>
                         <input type="hidden" name="key" value="gtKFFx" />
                         <input type="hidden" name="txnid" value={orderId ?? ""} />
                         <input type="hidden" name="productinfo" value="T-Shirt" />

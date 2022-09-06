@@ -62,7 +62,8 @@ export const orderCreate = functions.region("asia-south1").firestore.document("c
   return;
 });
 
-export const orderUpdate = functions.region("asia-south1").firestore.document("cart/{userId}").onUpdate(async (snap) => {
+export const orderUpdate = functions.region("asia-south1").firestore.document("cart/{userId}").onUpdate(async (snap, context) => {
+  if (!context.auth) return;
   const after = snap.after.data();
   const items = after.items;
   let total = 0;
@@ -83,8 +84,8 @@ export const orderUpdate = functions.region("asia-south1").firestore.document("c
       }
     }
   }
-  if (after.coupon) {
-    const coupon = after.coupon;
+  const coupon = after.coupon;
+  if (coupon) {
     const flatCoupon = (total: number, coupon: any) => {
       return total - coupon.amount;
     };
@@ -105,43 +106,63 @@ export const orderUpdate = functions.region("asia-south1").firestore.document("c
         return {totalAmount, amountToRemove};
       }
     };
-    if (total < coupon.minOrderValue) {
+    const res = admin.firestore().collection("users").doc(context.auth.uid).collection("couponCount").doc(coupon.couponCode);
+    const doc = await res.get();
+    const result = doc.data();
+    let eligiable = false;
+    if (!result) {
+      eligiable = true;
+    } else if (result.count < coupon.numUsage) {
+      eligiable = true;
+    } else if (result.count >= coupon.numUsage) {
+      eligiable =false;
+    }
+    if (eligiable) {
+      if (total < coupon.minOrderValue) {
+        await admin.firestore().collection("orders").doc(after.orderid).update({
+          ...after,
+          total: total,
+          couponRemark: "not eligible-(min value)",
+        });
+      } else {
+        if (coupon.couponType === "Flat") {
+          const result = flatCoupon(total, coupon);
+          await admin.firestore().collection("orders").doc(after.orderid).update({
+            ...after,
+            total: result,
+            discount: coupon.amount,
+            couponRemark: "success",
+          });
+        } else if (coupon.couponType === "Flat Percentage") {
+          const result = flatPercentageCoupon(total, coupon);
+          await admin.firestore().collection("orders").doc(after.orderid).update({
+            ...after,
+            total: result.totalAmount,
+            discount: result.amountToRemove,
+            couponRemark: "success",
+          });
+        } else if (coupon.couponType === "Percentage Upto") {
+          const result = percentageCouponUpto(total, coupon);
+          await admin.firestore().collection("orders").doc(after.orderid).update({
+            ...after,
+            total: result.totalAmount,
+            discount: result.amountToRemove,
+            couponRemark: "success",
+          });
+        }
+      }
+    } else {
       await admin.firestore().collection("orders").doc(after.orderid).update({
         ...after,
         total: total,
-        couponRemark: `Minimum order value is ${coupon.minOrderValue}`,
+        couponRemark: "Coupon used max times",
       });
-    } else {
-      if (coupon.couponType === "Flat") {
-        const result = flatCoupon(total, coupon);
-        await admin.firestore().collection("orders").doc(after.orderid).update({
-          ...after,
-          total: result,
-          discount: coupon.amount,
-          couponRemark: "success",
-        });
-      } else if (coupon.couponType === "Flat Percentage") {
-        const result = flatPercentageCoupon(total, coupon);
-        await admin.firestore().collection("orders").doc(after.orderid).update({
-          ...after,
-          total: result.totalAmount,
-          discount: result.amountToRemove,
-          couponRemark: "success",
-        });
-      } else if (coupon.couponType === "Percentage Upto") {
-        const result = percentageCouponUpto(total, coupon);
-        await admin.firestore().collection("orders").doc(after.orderid).update({
-          ...after,
-          total: result.totalAmount,
-          discount: result.amountToRemove,
-          couponRemark: "success",
-        });
-      }
     }
   } else {
     await admin.firestore().collection("orders").doc(after.orderid).update({
       ...after,
       total,
+      discount: admin.firestore.FieldValue.delete(),
     });
   }
   return;
@@ -305,12 +326,21 @@ app.post("/success", async (req, res) => {
     }
     // res.redirect("https://dos-website.web.app//success");
   }
-  const orderData = admin.firestore().collection("orders").where("userId", "==", orderdata.userId).where("status", "==", "success");
-  const docs = await orderData.get();
-  await admin.firestore().collection("users").doc(orderdata.userId).collection("Count").doc("orderCount").set({
-    count: docs.docs.length,
-  });
-  res.redirect("https://dos-website.web.app//success");
+  if (orderdata.couponRemark ==="success") {
+    const res = admin.firestore().collection("users").doc(orderdata.userId).collection("couponCount").doc(orderdata.coupon.couponCode);
+    const doc = await res.get();
+    const result = doc.data();
+    if (result) {
+      await admin.firestore().collection("users").doc(orderdata.userId).collection("couponCount").doc(orderdata.coupon.couponCode).update({
+        count: result.count+1,
+      });
+    } else {
+      await admin.firestore().collection("users").doc(orderdata.userId).collection("couponCount").doc(orderdata.coupon.couponCode).set({
+        count: 1,
+      });
+    }
+  }
+  res.redirect("http://localhost:4200/success");
 });
 
 app.post("/failure", async (req, res) => {
@@ -321,7 +351,5 @@ app.post("/failure", async (req, res) => {
     status: status,
     mode: mode,
   });
-  res.redirect("https://dos-website.web.app//failure");
+  res.redirect("http://localhost:4200/failure");
 });
-
-

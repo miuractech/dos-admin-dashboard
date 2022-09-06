@@ -3,36 +3,39 @@ import { setBackDrop, setError } from '../../../store/alertslice'
 import { RootState } from '../../../store/store'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { flatCoupon, flatPercentageCoupon, percentageCouponUpto } from './couponFunction'
 import { CouponType } from './Coupons'
 import { db } from '../../../configs/firebaseConfig'
 import { doc, updateDoc } from 'firebase/firestore'
 import { FieldValues, UseFormSetError } from 'react-hook-form'
 
-export const CouponCard = ({ coupon, setErrors }: {
-    coupon: CouponType, setErrors: UseFormSetError<FieldValues>
+export const CouponCard = ({ coupon, setErrors, setCouponModal }: {
+    coupon: CouponType,
+    setErrors: UseFormSetError<FieldValues>,
+    setCouponModal: React.Dispatch<React.SetStateAction<boolean>>
  }) => {
-    const { orderId, orderDetails } = useSelector((state: RootState) => state.cart)
+    const { orderDetails } = useSelector((state: RootState) => state.cart)
     const { user } = useSelector((state: RootState) => state.User)
     const dispatch = useDispatch()
 
     const applyCoupon = async () => {
         dispatch(setBackDrop(true))
         try {
-            if (!orderId) return
             if (!orderDetails) return
             if (orderDetails.total < coupon.minOrderValue) {
                 setErrors("coupon", { message: `minimum order value is ${coupon.minOrderValue}` })
                 dispatch(setError(`Minimum order value for should be atleast ${coupon.minOrderValue}`))
+                dispatch(setBackDrop(false))
             } else {
                 if (!user) return
                 const orderRef = doc(db, "cart", user.uid);
                 await updateDoc(orderRef, {
                     coupon
                 });
+                setCouponModal(false)
             }
         } catch (error) {
             dispatch(setError("Somthing went wrong please try again"))
+            dispatch(setBackDrop(false))
             console.log(error);
         }
     }

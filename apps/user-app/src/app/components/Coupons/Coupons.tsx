@@ -1,6 +1,6 @@
 import { Card, Divider, Paper, TextField, Typography } from '@mui/material'
 import { db } from '../../../configs/firebaseConfig';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { RootState } from '../../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,8 +18,9 @@ const schema = yup.object({
   coupon: yup.string().min(3).max(20).required('Coupon code is required'),
 });
 
-export const Coupons = () => {
+export const Coupons = ({ setCouponModal }: { setCouponModal: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const { user } = useSelector((state: RootState) => state.User)
+  const { orderDetails } = useSelector((state: RootState) => state.cart)
   const [orderCount, setOrderCount] = useState(0)
   const dispatch = useDispatch()
   const [coupons, setCoupons] = useState<CouponType[]>([])
@@ -57,12 +58,38 @@ export const Coupons = () => {
     }
   }, [user])
   
-  const onsubmit = (data: Inputs) => {
-    console.log(data);
+  const onsubmit = async(data: Inputs) => {
+    try {
+      if (!orderDetails) return
+      const q = query(collection(db, "coupons"), where("couponCode", "==", data.coupon));
+      const querySnapshot = await getDocs(q);
+      const targetData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as CouponType[]
+      if (targetData.length === 0) {
+        dispatch(setError(`${data.coupon} is not valid`))
+      } else {
+        const coupon = targetData[0]
+        if (orderDetails.total < coupon.minOrderValue) {
+          setErrors("coupon", { message: `minimum order value is ${coupon.minOrderValue}` })
+          dispatch(setError(`Minimum order value for should be atleast ${coupon.minOrderValue}`))
+        } if (coupon.expiryDate < new Date()) {
+          dispatch(setError(`Coupon expired on ${coupon.expiryDate.toDate().toLocaleString()}`))
+        }else {
+          if (!user) return
+          const orderRef = doc(db, "cart", user.uid);
+          await updateDoc(orderRef, {
+            coupon
+          });   
+          setCouponModal(false)
+        }
+      }
+    } catch (error) {
+      dispatch(setError("Somthing went wrong please try again"))
+      console.log(error);
+    }
   }
 
   return (
-      <div className='w-80'>
+    <div className='w-80'>
       <Typography fontWeight={600} className="my-5">APPLY COUPON</Typography>
       <div className='space-y-5 grid'>
         <form onSubmit={handleSubmit(onsubmit)}>
@@ -73,10 +100,12 @@ export const Coupons = () => {
             InputProps={{
               endAdornment: <button type='submit' className='text-blue-500 text-base cursor-pointer border-none bg-inherit active:text-blue-300 font-bold hover:text-blue-900'>Apply</button>
             }}
+            placeholder="Coupon Code"
+            fullWidth
           />
         </form>
         <Typography align='left' variant='caption'>Or choose from below</Typography>
-        {coupons.map((coupon: CouponType) => (<CouponCard setErrors={setErrors} coupon={coupon} />))}
+        {coupons.map((coupon: CouponType) => (<CouponCard setCouponModal={setCouponModal} setErrors={setErrors} coupon={coupon} />))}
       </div>
       </div>
   )

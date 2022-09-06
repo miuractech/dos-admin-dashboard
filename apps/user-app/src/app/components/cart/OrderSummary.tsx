@@ -1,7 +1,7 @@
 import { Button, Card, Checkbox, Divider, FormControlLabel, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { RootState } from '../../../store/store'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { SummaryCard } from './SummaryCard'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -9,6 +9,9 @@ import { cartProduct } from '../../../store/cartSlice'
 import SimpleModal from '@dropout-store/simple-modal'
 import { Coupons } from '../Coupons/Coupons'
 import { useLocation } from 'react-router-dom'
+import { deleteField, doc, updateDoc } from 'firebase/firestore'
+import { db } from '../../../configs/firebaseConfig'
+import { setBackDrop } from '../../../store/alertslice'
 
 export const OrderSummary = () => {
     const { cartProductList,selectedCoupon, orderDetails } = useSelector((state: RootState) => state.cart)
@@ -19,6 +22,7 @@ export const OrderSummary = () => {
     const theme = useTheme()
     const media = useMediaQuery(theme.breakpoints.up("md"))
     const location = useLocation();
+    const dispatch = useDispatch()
     useEffect(() => {
         const arr: number[] = []
         const arr1: number[] = []
@@ -37,7 +41,7 @@ export const OrderSummary = () => {
         setSubtotal(result)
         setDiscount(result1)
     }, [cartProductList])
-    console.log(location.pathname);
+    console.log(user?.uid);
     return (
         <div>
             <SimpleModal
@@ -45,31 +49,41 @@ export const OrderSummary = () => {
                 onClose={() => setCouponModal(false)}
                 style={{ left: !media ?"50%":"78%"}}
             >
-                <Coupons/>
+                <Coupons setCouponModal={setCouponModal} />
             </SimpleModal>
             <Card className='my-5 p-3'>
                 <Typography fontWeight={600} gutterBottom className='mb-5'>Shipping</Typography>
                 {cartProductList.map((item: cartProduct, index: number) => <SummaryCard key={index} productName={item.product.productName} size={item.size} price={item.product.price} count={item.count} />)}
                 <div>
-                    {location.pathname === "/cart/orderconfirmation" && selectedCoupon?(
+                    {location.pathname === "/cart/orderconfirmation" && <div>
+                        {selectedCoupon ? (
                         <div className='h-10 flex items-center align-middle justify-between' >
                             <Typography color="green" fontWeight={600} >
                                 {selectedCoupon.couponCode}
                             </Typography>
-                            <Button size='small' variant='text' color='secondary'  >
+                                <Button size='small' variant='text' color='secondary' onClick={async () => {
+                                    if (!orderDetails) return
+                                    if (!user) return
+                                    dispatch(setBackDrop(true))
+                                    const orderRef = doc(db, "cart", user.uid);
+                                    await updateDoc(orderRef, {
+                                        couponRemark: "removed",
+                                        coupon: deleteField(),
+                                    });
+                            }}>
                                 Change
                             </Button>
                         </div>
-                        ): (
-                        <div className = 'flex justify-between py-4 cursor-pointer' onClick = { () => { setCouponModal(true) } }>
-                            <div className = 'flex gap-4'>
+                        ) : (
+                        <div className='flex justify-between py-4 cursor-pointer' onClick={() => { setCouponModal(true) }}>
+                            <div className='flex gap-4'>
                                 <LocalOfferIcon />
                                 <Typography>Apply Cupon Code</Typography>
                             </div>
                             <ChevronRightIcon />
                         </div>
-                        )
-                    }
+                        )}
+                    </div>}
                     <Divider />
                     <div className='flex gap-2 py-3'>
                         <input type="Checkbox" className='h-4 w-4 cursor-pointer' />
@@ -84,8 +98,8 @@ export const OrderSummary = () => {
                     <Typography fontWeight={500} className='text-right text-green-500'>-₹{discount}</Typography>
                     <Typography>Shipping</Typography>
                     <Typography fontWeight={500} className='text-right text-green-500'>FREE</Typography>
-                    {orderDetails && <Typography>Coupon Discount</Typography>}
-                    {orderDetails && <Typography fontWeight={500} className='text-right text-green-500'>-₹{orderDetails.discount ? orderDetails.discount:"0"}</Typography>}
+                    {orderDetails?.discount && <Typography>Coupon Discount</Typography>}
+                    {orderDetails?.discount && <Typography fontWeight={500} className='text-right text-green-500'>-₹{orderDetails.discount}</Typography>}
                 </div>
                 <Divider />
                 <div className='flex justify-between pt-3'>
