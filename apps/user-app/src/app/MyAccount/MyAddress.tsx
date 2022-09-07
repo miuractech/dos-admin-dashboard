@@ -284,9 +284,9 @@ export default function MyAddress() {
         </Typography>
       </div>
       <Box className="my-10 flex justify-center py-5 ">
-        <Card className="px-5  min-h-screen w-full grid grid-cols-1 rounded-xl  items-center">
+        <Card className="px-5  w-full grid grid-cols-1 rounded-xl  ">
           {addresses.map((a, index) => (
-            <div className="flex flex-wrap justify-center ">
+            <div className="flex flex-wrap justify-center my-5">
               <div className="mb-4 font-medium text-xl  mr-8">
                 Address {index + 1}
               </div>

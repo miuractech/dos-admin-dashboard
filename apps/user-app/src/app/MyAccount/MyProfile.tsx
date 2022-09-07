@@ -4,29 +4,39 @@ import InputAdornment from '@mui/material/InputAdornment';
 import EditIcon from '@mui/icons-material/Edit';
 import { type } from 'os';
 import { useEffect, useState } from 'react';
+import { RootState } from '../../store/store';
+import { useSelector } from 'react-redux';
 type UserInfo = {
   name: string;
-  mobile: string;
+  mobile: string | null;
   gender: 'Male' | 'Female';
   email: string;
 };
 
 export default function MyProfile() {
-  const [user, setUser] = useState<UserInfo>({
+  const { user } = useSelector((state: RootState) => state.User);
+  console.log(user);
+  const [userInfo, setUserInfo] = useState<UserInfo>({
     name: '',
     mobile: '',
     gender: 'Female',
     email: '',
   });
+
   const [isEdit, setIsEdit] = useState({
     name: true,
     email: true,
     gender: true,
     mobile: true,
   });
+
   useEffect(() => {
-    console.log(user);
-  }, [user]);
+    if (user) {
+      setUserInfo({ ...userInfo, mobile: user.phoneNumber });
+      console.log('here');
+    }
+  }, []);
+
   return (
     <div className="mt-10 md:mt-10  md:m-auto min-h-fit md:p-10">
       <Card className="px-5 ">
@@ -45,9 +55,9 @@ export default function MyProfile() {
               <TextField
                 id="input-with-icon-textfield"
                 disabled={isEdit.name}
-                value={user?.name}
+                value={userInfo?.name}
                 onChange={(e) => {
-                  setUser({ ...user, name: e.target.value });
+                  setUserInfo({ ...userInfo, name: e.target.value });
                 }}
                 InputProps={{
                   endAdornment: (
@@ -71,9 +81,9 @@ export default function MyProfile() {
               <TextField
                 id="input-with-icon-textfield"
                 disabled={isEdit.email}
-                value={user?.email}
+                value={userInfo?.email}
                 onChange={(e) => {
-                  setUser({ ...user, email: e.target.value });
+                  setUserInfo({ ...userInfo, email: e.target.value });
                 }}
                 InputProps={{
                   endAdornment: (
@@ -97,9 +107,9 @@ export default function MyProfile() {
               <TextField
                 id="input-with-icon-textfield"
                 disabled={isEdit.mobile}
-                value={user?.mobile}
+                value={userInfo?.mobile}
                 onChange={(e) => {
-                  setUser({ ...user, mobile: e.target.value });
+                  setUserInfo({ ...userInfo, mobile: e.target.value });
                 }}
                 InputProps={{
                   endAdornment: (
@@ -123,16 +133,16 @@ export default function MyProfile() {
               <TextField
                 id="input-with-icon-textfield "
                 disabled={isEdit.gender}
-                value={user?.gender || 'Female'}
+                value={userInfo?.gender || 'Female'}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
                       <span
                         className={`${
-                          user.gender === 'Female' ? 'text-blue-600' : ''
+                          userInfo.gender === 'Female' ? 'text-blue-600' : ''
                         }  font-medium hover:cursor-pointer`}
                         onClick={() => {
-                          setUser({ ...user, gender: 'Female' });
+                          setUserInfo({ ...userInfo, gender: 'Female' });
                         }}
                       >
                         F
@@ -140,10 +150,10 @@ export default function MyProfile() {
                       /
                       <span
                         className={`${
-                          user.gender === 'Male' ? 'text-blue-600' : ''
+                          userInfo.gender === 'Male' ? 'text-blue-600' : ''
                         }  font-medium hover:cursor-pointer`}
                         onClick={() => {
-                          setUser({ ...user, gender: 'Male' });
+                          setUserInfo({ ...userInfo, gender: 'Male' });
                         }}
                       >
                         M
