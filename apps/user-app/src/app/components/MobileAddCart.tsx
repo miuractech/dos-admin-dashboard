@@ -17,18 +17,37 @@ import {
 import { setError } from '../../store/alertslice';
 import { GetOTP } from './cart/GetOTP';
 import { GetPhoneNumber } from './cart/GetPhoneNumber';
+import wishlist from '../../store/wishlist';
 
 export const MobileAddCart = ({ AddToCard }: { AddToCard: () => void }) => {
   const { user, step } = useSelector((state: RootState) => state.User);
   const { product } = useSelector((state: RootState) => state.product);
+
+  const { whishListProducts } = useSelector(
+    (state: RootState) => state.myProfile
+  );
+
   // const { productid, resellerid } = useParams();
   const [authModal, setAuthModal] = useState(false);
   const dispatch = useDispatch();
-  console.log(user);
 
   const { productid, resellerid } = useParams();
 
   const [isFavorite, setFavorite] = useState(false);
+  useEffect(() => {
+    console.log(whishListProducts);
+    console.log();
+    if (product) {
+      const isContain = whishListProducts.filter(
+        (ele) =>
+          ele.resellerId === product.resellerId &&
+          ele.productId === product.productId
+      ).length;
+      if (isContain) {
+        setFavorite(true);
+      }
+    }
+  });
 
   const handelFavorite = async () => {
     if (user) {

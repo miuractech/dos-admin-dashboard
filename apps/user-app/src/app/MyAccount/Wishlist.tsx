@@ -30,25 +30,6 @@ export default function WishList() {
   const dispatch = useDispatch();
   const [value, setValue] = React.useState('1');
 
-  //   setValue(newValue);
-  // };
-  // useEffect(() => {
-  //   const ordersRef = collection(db, 'orders');
-  //   const q = query(
-  //     ordersRef,
-  //     where('status', '==', 'success'),
-  //     where('userId', '==', `${user?.uid}`)
-  //   );
-
-  //   const unsub = onSnapshot(q, (doc) => {
-  //     console.log(doc.docs);
-  //     const data = doc.docs.map((order) => ({ ...order.data() }));
-  //     console.log(data);
-  //     setyourOrders(data[0]);
-  //   });
-  //   return () => unsub();
-  // }, []);
-  // console.log(yourOrders.items);
   useEffect(() => {
     if (whishListProducts.length === 0) {
       getDos();
@@ -125,8 +106,12 @@ export default function WishList() {
                   productName={pro.productName}
                   sizeArray={pro.sizeAvailable}
                 />
-                <Button onClick={() => removefav(pro.whishListId)}>
-                  Delete
+                <Button
+                  variant="contained"
+                  className="text-white w-full my-2"
+                  onClick={() => removefav(pro.whishListId)}
+                >
+                  Remove
                 </Button>
               </div>
             ))}

@@ -5,7 +5,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import { type } from 'os';
 import { useEffect, useState } from 'react';
 import { RootState } from '../../store/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
+import { setError } from '../../store/alertslice';
+import { db } from '../../configs/firebaseConfig';
+import { addProfile } from '../../store/myProfileSlice';
 type UserInfo = {
   name: string;
   mobile: string | null;
@@ -14,11 +24,16 @@ type UserInfo = {
 };
 
 export default function MyProfile() {
+  const { myProfile } = useSelector((state: RootState) => state.myProfile);
   const { user } = useSelector((state: RootState) => state.User);
-  console.log(user);
-  const [userInfo, setUserInfo] = useState<UserInfo>({
+  console.log(myProfile);
+  const dispatch = useDispatch();
+
+  let phoneNumber: null | string = '';
+  if (user) phoneNumber = user.phoneNumber;
+  const [userInfo, setUserInfo] = useState({
     name: '',
-    mobile: '',
+    mobile: phoneNumber,
     gender: 'Female',
     email: '',
   });
@@ -30,12 +45,61 @@ export default function MyProfile() {
     mobile: true,
   });
 
-  useEffect(() => {
-    if (user) {
-      setUserInfo({ ...userInfo, mobile: user.phoneNumber });
-      console.log('here');
+  const update = async () => {
+    if (!user) return;
+    const profileRef = doc(
+      db,
+      'users',
+      user.uid,
+      'profile',
+      'PhTNiBcCFLRNveBnNFfq'
+    );
+    try {
+      await updateDoc(profileRef, {
+        name: userInfo.name,
+        email: userInfo.email,
+        phoneNumber: userInfo.mobile,
+        gender: userInfo.gender,
+      });
+      const data = await getDoc(profileRef);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+      dispatch(setError('Unable to upadte profile try again'));
     }
+  };
+
+  const getProfile = async () => {
+    if (!user) return;
+    try {
+      const profileRef = collection(db, 'users', user.uid, 'profile');
+      const collections = await getDocs(profileRef);
+      const profileId = collections.docs[0].id;
+
+      const profileDocRef = doc(db, 'users', user.uid, 'profile', profileId);
+      const profile = await getDoc(profileDocRef);
+      const profileData = profile.data();
+      dispatch(addProfile({ ...profileData, profileId }));
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getProfile();
   }, []);
+
+  useEffect(() => {
+    if (myProfile && myProfile.profileId) update();
+  }, [userInfo]);
+  useEffect(() => {
+    if (myProfile) {
+      setUserInfo({
+        name: myProfile.name,
+        email: myProfile.email,
+        mobile: myProfile.phoneNumber,
+        gender: myProfile.gender,
+      });
+    }
+  }, [myProfile]);
 
   return (
     <div className="mt-10 md:mt-10  md:m-auto min-h-fit md:p-10">

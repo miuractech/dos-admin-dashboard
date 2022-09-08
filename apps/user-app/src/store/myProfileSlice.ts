@@ -1,24 +1,28 @@
-
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 type myProfileType = {
-  whishListProducts:any[]
-}
+  whishListProducts: any[];
+  myProfile: any
+};
 
 const initialState: myProfileType = {
-whishListProducts:[]
-}
+  whishListProducts: [],
+  myProfile: {},
+};
 
 export const myProfileSlice = createSlice({
-    name: 'Myprofile',
-    initialState,
-    reducers: {
-        addWishListProducts: (state, action) => {
-            state.whishListProducts.push(action.payload)
-        }
+  name: 'Myprofile',
+  initialState,
+  reducers: {
+    addWishListProducts: (state, action) => {
+      state.whishListProducts.push(action.payload);
     },
-})
+    addProfile: (state, action) => {
+      state.myProfile = action.payload;
+    },
+  },
+});
 
-export const { addWishListProducts } = myProfileSlice.actions
+export const { addWishListProducts, addProfile } = myProfileSlice.actions;
 
-export default myProfileSlice.reducer
+export default myProfileSlice.reducer;

@@ -60,6 +60,7 @@ import MyProfile from './MyAccount/MyProfile';
 import MyAddress from './MyAccount/MyAddress';
 import MyDesign from './MyAccount/MyDesign';
 import YourOrders from './MyAccount/YourOders';
+import { addWishListProducts } from '../store/myProfileSlice';
 const Auth = lazy(() => import('../features/auth/auth'));
 const Logout = lazy(() => import('../features/auth/logout'));
 const StoreFront = lazy(() => import('./storefront/storeFront'));
@@ -100,12 +101,37 @@ export function App() {
     });
   };
 
-  const getLocalWishlistData = () => {
-    console.log('wishlist data');
-    const data = localStorage.getItem('wishlist');
-    if (!data) return;
-    const wishlistData = JSON.parse(data);
+  const getWishlist = async () => {
 
+    try {
+      if (user) {
+     
+        console.log(user.uid);
+        const wishlistRef = collection(db, 'users', user.uid, 'wishlist');
+        const querySnapShot = await getDocs(wishlistRef);
+        const docs = querySnapShot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        docs.forEach(async (pro: any) => {
+          const docRef = doc(
+            db,
+            'reSellers',
+            pro.resellerId,
+            'products',
+            pro.productId
+          );
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            dispatch(
+              addWishListProducts({ ...docSnap.data(), whishListId: pro.id })
+            );
+          }
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getData = async () => {
@@ -148,10 +174,9 @@ export function App() {
     }
   };
 
-
   useEffect(() => {
     getorderid();
- 
+    getWishlist();
   }, [user]);
 
   const getorderid = async () => {
